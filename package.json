@@ -1,13 +1,13 @@
 {
   "name": "@deskpro/app-shortcut",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
-    "@deskpro/app-sdk": "0.1.1",
+    "@deskpro/app-sdk": "^0.1.1",
     "formik": "^2.2.9",
     "iframe-resizer": "4.3.2",
     "js-cache": "1.0.3",
