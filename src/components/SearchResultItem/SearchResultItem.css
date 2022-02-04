@@ -1,0 +1,8 @@
+.user-avatar {
+  position: absolute;
+  border-radius: 100%;
+}
+
+.user-name {
+  margin-left: 23px;
+}

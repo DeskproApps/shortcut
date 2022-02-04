@@ -1,0 +1,12 @@
+.create-link {
+  margin-bottom: 10px !important;
+  padding: 6px 6px 7px !important;
+  border-radius: 6px;
+}
+
+.create-link .create-link-create.unselected,
+.create-link .create-link-link.unselected {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none;
+}

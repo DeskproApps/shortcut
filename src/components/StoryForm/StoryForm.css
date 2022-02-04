@@ -1,0 +1,7 @@
+.create-form-field {
+  width: 100%;
+}
+
+.description-field:focus {
+  min-height: 100px;
+}
