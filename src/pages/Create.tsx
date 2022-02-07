@@ -42,6 +42,9 @@ export const Create: FC = () => {
         setLoading(false);
         dispatch({ type: "changePage", page: "home" });
       })
+      .finally(() => {
+        setLoading(false);
+      })
     ;
   };
 
