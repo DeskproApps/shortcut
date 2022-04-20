@@ -2,7 +2,7 @@
   "name": "@deskpro/shortcut",
   "title": "Shortcut",
   "description": "Link tickets to Shortcut stories so agents can track a story's progress from a ticket",
-  "version": "0.1.4",
+  "version": "0.1.8",
   "scope": "agent",
   "isSingleInstall": true,
   "hasDevMode": true,
@@ -21,6 +21,7 @@
   }],
   "entityAssociations": {
     "linkedShortcutStories": {
+      "title": "Linked Shortcut Stories",
       "entity": "ticket",
       "type": "external_id"
     }
