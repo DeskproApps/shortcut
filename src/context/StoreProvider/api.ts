@@ -39,7 +39,7 @@ export const addExternalUrlToStory = async (client: IDeskproClient, id: string, 
 export const removeExternalUrlToStory = async (client: IDeskproClient, id: string, url: string): Promise<void> => {
   const story = await request(client, "GET", `${API_BASE_URL}/stories/${id}`);
 
-  const externalLinks = (story.external_links ?? []).filter((existing) => existing !== url);
+  const externalLinks = (story.external_links ?? []).filter((existing: string) => existing !== url);
 
   await request(client, "PUT", `${API_BASE_URL}/stories/${id}`, {
     external_links: externalLinks,
