@@ -9,6 +9,23 @@ export const useSetAppTitle = (title: string, deps: DependencyList|undefined = [
   useEffect(() => client?.setTitle(title), deps);
 };
 
+export const useWhenNoLinkedItems = (onNoLinkedItems: () => void) => {
+  const { client } = useDeskproAppClient();
+  const [ state ] = useStore();
+
+  useEffect(() => {
+    if (!client || !state.context?.data.ticket.id) {
+      return;
+    }
+
+    client
+        .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
+        .list()
+        .then((items) => items.length === 0 && onNoLinkedItems())
+    ;
+  }, [client, state.context?.data.ticket.id]);
+};
+
 export const useLoadLinkedStories = () => {
   const { client } = useDeskproAppClient();
   const [ state, dispatch ] = useStore();

@@ -8,8 +8,9 @@ import { View } from "./View";
 import { Page } from "../context/StoreProvider/types";
 import { useDebouncedCallback } from "use-debounce";
 import { ErrorBlock } from "../components/Error/ErrorBlock";
-import { useLoadLinkedStories } from "../hooks";
+import { useLoadLinkedStories, useWhenNoLinkedItems } from "../hooks";
 import { Create } from "./Create";
+import {removeExternalUrlToStory} from "../context/StoreProvider/api";
 
 export const Main: FC = () => {
   const { client } = useDeskproAppClient();
@@ -19,6 +20,8 @@ export const Main: FC = () => {
   if (state._error) {
     console.error(state._error);
   }
+
+  useWhenNoLinkedItems(() => dispatch({ type: "changePage", page: "link" }));
 
   useEffect(() => {
     client?.registerElement("refresh", { type: "refresh_button" });
@@ -33,17 +36,18 @@ export const Main: FC = () => {
   );
 
   const unlinkTicket = ({ id }: any) => {
-    if (!state?.context?.data.ticket) {
+    if (!client || !state?.context?.data.ticket) {
       return;
     }
 
     const { ticket }: any = state?.context?.data;
 
-    client?.getEntityAssociation("linkedShortcutStories", ticket.id).delete(id).then(() => {
-      dispatch({ type: "linkedStoriesListLoading" });
-      loadLinkedIssues();
-      dispatch({ type: "changePage", page: "home" });
-    });
+    client?.getEntityAssociation("linkedShortcutStories", ticket.id).delete(id)
+        .then(() => dispatch({ type: "linkedStoriesListLoading" }))
+        .then(() => removeExternalUrlToStory(client, `${id}`, state.context?.data.ticket.permalinkUrl as string))
+        .then(loadLinkedIssues)
+        .then(() => dispatch({ type: "changePage", page: "home" }))
+    ;
   };
 
   useDeskproAppEvents({

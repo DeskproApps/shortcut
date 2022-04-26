@@ -198,6 +198,17 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
     }))
   ;
 
+    const buildOwnersOptions = (): DropdownMultiSelectValueType[] => members
+        .filter((m: ShortcutMember) => !m.disabled)
+        .map((member: ShortcutMember, idx: number) => ({
+            key: `${idx}`,
+            label: member.profile.name,
+            valueLabel: member.profile.name,
+            value: member.id,
+            type: "value" as const,
+        }))
+    ;
+
   const buildLabelOptions = (): DropdownMultiSelectValueType[] => labels
     .filter((l: ShortcutLabel) => !l.archived)
     .map((label: ShortcutLabel, idx: number) => ({
@@ -379,6 +390,21 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
                   </Label>
                 )}
               </FormikField>
+            </div>
+            <div className="create-form-field">
+                <FormikField<string[]> name="owners">
+                    {([field, , helpers], { id, error }) => (
+                        <Label htmlFor={id} label="Owners" error={error}>
+                            <DropdownMultiSelect
+                                helpers={helpers}
+                                options={buildOwnersOptions()}
+                                id={id}
+                                placeholder="Select values"
+                                values={field.value}
+                            />
+                        </Label>
+                    )}
+                </FormikField>
             </div>
             <div className="create-form-field">
               <FormikField<string[]> name="followers">

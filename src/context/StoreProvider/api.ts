@@ -34,6 +34,19 @@ export const addExternalUrlToStory = async (client: IDeskproClient, id: string, 
 };
 
 /**
+ * Remove an external link from a story
+ */
+export const removeExternalUrlToStory = async (client: IDeskproClient, id: string, url: string): Promise<void> => {
+  const story = await request(client, "GET", `${API_BASE_URL}/stories/${id}`);
+
+  const externalLinks = (story.external_links ?? []).filter((existing) => existing !== url);
+
+  await request(client, "PUT", `${API_BASE_URL}/stories/${id}`, {
+    external_links: externalLinks,
+  });
+};
+
+/**
  * Search stories in Shortcut
  */
 export const searchStories = async (client: IDeskproClient, q: string): Promise<StorySearchItem[]> => {
@@ -170,6 +183,12 @@ export const createStory = async (client: IDeskproClient, data: CreateStoryData)
   if (data.followers) {
     body.follower_ids = (data.followers ?? [])
       .map((follower) => `${follower}`)
+    ;
+  }
+
+  if (data.owners) {
+    body.owner_ids = (data.owners ?? [])
+        .map((owner) => `${owner}`)
     ;
   }
 

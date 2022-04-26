@@ -78,6 +78,7 @@ export interface CreateStoryData {
   type: string;
   labels: string[];
   followers: string[],
+  owners: string[],
   team?: string;
   workflow?: string;
   state?: string;
