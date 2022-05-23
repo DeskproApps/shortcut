@@ -87,3 +87,29 @@ export interface CreateStoryData {
   iteration?: string;
   requester?: string;
 }
+
+export interface ShortcutStoryAssociationPropsLabel {
+  id: number;
+  name: string;
+}
+
+export interface ShortcutStoryAssociationPropsOwner {
+  id: string;
+  name: string;
+}
+
+export interface ShortcutStoryAssociationProps {
+  id: string;
+  name: string;
+  type: string;
+  statusId?: number;
+  statusName?: string;
+  teamId?: string;
+  teamName?: string;
+  iterationId?: number;
+  iterationName?: string;
+  epicId?: number;
+  epicName?: string;
+  labels: ShortcutStoryAssociationPropsLabel[];
+  owners: ShortcutStoryAssociationPropsOwner[];
+}

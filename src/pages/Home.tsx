@@ -5,18 +5,19 @@ import {
   IconButton,
   Input,
   LoadingSpinner,
-  Stack, useDeskproAppClient
+  Stack, useDeskproAppClient, useDeskproAppTheme
 } from "@deskpro/app-sdk";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/LinkedStoryResultItem";
 
 export const Home: FC = () => {
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement|null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [state, dispatch] = useStore();
   const loadLinkedStories = useLoadLinkedStories();
   const { client } = useDeskproAppClient();
+  const { theme } = useDeskproAppTheme();
 
   useSetAppTitle("Shortcut Stories");
 
@@ -55,6 +56,7 @@ export const Home: FC = () => {
         />
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
+
       {loading ?  <LoadingSpinner /> : linkedStories.map((item, idx) => (
         <LinkedStoryResultItem
           key={idx}

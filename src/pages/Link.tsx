@@ -15,6 +15,11 @@ import { addExternalUrlToStory, searchStories } from "../context/StoreProvider/a
 import { SearchResultItem } from "../components/SearchResultItem/SearchResultItem";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
 import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
+import {
+    ShortcutStoryAssociationProps,
+    ShortcutStoryAssociationPropsLabel,
+    ShortcutStoryAssociationPropsOwner, StorySearchItem
+} from "../context/StoreProvider/types";
 
 export const Link: FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -73,9 +78,34 @@ export const Link: FC = () => {
 
     setIsLinkStoriesLoading(true);
 
+    const selectedItems = (state.linkStorySearchResults?.list ?? [])
+        .filter((item) => selected.includes(item.id))
+        .reduce<Record<string, StorySearchItem>>((items, item) => ({ ...items, [item.id]: item }), {})
+    ;
+
     const updates = selected.map((id: string) => client
       .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
-      .set(id)
+      .set<ShortcutStoryAssociationProps>(id, {
+        id,
+        name: selectedItems[id].name,
+        type: selectedItems[id].type,
+        statusId: selectedItems[id].stateId,
+        statusName: selectedItems[id].stateName,
+        teamId: selectedItems[id].teamId,
+        teamName: selectedItems[id].teamName,
+        iterationId: selectedItems[id].iterationId,
+        iterationName: selectedItems[id].iterationName,
+        epicId: selectedItems[id].epicId,
+        epicName: selectedItems[id].epicName,
+        labels: selectedItems[id].labels.map<ShortcutStoryAssociationPropsLabel>((label) => ({
+          id: label.id,
+          name: label.name,
+        })),
+        owners: selectedItems[id].owners.map<ShortcutStoryAssociationPropsOwner>((owner) => ({
+          id: owner.id,
+          name: owner.name,
+        })),
+      })
     );
 
     updates.push(...selected.map((id: string) => addExternalUrlToStory(
