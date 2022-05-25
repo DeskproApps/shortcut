@@ -1,11 +1,11 @@
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import {
-  Button,
-  Checkbox, H3,
-  HorizontalDivider,
-  IconButton,
-  Input,
-  Stack, useDeskproAppClient
+    Button,
+    Checkbox, H3,
+    HorizontalDivider,
+    IconButton,
+    Input,
+    Stack, useDeskproAppClient
 } from "@deskpro/app-sdk";
 import { useStore } from "../context/StoreProvider/hooks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -100,10 +100,6 @@ export const Link: FC = () => {
         labels: selectedItems[id].labels.map<ShortcutStoryAssociationPropsLabel>((label) => ({
           id: label.id,
           name: label.name,
-        })),
-        owners: selectedItems[id].owners.map<ShortcutStoryAssociationPropsOwner>((owner) => ({
-          id: owner.id,
-          name: owner.name,
         })),
       })
     );

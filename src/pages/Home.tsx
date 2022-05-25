@@ -5,7 +5,8 @@ import {
   IconButton,
   Input,
   LoadingSpinner,
-  Stack, useDeskproAppClient, useDeskproAppTheme
+  Stack,
+  useDeskproAppClient
 } from "@deskpro/app-sdk";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +18,6 @@ export const Home: FC = () => {
   const [state, dispatch] = useStore();
   const loadLinkedStories = useLoadLinkedStories();
   const { client } = useDeskproAppClient();
-  const { theme } = useDeskproAppTheme();
 
   useSetAppTitle("Shortcut Stories");
 

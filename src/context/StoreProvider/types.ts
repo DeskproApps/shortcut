@@ -93,11 +93,6 @@ export interface ShortcutStoryAssociationPropsLabel {
   name: string;
 }
 
-export interface ShortcutStoryAssociationPropsOwner {
-  id: string;
-  name: string;
-}
-
 export interface ShortcutStoryAssociationProps {
   id: string;
   name: string;
@@ -111,5 +106,4 @@ export interface ShortcutStoryAssociationProps {
   epicId?: number;
   epicName?: string;
   labels: ShortcutStoryAssociationPropsLabel[];
-  owners: ShortcutStoryAssociationPropsOwner[];
 }
