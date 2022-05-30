@@ -3,6 +3,9 @@ Shortcut
 
 Link tickets to Shortcut stories so agents can track a story's progress from a ticket.
 
+
+[Read more about our Shortcut app](https://www.deskpro.com/apps/shortcut)
+
 Basic Usage
 ---
 
