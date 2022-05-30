@@ -7,7 +7,7 @@ Link tickets to Shortcut stories so agents can track a story's progress from a t
 
 [Read more about our Shortcut app](https://www.deskpro.com/apps/shortcut)
 
-Basic Usage
+Developers
 ---
 
 We recommend using [Yarn](https://yarnpkg.com/) to manage this project. First, start by installing the project 
