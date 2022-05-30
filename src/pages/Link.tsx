@@ -18,7 +18,7 @@ import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
 import {
     ShortcutStoryAssociationProps,
     ShortcutStoryAssociationPropsLabel,
-    ShortcutStoryAssociationPropsOwner, StorySearchItem
+    StorySearchItem
 } from "../context/StoreProvider/types";
 
 export const Link: FC = () => {
