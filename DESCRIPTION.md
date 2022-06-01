@@ -10,6 +10,3 @@ This app comes with features which make it possible to get the most out of Short
 ***Link tickets to stories:*** Being able to link your Deskpro tickets to Shortcut stories means that you can easily view information from the story while interacting with your users. Once a story is linked it can be viewed alongside your Deskpro ticket in the same tab. Getting updates on the status of your stories without having leave Deskpro makes it faster and easier to deliver useful information to your users.
 
 ***Add comments to stories:*** As well as editing, agents can add comments on stories to relay more information.
-
-## Configuration
-Set up requires the generation of an API key to authenticate the app. To generate an API token, go to "account settings" in Shortcut.
