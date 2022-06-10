@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "start": "vite",
-    "build": "rimraf ./dist/* && tsc && vite build && rimraf ./dist/assets/*.*.svg",
+    "build": "rimraf ./dist/* && tsc && vite build",
     "build:package": "yarn build && yarn package",
-    "package": "node ./bin/package.js",
+    "package": "rimraf ./build/* && node ./bin/package.js",
     "serve": "vite preview",
     "test": "cross-env NODE_OPTIONS=--max-old-space-size=1024 jest --maxWorkers=75%"
   },
