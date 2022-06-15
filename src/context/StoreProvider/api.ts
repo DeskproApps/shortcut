@@ -72,7 +72,7 @@ export const searchStories = async (client: IDeskproClient, q: string): Promise<
     const project = (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
 
     const stateId = state ? state.id : undefined;
-    const workflow = (workflows ?? []).filter((w) => find(w.states, { id: stateId }))[0] ?? null;
+    const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
 
     return {
       id: story.id,
@@ -144,7 +144,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
     const project = (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
 
     const stateId = state ? state.id : undefined;
-    const workflow = (workflows ?? []).filter((w) => find(w.states, { id: stateId }))[0] ?? null;
+    const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
 
     return {
       id: story.id,

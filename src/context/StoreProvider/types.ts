@@ -101,8 +101,8 @@ export interface ShortcutStoryAssociationProps {
   id: string;
   name: string;
   type: string;
-  projectId: number;
-  projectName: string;
+  projectId?: number;
+  projectName?: string;
   workflowId: number;
   workflowName: string;
   statusId?: number;
