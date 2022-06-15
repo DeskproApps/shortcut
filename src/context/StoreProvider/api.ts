@@ -2,6 +2,7 @@ import { IDeskproClient, proxyFetch } from "@deskpro/app-sdk";
 import cache from "js-cache";
 import showdown from "showdown";
 import { ApiRequestMethod, CreateStoryData, StorySearchItem } from "./types";
+import { find } from "lodash";
 
 // Shortcut REST API Base URL
 const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
@@ -58,6 +59,7 @@ export const searchStories = async (client: IDeskproClient, q: string): Promise<
     members,
     workflows,
     iterations,
+    projects,
   } = await getStoryDependencies(client);
 
   const states = (workflows ?? []).reduce((all: any[], workflow: any) => [...all, ...workflow.states], []);
@@ -67,16 +69,24 @@ export const searchStories = async (client: IDeskproClient, q: string): Promise<
     const state = (states ?? []).filter((s: any) => s.id === story.workflow_state_id)[0] ?? null;
     const iteration = (iterations ?? []).filter((i: any) => i.id === story.iteration_id)[0] ?? null;
     const group = (groups ?? []).filter((g: any) => g.id === story.group_id)[0] ?? null;
+    const project = (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
+
+    const stateId = state ? state.id : undefined;
+    const workflow = (workflows ?? []).filter((w) => find(w.states, { id: stateId }))[0] ?? null;
 
     return {
       id: story.id,
       url: story.app_url,
       name: story.name,
       type: story.story_type,
+      workflowId: workflow.id,
+      workflowName: workflow.name,
+      projectId: project ? project.id : undefined,
+      projectName: project ? project.name : undefined,
       epicId: epic ? epic.id : undefined,
       epicName: epic ? epic.name : undefined,
       epicUrl: epic ? epic.app_url : undefined,
-      stateId: state ? state.id : undefined,
+      stateId: stateId,
       stateName: state ? state.name : undefined,
       iterationId: iteration ? iteration.id : undefined,
       iterationName: iteration ? iteration.name : undefined,
@@ -121,6 +131,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
     members,
     workflows,
     iterations,
+    projects,
   } = await getStoryDependencies(client);
 
   const states = (workflows ?? []).reduce((all: any[], workflow: any) => [...all, ...workflow.states], []);
@@ -130,12 +141,20 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
     const state = (states ?? []).filter((s: any) => s.id === story.workflow_state_id)[0] ?? null;
     const iteration = (iterations ?? []).filter((i: any) => i.id === story.iteration_id)[0] ?? null;
     const group = (groups ?? []).filter((g: any) => g.id === story.group_id)[0] ?? null;
+    const project = (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
+
+    const stateId = state ? state.id : undefined;
+    const workflow = (workflows ?? []).filter((w) => find(w.states, { id: stateId }))[0] ?? null;
 
     return {
       id: story.id,
       url: story.app_url,
       name: story.name,
       type: story.story_type,
+      workflowId: workflow.id,
+      workflowName: workflow.name,
+      projectId: project ? project.id : undefined,
+      projectName: project ? project.name : undefined,
       epicId: epic ? epic.id : undefined,
       epicName: epic ? epic.name : undefined,
       epicUrl: epic ? epic.app_url : undefined,
@@ -144,7 +163,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
         name: label.name,
         color: label.color,
       })),
-      stateId: state ? state.id : undefined,
+      stateId,
       stateName: state ? state.name : undefined,
       iterationId: iteration ? iteration.id : undefined,
       iterationName: iteration ? iteration.name : undefined,

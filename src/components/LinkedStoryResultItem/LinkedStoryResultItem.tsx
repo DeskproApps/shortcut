@@ -41,12 +41,12 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
               {entityCount}
             </Property>
           </Stack>
-          {(item.epicId && item.epicUrl) && (
-            <Property title="Epic">
-              {item.epicName}
-              <ExternalLink href={item.epicUrl} />
-            </Property>
-          )}
+          <Property title="Project">
+            {item.projectName ? (item.projectName) : (<em>None</em>)}
+          </Property>
+          <Property title="Workflow">
+            {item.workflowName ? (item.workflowName) : (<em>None</em>)}
+          </Property>
           <Property title="State">
             {item.stateId ? (
               <Pill
@@ -59,6 +59,12 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
           <Property title="Type">
             {capitalize(item.type)}
           </Property>
+          {(item.epicId && item.epicUrl) && (
+              <Property title="Epic">
+                {item.epicName}
+                <ExternalLink href={item.epicUrl} />
+              </Property>
+          )}
           <Property title="Iteration">
             {item.iterationId ? (item.iterationName) : (<em>None</em>)}
           </Property>

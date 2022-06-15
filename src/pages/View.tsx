@@ -50,12 +50,12 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           <Property title="Story ID">
             {story.id}
           </Property>
-          {(story.epicId && story.epicUrl) && (
-            <Property title="Epic">
-              {story.epicName}
-              <ExternalLink href={story.epicUrl} />
-            </Property>
-          )}
+          <Property title="Project">
+            {story.projectName ?? (<em>None</em>)}
+          </Property>
+          <Property title="Workflow">
+            {story.workflowName ?? (<em>None</em>)}
+          </Property>
           <Property title="State">
             {story.stateId ? (
               <Pill
@@ -68,6 +68,12 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           <Property title="Type">
             {capitalize(story.type)}
           </Property>
+          {(story.epicId && story.epicUrl) && (
+              <Property title="Epic">
+                {story.epicName}
+                <ExternalLink href={story.epicUrl} />
+              </Property>
+          )}
           {story.descriptionHtml && (
             <Property title="Description">
               <div dangerouslySetInnerHTML={{ __html: story.descriptionHtml }} />

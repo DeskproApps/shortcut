@@ -51,6 +51,10 @@ export interface StoryItem {
   url: string;
   name: string;
   type: string;
+  projectId?: number;
+  projectName?: string;
+  workflowId: number;
+  workflowName: string;
   epicId?: number;
   epicName?: string;
   epicUrl?: string;
@@ -97,6 +101,10 @@ export interface ShortcutStoryAssociationProps {
   id: string;
   name: string;
   type: string;
+  projectId: number;
+  projectName: string;
+  workflowId: number;
+  workflowName: string;
   statusId?: number;
   statusName?: string;
   teamId?: string;
