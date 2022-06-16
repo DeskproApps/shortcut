@@ -93,7 +93,7 @@ export interface CreateStoryData {
 }
 
 export interface ShortcutStoryAssociationPropsLabel {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -101,17 +101,17 @@ export interface ShortcutStoryAssociationProps {
   id: string;
   name: string;
   type: string;
-  projectId?: number;
+  projectId?: string;
   projectName?: string;
-  workflowId: number;
+  workflowId: string;
   workflowName: string;
-  statusId?: number;
+  statusId?: string;
   statusName?: string;
   teamId?: string;
   teamName?: string;
-  iterationId?: number;
+  iterationId?: string;
   iterationName?: string;
-  epicId?: number;
+  epicId?: string;
   epicName?: string;
   labels: ShortcutStoryAssociationPropsLabel[];
 }
