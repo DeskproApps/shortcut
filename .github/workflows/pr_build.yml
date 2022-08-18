@@ -63,7 +63,7 @@ jobs:
           path: |
             dist/app.zip
             dist/manifest.json
-          retention-days: 30
+          retention-days: 1
 
   deploy:
     uses: DeskproApps/app-template-vite/.github/workflows/subworkflow-deploy.yml@master
