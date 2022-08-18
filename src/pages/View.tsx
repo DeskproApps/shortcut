@@ -2,14 +2,16 @@ import { FC, useEffect, useMemo } from "react";
 import { useFindLinkedStoryById, useSetAppTitle } from "../hooks";
 import { useStore } from "../context/StoreProvider/hooks";
 import {
-  H1,
   Pill,
+  Stack,
   Property,
-  Stack, useDeskproAppClient, useDeskproAppTheme,
+  useDeskproAppTheme,
+  useDeskproAppClient,
 } from "@deskpro/app-sdk";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { capitalize } from "lodash";
 import { Label } from "../components/Label/Label";
+import { Title } from "../components/Title/Title";
 
 export interface ViewProps {
   id: string;
@@ -41,12 +43,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
     <>
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical>
-          <div style={{ display: "flex", alignItems: "start" }}>
-            <H1 style={{ marginRight: "1px" }}>
-              {story.name}
-            </H1>
-            <ExternalLink href={story.url} style={{ position: "relative", top: "-4px" }} />
-          </div>
+          <Title name={story.name} url={story.url} />
           <Property title="Story ID">
             {story.id}
           </Property>
