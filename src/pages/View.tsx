@@ -71,11 +71,12 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
                 <ExternalLink href={story.epicUrl} />
               </Property>
           )}
-          {story.descriptionHtml && (
-            <Property title="Description">
-              <div dangerouslySetInnerHTML={{ __html: story.descriptionHtml }} />
-            </Property>
-          )}
+          <Property title="Description">
+            {story.descriptionHtml
+                ? <div dangerouslySetInnerHTML={{ __html: story.descriptionHtml }} />
+                : <span style={{ color: theme.colors.grey40 }}>---</span>
+            }
+          </Property>
           <Property title="Iteration">
             {story.iterationId ? (story.iterationName) : (<em>None</em>)}
           </Property>
