@@ -2,7 +2,7 @@
   "name": "@deskpro-apps/shortcut",
   "title": "Shortcut",
   "description": "Link tickets to Shortcut stories so agents can track a story's progress from a ticket",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "scope": "agent",
   "isSingleInstall": true,
   "hasDevMode": true,

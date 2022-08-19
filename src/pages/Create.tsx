@@ -83,15 +83,31 @@ export const Create: FC = () => {
           .set<ShortcutStoryAssociationProps>(`${res.id}`, metadata)
         ;
 
+        console.log("HERE1");
+
         return res.id;
       })
-      .then((id: number) => addExternalUrlToStory(client, `${id}`, permalinkUrl))
-      .then(() => loadLinkedStories())
+      .then((id: number) => {
+
+          console.log("HERE2", id, permalinkUrl);
+
+          return addExternalUrlToStory(client, `${id}`, permalinkUrl);
+      })
       .then(() => {
+
+          console.log("HERE3");
+
+          return loadLinkedStories();
+      })
+      .then(() => {
+          console.log("HERE4");
+
         setLoading(false);
         dispatch({ type: "changePage", page: "home" });
       })
       .finally(() => {
+          console.log("HERE5");
+
         setLoading(false);
       })
     ;
