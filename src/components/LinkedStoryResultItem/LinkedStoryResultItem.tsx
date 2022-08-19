@@ -1,16 +1,18 @@
-import {
-  H1,
-  HorizontalDivider, Pill,
-  Property,
-  Stack, useDeskproAppTheme,
-  VerticalDivider
-} from "@deskpro/app-sdk";
 import { FC } from "react";
+import { capitalize } from "lodash";
+import {
+  Pill,
+  Stack,
+  Property,
+  VerticalDivider,
+  HorizontalDivider,
+  useDeskproAppTheme,
+} from "@deskpro/app-sdk";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
 import "./LinkedStoryResultItem.css";
 import { StoryItem } from "../../context/StoreProvider/types";
-import { capitalize } from "lodash";
 import { Label } from "../Label/Label";
+import { Title } from "../Title/Title";
 import { useAssociatedEntityCount } from "../../hooks";
 
 export interface LinkedStoryResultItemProps {
@@ -26,12 +28,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
     <>
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical>
-          <div style={{ display: "flex", alignItems: "start" }}>
-            <H1 onClick={() => onView && onView()} style={{ color: theme.colors.cyan100, cursor: "pointer", marginRight: "1px" }}>
-              {item.name}
-            </H1>
-            <ExternalLink href={item.url} style={{ position: "relative", top: "-4px" }} />
-          </div>
+          <Title name={item.name} url={item.url} onClick={onView} />
           <Stack align="stretch">
             <Property title="Story ID" width="108px">
               {item.id}
