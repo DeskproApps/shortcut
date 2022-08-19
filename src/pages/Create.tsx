@@ -91,10 +91,14 @@ export const Create: FC = () => {
             })),
         };
 
-        await client
-            .getEntityAssociation("linkedShortcutStories", ticketId)
-            .set<ShortcutStoryAssociationProps>(`${res.id}`, metadata)
-        ;
+        try {
+            await client
+                .getEntityAssociation("linkedShortcutStories", ticketId)
+                .set<ShortcutStoryAssociationProps>(`${res.id}`, metadata)
+            ;
+        } catch (e) {
+            console.error(e);
+        }
 
         const id = res.id;
 
