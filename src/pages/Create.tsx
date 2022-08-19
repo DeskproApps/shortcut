@@ -37,7 +37,7 @@ export const Create: FC = () => {
 
 
     (async () => {
-        let res;
+        let res: any;
 
         try {
             res = await createStory(client, data);
