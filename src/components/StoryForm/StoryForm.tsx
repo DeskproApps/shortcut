@@ -249,7 +249,6 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
               <FormikField<string> name="description">
                 {([field, meta], { id, error }) => (
                   <Label
-                    required
                     htmlFor={id}
                     label={
                       <Stack gap={6} align="center">
