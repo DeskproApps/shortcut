@@ -238,6 +238,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
                     htmlFor={id}
                     label="Name"
                     error={error}
+                    required
                   >
                     <Input id={id} {...field} variant="inline" placeholder="Add value" />
                   </Label>
@@ -364,7 +365,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
             <div className="create-form-field">
               <FormikField<string> name="type">
                 {([field, , helpers], { id, error }) => (
-                  <Label htmlFor={id} label="Type" error={error}>
+                  <Label required htmlFor={id} label="Type" error={error}>
                     <DropdownSelect
                       helpers={helpers}
                       options={typeOptions}
@@ -379,7 +380,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
             <div className="create-form-field">
               <FormikField<string> name="requester">
                 {([field, , helpers], { id, error }) => (
-                  <Label htmlFor={id} label="Requester" error={error}>
+                  <Label required htmlFor={id} label="Requester" error={error}>
                     <DropdownSelect
                       helpers={helpers}
                       options={buildRequesterOptions()}

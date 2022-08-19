@@ -235,13 +235,7 @@ export const createStory = async (client: IDeskproClient, data: CreateStoryData)
     body.requested_by_id = data.requester;
   }
 
-  const createRes = await request(client, "POST", `${API_BASE_URL}/stories`, body);
-
-  if (!createRes?.id) {
-    throw new Error("Failed to create story, could not get new story ID");
-  }
-
-  return createRes;
+  return await request(client, "POST", `${API_BASE_URL}/stories`, body);
 };
 
 export const getStoryDependencies = async (client: IDeskproClient) => {
