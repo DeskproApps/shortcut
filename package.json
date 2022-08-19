@@ -20,6 +20,7 @@
     "react-dom": "^17.0.2",
     "react-intl": "^5.24.4",
     "showdown": "1.9.1",
+    "styled-components": "^5.3.3",
     "ts-pattern": "3.3.5",
     "use-debounce": "7.0.1",
     "yup": "0.31.1"
