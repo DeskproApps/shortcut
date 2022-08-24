@@ -22,9 +22,10 @@ export const Home: FC = () => {
   useSetAppTitle("Shortcut Stories");
 
   useEffect(() => {
-    client?.registerElement("addStory", { type: "plus_button" });
     client?.deregisterElement("home");
+    client?.deregisterElement("edit");
     client?.deregisterElement("viewContextMenu");
+    client?.registerElement("addStory", { type: "plus_button" });
   }, [client]);
 
   const linkedStories = useMemo(() => {

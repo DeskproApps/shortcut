@@ -1,0 +1,1 @@
+export { getLabelsNameById } from "./getLabelsNameById";

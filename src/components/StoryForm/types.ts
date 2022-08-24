@@ -9,6 +9,7 @@ export interface ShortcutMember {
 }
 
 export interface ShortcutLabel {
+  id: number;
   name: string;
   color: string;
   archived: boolean;

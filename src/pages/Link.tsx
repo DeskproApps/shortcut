@@ -33,6 +33,7 @@ export const Link: FC = () => {
   useSetAppTitle("Add Story");
 
   useEffect(() => {
+    client?.deregisterElement("edit");
     client?.deregisterElement("addStory");
     client?.registerElement("home", { type: "home_button" });
   }, [client]);

@@ -1,8 +1,14 @@
 import { IDeskproClient, proxyFetch } from "@deskpro/app-sdk";
 import cache from "js-cache";
 import showdown from "showdown";
-import { ApiRequestMethod, CreateStoryData, StorySearchItem } from "./types";
 import { find } from "lodash";
+import {
+  StoryItem,
+  StoryLabel,
+  CreateStoryData,
+  StorySearchItem,
+  ApiRequestMethod,
+} from "./types";
 
 // Shortcut REST API Base URL
 const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
@@ -11,12 +17,13 @@ const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
 const SEARCH_DEPS_CACHE_TTL = 5 * (60 * 1000); // 5 Minutes
 
 const markdownToHtmlConverter = new showdown.Converter();
+
 /**
  * Fetch a single Shortcut story by ID, e.g. "123"
  */
-export const getStoryById = async (client: IDeskproClient, id: string) =>
-  request(client, "GET", `${API_BASE_URL}/stories/${id}`)
-;
+export const getStoryById = async (client: IDeskproClient, id: string) => {
+  return request(client, "GET", `${API_BASE_URL}/stories/${id}`);
+}
 
 /**
  * Add an external link to a story
@@ -183,32 +190,32 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
         name: label.name,
         color: label.color,
       })),
+      requesterId: story.requested_by_id,
+      followerIds: story.follower_ids,
+      description: story.description,
       descriptionHtml: markdownToHtmlConverter.makeHtml(story.description),
       deadline: story?.deadline ? new Date(story.deadline) : undefined,
     } as StorySearchItem;
   });
 }
 
-export const createStory = async (client: IDeskproClient, data: CreateStoryData): Promise<any> => {
+export const createStory = async (
+    client: IDeskproClient,
+    data: Omit<CreateStoryData, "labels"> & { labels: Array<StoryLabel["name"]> },
+): Promise<any> => {
   const body: any = {
     name: data.name,
     description: data.description,
-    labels: (data.labels ?? []).map((label: string) => ({
-      name: label,
-    })),
+    labels: (data.labels ?? []).map((label) => ({ name: label })),
     story_type: data.type,
   };
 
   if (data.followers) {
-    body.follower_ids = (data.followers ?? [])
-      .map((follower) => `${follower}`)
-    ;
+    body.follower_ids = (data.followers ?? []).map((follower) => `${follower}`);
   }
 
   if (data.owners) {
-    body.owner_ids = (data.owners ?? [])
-        .map((owner) => `${owner}`)
-    ;
+    body.owner_ids = (data.owners ?? []).map((owner) => `${owner}`);
   }
 
   if (data.team) {
@@ -236,6 +243,27 @@ export const createStory = async (client: IDeskproClient, data: CreateStoryData)
   }
 
   return await request(client, "POST", `${API_BASE_URL}/stories`, body);
+};
+
+export const updateStory = async (
+    client: IDeskproClient,
+    storyId: StoryItem["id"],
+    data: Omit<CreateStoryData, "labels"> & { labels: Array<StoryLabel["name"]> },
+): Promise<any> => {
+  return await request(client, "PUT", `${API_BASE_URL}/stories/${storyId}`, {
+    name: data.name,
+    description: data.description,
+    labels: (data.labels ?? []).map((label) => ({ name: label })),
+    story_type: data.type,
+    ...(!data.followers ? {} : { follower_ids: (data.followers ?? []).map((follower) => `${follower}`) }),
+    ...(!data.owners ? {} : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
+    ...(!data.team ? {} : { group_id: data.team }),
+    ...(!data.state ? {} : { workflow_state_id: data.state }),
+    ...(!data.project ? {} : { project_id: data.project }),
+    ...(!data.epic ? {} : { epic_id: data.epic }),
+    ...(!data.iteration ? {} : { iteration_id: data.iteration }),
+    ...(!data.requester ? {} : { requested_by_id: data.requester }),
+  });
 };
 
 export const getStoryDependencies = async (client: IDeskproClient) => {

@@ -12,6 +12,7 @@ export type Page =
   | "link"
   | "view"
   | "create"
+  | "edit"
 ;
 
 export interface State {
@@ -46,6 +47,24 @@ export interface TicketContext extends Context {
   data: { ticket: { id: string, permalinkUrl: string }, currentAgent: { primaryEmail: string } }
 }
 
+// Shortcut types
+export type DateTime = string; // eg. 2022-08-24T15:23:51Z
+
+export interface StoryLabel {
+  id: number;
+  name: string;
+  app_url: string;
+  archived: boolean;
+  color: string;
+  created_at: DateTime;
+  description: string;
+  entity_type: "label";
+  external_id: string;
+  global_id: string;
+  updated_at: DateTime;
+  stats: Record<string, number>;
+}
+
 export interface StoryItem {
   id: string;
   url: string;
@@ -67,9 +86,12 @@ export interface StoryItem {
   teamName?: string;
   teamIconUrl?: string;
   owners: { id: string; name: string; iconUrl?: string }[];
-  labels: { id: number; name: string; color: string }[];
+  labels: StoryLabel[];
+  description?: string;
   descriptionHtml?: string;
   deadline?: Date;
+  requesterId: string;
+  followerIds: string[];
 }
 
 export interface StorySearchItem extends StoryItem {
@@ -80,7 +102,7 @@ export interface CreateStoryData {
   name: string;
   description: string;
   type: string;
-  labels: string[];
+  labels: Array<StoryLabel["id"]>;
   followers: string[],
   owners: string[],
   team?: string;

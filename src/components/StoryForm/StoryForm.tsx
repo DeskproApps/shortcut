@@ -38,6 +38,13 @@ export interface StoryFormProps {
   type: "create"|"update";
 }
 
+const getNoneOption = () => ({
+    key: `-1`,
+    label: "None",
+    value: "",
+    type: "value" as const,
+});
+
 export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading = false }: StoryFormProps) => {
   const { theme: { colors } } = useDeskproAppTheme();
   const [ state ] = useStore();
@@ -73,9 +80,9 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
 
   const currentAgentEmail = state?.context?.data.currentAgent.primaryEmail ?? null;
 
-  const currentRequester = values ? undefined : (members ?? [])
-    .filter((m: { profile: { email_address: string } }) => `${m.profile.email_address}`.toLowerCase() === `${currentAgentEmail}`.toLowerCase())[0]
-  ;
+  const currentRequester = values
+      ? undefined
+      : (members ?? []).filter((m: { profile: { email_address: string } }) => `${m.profile.email_address}`.toLowerCase() === `${currentAgentEmail}`.toLowerCase())[0];
 
   if (currentRequester) {
     initialValues.requester = currentRequester.id;
@@ -88,12 +95,14 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
     type: "value" as const,
   })) as DropdownValueType<any>[];
 
-  const teamOptions = teams.filter((t: ShortcutTeam) => !t.archived).map((team: ShortcutTeam, idx: number) => ({
-    key: `${idx}`,
-    label: team.name,
-    value: team.id,
-    type: "value" as const,
-  })) as DropdownValueType<any>[];
+  const teamOptions = teams
+    .filter((t: ShortcutTeam) => !t.archived)
+    .map((team: ShortcutTeam, idx: number) => ({
+      key: `${idx}`,
+      label: team.name,
+      value: team.id,
+      type: "value" as const,
+    })) as DropdownValueType<any>[];
 
   const buildWorkflowOptions = (teamId?: string): DropdownValueType<any>[] => workflows
     .map((workflow: ShortcutWorkflow, idx: number) => ({
@@ -110,8 +119,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
       return (teams.filter((t: { id: string }) => t.id === teamId)[0].workflow_ids ?? [])
         .includes(option.value)
       ;
-    })
-  ;
+    });
 
   const buildStateOptions = (workflowId: string): DropdownValueType<any>[] => {
     const workflow = workflows.filter((w: { id: string }) => w.id === workflowId)[0];
@@ -124,58 +132,50 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
     }));
   };
 
-  const buildProjectOptions = (workflowId?: string): DropdownValueType<any>[] => [{
-    key: `-1`,
-    label: "None",
-    value: "",
-    type: "value" as const,
-  }, ...projects
-    .filter((p: ShortcutProject) => !p.archived)
-    .map((project: ShortcutProject, idx: number) => ({
-      key: `${idx}`,
-      label: project.name,
-      value: project.id,
-      type: "value" as const,
-    }))
-    .filter((option: { value: string }) => {
-      if (!workflowId) {
-        return true;
-      }
+  const buildProjectOptions = (workflowId?: string): DropdownValueType<any>[] => [
+      getNoneOption(),
+      ...projects
+        .filter((p: ShortcutProject) => !p.archived)
+        .map((project: ShortcutProject, idx: number) => ({
+          key: `${idx}`,
+          label: project.name,
+          value: project.id,
+          type: "value" as const,
+        }))
+        .filter((option: { value: string }) => {
+          if (!workflowId) {
+            return true;
+          }
 
-      return projects
-        .filter((p: ShortcutProject) => p.workflow_id === workflowId)
-        .map((p: ShortcutProject) => p.id)
-        .includes(option.value)
-        ;
-    })];
-
-  const buildEpicOptions = (projectId?: string): DropdownValueType<any>[] => [{
-    key: `-1`,
-    label: "None",
-    value: "",
-    type: "value" as const,
-  }, ...epics
-      .filter((e: ShortcutEpic) => !e.archived)
-      .filter((e: ShortcutEpic) => projectId ? (e.project_ids ?? []).includes(projectId) : (e.project_ids ?? []).length === 0)
-      .map((epic: ShortcutEpic, idx: number) => ({
-        key: `${idx}`,
-        label: epic.name,
-        value: epic.id,
-        type: "value" as const,
-      })),
+          return projects
+            .filter((p: ShortcutProject) => p.workflow_id === workflowId)
+            .map((p: ShortcutProject) => p.id)
+            .includes(option.value);
+        })
   ];
 
-  const buildIterationOptions = (): DropdownValueType<any>[] => [{
-    key: `-1`,
-    label: "None",
-    value: "",
-    type: "value" as const,
-  }, ...iterations.map((iteration: ShortcutIteration, idx: number) => ({
-    key: `${idx}`,
-    label: iteration.name,
-    value: iteration.id,
-    type: "value" as const,
-  }))];
+  const buildEpicOptions = (projectId?: string): DropdownValueType<any>[] => [
+      getNoneOption(),
+      ...epics
+          .filter((e: ShortcutEpic) => !e.archived)
+          .filter((e: ShortcutEpic) => projectId ? (e.project_ids ?? []).includes(projectId) : (e.project_ids ?? []).length === 0)
+          .map((epic: ShortcutEpic, idx: number) => ({
+            key: `${idx}`,
+            label: epic.name,
+            value: epic.id,
+            type: "value" as const,
+          })),
+  ];
+
+  const buildIterationOptions = (): DropdownValueType<any>[] => [
+      getNoneOption(),
+      ...iterations.map((iteration: ShortcutIteration, idx: number) => ({
+        key: `${idx}`,
+        label: iteration.name,
+        value: iteration.id,
+        type: "value" as const,
+    }))
+  ];
 
   const buildRequesterOptions = (): DropdownValueType<any>[] => members
     .filter((m: ShortcutMember) => !m.disabled)
@@ -184,8 +184,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
       label: member.profile.name,
       value: member.id,
       type: "value" as const,
-    }))
-  ;
+    }));
 
   const buildFollowerOptions = (): DropdownMultiSelectValueType[] => members
     .filter((m: ShortcutMember) => !m.disabled)
@@ -195,31 +194,28 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
       valueLabel: member.profile.name,
       value: member.id,
       type: "value" as const,
-    }))
-  ;
+    }));
 
-    const buildOwnersOptions = (): DropdownMultiSelectValueType[] => members
-        .filter((m: ShortcutMember) => !m.disabled)
-        .map((member: ShortcutMember, idx: number) => ({
-            key: `${idx}`,
-            label: member.profile.name,
-            valueLabel: member.profile.name,
-            value: member.id,
-            type: "value" as const,
-        }))
-    ;
+  const buildOwnersOptions = (): DropdownMultiSelectValueType[] => members
+    .filter((m: ShortcutMember) => !m.disabled)
+    .map((member: ShortcutMember) => ({
+      key: `${member.id}`,
+      label: member.profile.name,
+      valueLabel: member.profile.name,
+      value: member.id,
+      type: "value" as const,
+    }));
 
   const buildLabelOptions = (): DropdownMultiSelectValueType[] => labels
     .filter((l: ShortcutLabel) => !l.archived)
-    .map((label: ShortcutLabel, idx: number) => ({
-      key: `${idx}`,
+    .map((label: ShortcutLabel) => ({
+      key: `${label.id}`,
       label: (<StorybookLabel color={label.color ?? colors.grey20}>{label.name}</StorybookLabel>),
       valueLabel: label.name,
       color: label.color,
-      value: label.name,
+      value: label.id,
       type: "value" as const,
-    }))
-  ;
+    }));
 
   return (
     <IntlProvider locale="en">
@@ -440,8 +436,18 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
             <HorizontalDivider />
             <div className="create-form-field">
               <Stack justify="space-between">
-                <Button text={type === "create" ? "Create" : "Update"} onClick={() => submitForm()} loading={loading} />
-                <Button text="Reset" intent="secondary" onClick={() => resetForm()} />
+                <Button
+                    text={type === "create" ? "Create" : "Save"}
+                    onClick={() => submitForm()}
+                    loading={loading}
+                    style={{ minWidth: "72px", justifyContent: "center" }}
+                />
+                {(type === "create") && <Button
+                    text="Reset"
+                    intent="secondary"
+                    onClick={() => resetForm()}
+                    style={{ minWidth: "72px", justifyContent: "center" }}
+                />}
               </Stack>
             </div>
           </Stack>

@@ -10,6 +10,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { useLoadLinkedStories, useWhenNoLinkedItems } from "../hooks";
 import { Create } from "./Create";
+import { Edit } from "./Edit";
 import {removeExternalUrlToStory} from "../context/StoreProvider/api";
 
 export const Main: FC = () => {
@@ -61,6 +62,11 @@ export const Main: FC = () => {
       match<[string, any]>([id, payload])
         .with(["addStory", __], () => dispatch({ type: "changePage", page: "link" }))
         .with(["home", __], () => dispatch({ type: "changePage", page: "home" }))
+        .with(["edit", __], () => dispatch({
+          type: "changePage",
+          page: "edit",
+          params: { storyId: payload },
+        }))
         .with(["viewContextMenu", { action: "unlink", id: __ }], () => unlinkTicket(payload))
         .otherwise(() => {})
       ;
@@ -73,6 +79,7 @@ export const Main: FC = () => {
     .with("link", () => <Link {...state.pageParams} />)
     .with("view", () => <View {...state.pageParams} />)
     .with("create", () => <Create {...state.pageParams} />)
+    .with("edit", () => <Edit {...state.pageParams} />)
     .otherwise(() => <Home {...state.pageParams} />)
   ;
 
