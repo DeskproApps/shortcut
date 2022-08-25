@@ -11,6 +11,7 @@ import "./SearchResultItem.css";
 import { StorySearchItem } from "../../context/StoreProvider/types";
 import { capitalize } from "lodash";
 import { Label } from "../Label/Label";
+import { Title } from "../Title/Title";
 import { useAssociatedEntityCount } from "../../hooks";
 
 export interface SearchResultItemProps {
@@ -28,12 +29,12 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({ item, checkbox, on
       <Stack align="start" gap={10}>
         {checkbox && checkbox}
         <Stack gap={10} vertical>
-          <div style={{ display: "flex", alignItems: "start" }}>
-            <H1 onClick={() => onSelect && onSelect()} style={{ color: theme.colors.cyan100, cursor: "pointer", marginRight: "1px" }}>
-              {item.name}
-            </H1>
-            <ExternalLink href={item.url} style={{ position: "relative", top: "-4px" }} />
-          </div>
+          <Title
+            name={item.name}
+            url={item.url}
+            width="2x"
+            onClick={() => onSelect && onSelect()}
+          />
           <Stack align="stretch">
             <Property title="Story ID" width="108px">
               {item.id}
