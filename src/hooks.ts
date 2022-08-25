@@ -38,8 +38,7 @@ export const useLoadLinkedStories = () => {
     try {
       const ids = await client
         .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
-        .list()
-      ;
+        .list();
 
       const list = await listStories(client, ids);
 

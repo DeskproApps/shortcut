@@ -1,16 +1,21 @@
 import { FC, useEffect, useState } from "react";
-import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import {find} from "lodash";
 import { useDeskproAppClient } from "@deskpro/app-sdk";
-import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
+import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import {
+    createStory,
+    getStoryDependencies,
+    addExternalUrlToStory,
+} from "../context/StoreProvider/api";
+import { useStore } from "../context/StoreProvider/hooks";
+import { getLabelsNameById } from "../utils";
 import { StoryForm } from "../components/StoryForm/StoryForm";
-import {addExternalUrlToStory, createStory, getStoryDependencies} from "../context/StoreProvider/api";
+import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
 import {
   CreateStoryData,
   ShortcutStoryAssociationProps,
   ShortcutStoryAssociationPropsLabel
 } from "../context/StoreProvider/types";
-import { useStore } from "../context/StoreProvider/hooks";
-import {find} from "lodash";
 
 export const Create: FC = () => {
   const { client } = useDeskproAppClient();
@@ -21,6 +26,7 @@ export const Create: FC = () => {
   useSetAppTitle("Add Story");
 
   useEffect(() => {
+    client?.deregisterElement("edit");
     client?.deregisterElement("addStory");
     client?.registerElement("home", { type: "home_button" });
   }, [client]);
@@ -32,15 +38,18 @@ export const Create: FC = () => {
 
     const ticketId = state.context?.data.ticket.id as string;
     const permalinkUrl = state.context?.data.ticket.permalinkUrl as string;
+    const storyData = {
+        ...data,
+        labels: getLabelsNameById(data.labels, state.dataDependencies?.labels),
+    };
 
     setLoading(true);
-
 
     (async () => {
         let res: any;
 
         try {
-            res = await createStory(client, data);
+            res = await createStory(client, storyData);
         } catch (e) {
             console.error(e);
         }
@@ -94,8 +103,7 @@ export const Create: FC = () => {
         try {
             await client
                 .getEntityAssociation("linkedShortcutStories", ticketId)
-                .set<ShortcutStoryAssociationProps>(`${res.id}`, metadata)
-            ;
+                .set<ShortcutStoryAssociationProps>(`${res.id}`, metadata);
         } catch (e) {
             console.error(e);
         }
