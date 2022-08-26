@@ -195,6 +195,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
       description: story.description,
       descriptionHtml: markdownToHtmlConverter.makeHtml(story.description),
       deadline: story?.deadline ? new Date(story.deadline) : undefined,
+      customFields: story?.custom_fields,
     } as StorySearchItem;
   });
 }
@@ -278,6 +279,7 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
       request(client, "GET", `${API_BASE_URL}/iterations`),
       request(client, "GET", `${API_BASE_URL}/projects`),
       request(client, "GET", `${API_BASE_URL}/labels`),
+      request(client, "GET", `${API_BASE_URL}/custom-fields`),
     ];
 
     const [
@@ -288,6 +290,7 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
       iterations,
       projects,
       labels,
+      customFields,
     ] = await Promise.all(dependencies);
 
     const resolved = {
@@ -298,6 +301,7 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
       iterations,
       projects,
       labels,
+      customFields,
     };
 
     cache.set(cache_key, resolved, SEARCH_DEPS_CACHE_TTL);
