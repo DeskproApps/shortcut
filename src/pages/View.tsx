@@ -16,7 +16,7 @@ import {
   useFindLinkedStoryById,
   useLoadDataDependencies,
 } from "../hooks";
-import { getStoryCustomFields } from "../utils";
+import { getStoryCustomFieldsToShow } from "../utils";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
@@ -56,7 +56,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
       return;
     }
 
-    setCustomFields(getStoryCustomFields(
+    setCustomFields(getStoryCustomFieldsToShow(
         story.type,
         story.customFields,
         state.dataDependencies.customFields,

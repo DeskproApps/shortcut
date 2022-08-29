@@ -8,7 +8,7 @@ import {
     addExternalUrlToStory,
 } from "../context/StoreProvider/api";
 import { useStore } from "../context/StoreProvider/hooks";
-import { getLabelsNameById } from "../utils";
+import { getLabelsNameById, getStoryCustomFieldsToSave } from "../utils";
 import { StoryForm } from "../components/StoryForm/StoryForm";
 import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
 import {
@@ -41,6 +41,7 @@ export const Create: FC = () => {
     const storyData = {
         ...data,
         labels: getLabelsNameById(data.labels, state.dataDependencies?.labels),
+        custom_fields: getStoryCustomFieldsToSave(data, state.dataDependencies?.customFields),
     };
 
     setLoading(true);

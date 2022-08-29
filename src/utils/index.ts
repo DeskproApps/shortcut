@@ -1,2 +1,8 @@
 export { getLabelsNameById } from "./getLabelsNameById";
-export { getStoryCustomFields } from "./getStoryCustomFields";
+export {
+    isStoryType,
+    normalizeCustomFields,
+    getStoryCustomFieldsToShow,
+    getStoryCustomFieldsToSave,
+} from "./getStoryCustomFields";
+export { normalize } from "./normalize";

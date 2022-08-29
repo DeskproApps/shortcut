@@ -141,6 +141,11 @@ export interface CreateStoryData {
   epic?: string;
   iteration?: string;
   requester?: string;
+  "custom-field-technical-area": string,
+  "custom-field-skill-set": string,
+  "custom-field-product-area": string,
+  "custom-field-priority": string,
+  "custom-field-severity": string,
 }
 
 export interface ShortcutStoryAssociationPropsLabel {

@@ -1,16 +1,11 @@
-import { StoryItem, CustomField, CustomFieldValue } from "../context/StoreProvider/types";
 import cloneDeep from "lodash/cloneDeep";
-
-const isStoryType = (
-    storyType: StoryItem["type"],
-    storyTypes: CustomField["story_types"],
-): boolean => {
-    if (!Array.isArray(storyTypes)) {
-        return true;
-    }
-
-    return storyTypes.includes(storyType);
-}
+import has from "lodash/has";
+import {
+    StoryItem,
+    CustomField,
+    CreateStoryData,
+    CustomFieldValue,
+} from "../context/StoreProvider/types";
 
 type NormalizeFieldValues = Record<CustomFieldValue["id"], CustomFieldValue>;
 
@@ -22,6 +17,17 @@ type NormalizeField = Record<
 type StoryCustomField = {
     label: CustomField["name"],
     value: CustomFieldValue["value"],
+};
+
+const isStoryType = (
+    storyType: StoryItem["type"],
+    storyTypes: CustomField["story_types"],
+): boolean => {
+    if (!Array.isArray(storyTypes)) {
+        return true;
+    }
+
+    return storyTypes.includes(storyType);
 };
 
 const normalizeFieldValues = (
@@ -48,7 +54,11 @@ const normalizeFields = (
     return acc;
 };
 
-const getStoryCustomFields = (
+const normalizeCustomFields = (customFields: CustomField[]): NormalizeField => {
+    return cloneDeep(customFields).reduce(normalizeFields, {});
+};
+
+const getStoryCustomFieldsToShow = (
     storyType: StoryItem["type"],
     storyCustomFields: StoryItem["customFields"],
     customFields: CustomField[],
@@ -68,4 +78,38 @@ const getStoryCustomFields = (
     }, []);
 };
 
-export { getStoryCustomFields };
+const getStoryCustomFieldsToSave = (
+    data: CreateStoryData,
+    customFields: CustomField[],
+): StoryItem["customFields"] => {
+    if (!data || !customFields) {
+        return [];
+    }
+
+    const fields = normalizeCustomFields(cloneDeep(customFields));
+    const availableFields = cloneDeep(customFields)
+        .filter(({ enabled, story_types }) => enabled && isStoryType(data.type, story_types));
+
+    const selected: StoryItem["customFields"] = [];
+
+    availableFields.forEach(({ canonical_name, id: fieldId }) => {
+        const valueId = data[`custom-field-${canonical_name}`];
+
+        if (has(fields, [fieldId, "values", valueId])) {
+            selected.push({
+                field_id: fieldId,
+                value: fields[fieldId]["values"][valueId]["value"],
+                value_id: valueId,
+            });
+        }
+    });
+
+    return selected;
+};
+
+export {
+    isStoryType,
+    normalizeCustomFields,
+    getStoryCustomFieldsToShow,
+    getStoryCustomFieldsToSave,
+};
