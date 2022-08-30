@@ -311,7 +311,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
             <div className="create-form-field">
               <FormikField<string> name="workflow">
                 {([field, , helpers], { id, error }) => (
-                  <Label htmlFor={id} label="Workflow" error={error}>
+                  <Label required htmlFor={id} label="Workflow" error={error}>
                     <DropdownSelect
                       helpers={helpers}
                       options={buildWorkflowOptions(values.team)}
@@ -327,7 +327,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
               <div className="create-form-field">
                 <FormikField<string> name="state">
                   {([field, , helpers], { id, error }) => (
-                    <Label htmlFor={id} label="State" error={error}>
+                    <Label required htmlFor={id} label="State" error={error}>
                       <DropdownSelect
                         helpers={helpers}
                         options={buildStateOptions(values.workflow)}
