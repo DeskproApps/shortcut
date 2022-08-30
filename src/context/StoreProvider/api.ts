@@ -196,6 +196,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
       description: story.description,
       descriptionHtml: markdownToHtmlConverter.makeHtml(story.description),
       deadline: story?.deadline ? new Date(story.deadline) : undefined,
+      customFields: story?.custom_fields,
       comments: (story?.comments ?? []).map((comment: Comment) => ({
         ...comment,
         textHtml: markdownToHtmlConverter.makeHtml(comment.text),
@@ -206,46 +207,26 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
 
 export const createStory = async (
     client: IDeskproClient,
-    data: Omit<CreateStoryData, "labels"> & { labels: Array<StoryLabel["name"]> },
+    data: Omit<CreateStoryData, "labels"> & {
+      labels: Array<StoryLabel["name"]>,
+      custom_fields: StoryItem["customFields"],
+    },
 ): Promise<any> => {
   const body: any = {
     name: data.name,
     description: data.description,
     labels: (data.labels ?? []).map((label) => ({ name: label })),
     story_type: data.type,
+    custom_fields: data.custom_fields,
+    ...(!data.followers ? {} : { follower_ids: (data.followers ?? []).map((follower) => `${follower}`) }),
+    ...(!data.owners ? {} : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
+    ...(!data.team ? {} : { group_id: data.team }),
+    ...(!data.state ? {} : { workflow_state_id: data.state }),
+    ...(!data.project ? {} : { project_id: data.project }),
+    ...(!data.epic ? {} : { epic_id: data.epic }),
+    ...(!data.iteration ? {} : { iteration_id: data.iteration }),
+    ...(!data.requester ? {} : { requested_by_id: data.requester }),
   };
-
-  if (data.followers) {
-    body.follower_ids = (data.followers ?? []).map((follower) => `${follower}`);
-  }
-
-  if (data.owners) {
-    body.owner_ids = (data.owners ?? []).map((owner) => `${owner}`);
-  }
-
-  if (data.team) {
-    body.group_id = data.team;
-  }
-
-  if (data.state) {
-    body.workflow_state_id = data.state;
-  }
-
-  if (data.project) {
-    body.project_id = data.project;
-  }
-
-  if (data.epic) {
-    body.epic_id = data.epic;
-  }
-
-  if (data.iteration) {
-    body.iteration_id = data.iteration;
-  }
-
-  if (data.requester) {
-    body.requested_by_id = data.requester;
-  }
 
   return await request(client, "POST", `${API_BASE_URL}/stories`, body);
 };
@@ -253,13 +234,17 @@ export const createStory = async (
 export const updateStory = async (
     client: IDeskproClient,
     storyId: StoryItem["id"],
-    data: Omit<CreateStoryData, "labels"> & { labels: Array<StoryLabel["name"]> },
+    data: Omit<CreateStoryData, "labels"> & {
+      labels: Array<StoryLabel["name"]>,
+      custom_fields: StoryItem["customFields"],
+    },
 ): Promise<any> => {
   return await request(client, "PUT", `${API_BASE_URL}/stories/${storyId}`, {
     name: data.name,
     description: data.description,
     labels: (data.labels ?? []).map((label) => ({ name: label })),
     story_type: data.type,
+    custom_fields: data.custom_fields,
     ...(!data.followers ? {} : { follower_ids: (data.followers ?? []).map((follower) => `${follower}`) }),
     ...(!data.owners ? {} : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
     ...(!data.team ? {} : { group_id: data.team }),
@@ -283,6 +268,7 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
       request(client, "GET", `${API_BASE_URL}/iterations`),
       request(client, "GET", `${API_BASE_URL}/projects`),
       request(client, "GET", `${API_BASE_URL}/labels`),
+      request(client, "GET", `${API_BASE_URL}/custom-fields`),
     ];
 
     const [
@@ -293,6 +279,7 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
       iterations,
       projects,
       labels,
+      customFields,
     ] = await Promise.all(dependencies);
 
     const resolved = {
@@ -303,6 +290,7 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
       iterations,
       projects,
       labels,
+      customFields,
     };
 
     cache.set(cache_key, resolved, SEARCH_DEPS_CACHE_TTL);

@@ -1,16 +1,32 @@
 import { FC, useMemo, useState, useEffect } from "react";
+import find from "lodash/find";
+import isEmpty from "lodash/isEmpty";
+import omit from "lodash/omit";
+import _values from "lodash/values";
 import { useDeskproAppClient } from "@deskpro/app-sdk";
 import { StoryForm } from "../components/StoryForm/StoryForm";
 import { useStore } from "../context/StoreProvider/hooks";
-import {useFindLinkedStoryById, useLoadLinkedStories, useSetAppTitle} from "../hooks";
-import { getLabelsNameById } from "../utils";
 import {
-    CreateStoryData,
+    useSetAppTitle,
+    useLoadLinkedStories,
+    useFindLinkedStoryById,
+} from "../hooks";
+import {
+    normalize,
+    getLabelsNameById,
+    normalizeCustomFields,
+    getStoryCustomFieldsToSave,
+} from "../utils";
+import {
+    CreateStoryData, CustomField,
     ShortcutStoryAssociationProps,
     ShortcutStoryAssociationPropsLabel
 } from "../context/StoreProvider/types";
-import {addExternalUrlToStory, getStoryDependencies, updateStory} from "../context/StoreProvider/api";
-import {find} from "lodash";
+import {
+    updateStory,
+    getStoryDependencies,
+    addExternalUrlToStory,
+} from "../context/StoreProvider/api";
 
 export interface EditProps {
     storyId: string;
@@ -23,6 +39,19 @@ const Edit: FC<EditProps> = ({ storyId }) => {
     const findStoryById = useFindLinkedStoryById();
     const loadLinkedStories = useLoadLinkedStories();
     const story = useMemo(() => findStoryById(storyId), [storyId]);
+    const customFields = useMemo(() => {
+        return isEmpty(state.dataDependencies?.customFields)
+            ? {}
+            : normalizeCustomFields(state.dataDependencies.customFields)
+    }, [state.dataDependencies?.customFields]);
+    const selectedCustomFields = useMemo(
+        () => normalize(story?.customFields, "field_id"),
+        [story?.customFields],
+    );
+    const notSelectedCustomFields = useMemo(
+        () => omit(customFields, Object.keys(selectedCustomFields)),
+        [selectedCustomFields],
+    ) as CustomField[];
 
     useSetAppTitle("Edit Story");
 
@@ -51,6 +80,7 @@ const Edit: FC<EditProps> = ({ storyId }) => {
         const storyData = {
             ...data,
             labels: getLabelsNameById(data.labels, state.dataDependencies?.labels),
+            custom_fields: getStoryCustomFieldsToSave(data, state.dataDependencies?.customFields),
         };
 
         setLoading(true);
@@ -140,6 +170,21 @@ const Edit: FC<EditProps> = ({ storyId }) => {
         owners: story.owners?.map(({ id }) => id) ?? [],
         labels: story.labels?.map(({ id }) => id) ?? [],
         followers: story.followerIds,
+        ...(isEmpty(selectedCustomFields)
+            ? {}
+            : _values(selectedCustomFields).reduce((acc, { field_id, value_id }) => {
+                const key = `custom-field-${customFields[field_id]["canonical_name"]}`;
+                acc[key] = value_id;
+                return acc;
+            }, {}) as Record<string, string>
+        ),
+        ...(isEmpty(notSelectedCustomFields)
+            ? {}
+            : _values(notSelectedCustomFields).reduce((acc: Record<string, string>, { canonical_name }) => {
+                acc[`custom-field-${canonical_name}`] = "";
+                return acc;
+            }, {})
+        ),
     };
 
     return (
@@ -148,5 +193,3 @@ const Edit: FC<EditProps> = ({ storyId }) => {
 };
 
 export { Edit };
-
-
