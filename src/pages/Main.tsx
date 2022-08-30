@@ -11,6 +11,7 @@ import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { useLoadLinkedStories, useWhenNoLinkedItems } from "../hooks";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
+import { AddComment } from "./AddComment";
 import {removeExternalUrlToStory} from "../context/StoreProvider/api";
 
 export const Main: FC = () => {
@@ -80,6 +81,7 @@ export const Main: FC = () => {
     .with("view", () => <View {...state.pageParams} />)
     .with("create", () => <Create {...state.pageParams} />)
     .with("edit", () => <Edit {...state.pageParams} />)
+    .with("add_comment", () => <AddComment {...state.pageParams} />)
     .otherwise(() => <Home {...state.pageParams} />)
   ;
 

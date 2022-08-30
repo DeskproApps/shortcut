@@ -3,6 +3,7 @@ import cache from "js-cache";
 import showdown from "showdown";
 import { find } from "lodash";
 import {
+  Comment,
   StoryItem,
   StoryLabel,
   CreateStoryData,
@@ -195,6 +196,10 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
       description: story.description,
       descriptionHtml: markdownToHtmlConverter.makeHtml(story.description),
       deadline: story?.deadline ? new Date(story.deadline) : undefined,
+      comments: (story?.comments ?? []).map((comment: Comment) => ({
+        ...comment,
+        textHtml: markdownToHtmlConverter.makeHtml(comment.text),
+      })),
     } as StorySearchItem;
   });
 }

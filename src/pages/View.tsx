@@ -1,27 +1,36 @@
-import { FC, useEffect, useMemo } from "react";
-import { useFindLinkedStoryById, useSetAppTitle } from "../hooks";
-import { useStore } from "../context/StoreProvider/hooks";
+import { FC, useState, useEffect, useMemo } from "react";
 import {
   Pill,
   Stack,
   Property,
+  HorizontalDivider,
   useDeskproAppTheme,
   useDeskproAppClient,
 } from "@deskpro/app-sdk";
+import {
+  useSetAppTitle,
+  useFindLinkedStoryById,
+  useLoadDataDependencies,
+} from "../hooks";
+import { useStore } from "../context/StoreProvider/hooks";
+import { Member } from "../context/StoreProvider/types";
+import { normalize } from "../utils";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { capitalize } from "lodash";
 import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
+import { Comments } from "../components/Comments/Comments";
 
 export interface ViewProps {
   id: string;
 }
 
 export const View: FC<ViewProps> = ({ id }: ViewProps) => {
-  const [, dispatch] = useStore();
+  const [state, dispatch] = useStore();
   const findStoryById = useFindLinkedStoryById();
   const { theme } = useDeskproAppTheme();
   const { client } = useDeskproAppClient();
+  const [members, setMembers] = useState<Record<Member["id"], Member>>({});
 
   const story = useMemo(() => findStoryById(id), [id]);
 
@@ -30,6 +39,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
     return (<></>);
   }
 
+  useLoadDataDependencies();
   useSetAppTitle(story.id);
 
   useEffect(() => {
@@ -40,6 +50,10 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
     ]});
     client?.registerElement("edit", { type: "edit_button", payload: id });
   }, [client]);
+
+  useEffect(() => {
+      setMembers(normalize(state.dataDependencies?.members));
+  }, [state.dataDependencies?.members]);
 
   return (
     <>
@@ -125,6 +139,16 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           )}
         </Stack>
       </Stack>
+      <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }}/>
+      <Comments
+          members={members}
+          comments={story.comments}
+          onAddComment={() => dispatch({
+            type: "changePage",
+            page: "add_comment",
+            params: { storyId: id },
+          })}
+      />
     </>
   );
 };
