@@ -1,15 +1,23 @@
-import { FC, useEffect, useMemo } from "react";
-import { useFindLinkedStoryById, useSetAppTitle } from "../hooks";
-import { useStore } from "../context/StoreProvider/hooks";
+import { FC, useEffect, useMemo, useState } from "react";
+import capitalize from "lodash/capitalize";
+import chunk from "lodash/chunk";
 import {
   Pill,
   Stack,
   Property,
+  VerticalDivider,
+  HorizontalDivider,
   useDeskproAppTheme,
   useDeskproAppClient,
 } from "@deskpro/app-sdk";
+import { useStore } from "../context/StoreProvider/hooks";
+import {
+  useSetAppTitle,
+  useFindLinkedStoryById,
+  useLoadDataDependencies,
+} from "../hooks";
+import { getStoryCustomFieldsToShow } from "../utils";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
-import { capitalize } from "lodash";
 import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
 
@@ -18,10 +26,11 @@ export interface ViewProps {
 }
 
 export const View: FC<ViewProps> = ({ id }: ViewProps) => {
-  const [, dispatch] = useStore();
+  const [state, dispatch] = useStore();
   const findStoryById = useFindLinkedStoryById();
   const { theme } = useDeskproAppTheme();
   const { client } = useDeskproAppClient();
+  const [customFields, setCustomFields] = useState<Array<any>>([]);
 
   const story = useMemo(() => findStoryById(id), [id]);
 
@@ -31,6 +40,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
   }
 
   useSetAppTitle(story.id);
+  useLoadDataDependencies();
 
   useEffect(() => {
     client?.deregisterElement("edit");
@@ -41,10 +51,22 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
     client?.registerElement("edit", { type: "edit_button", payload: id });
   }, [client]);
 
+  useEffect(() => {
+    if (!state.dataDependencies?.customFields) {
+      return;
+    }
+
+    setCustomFields(getStoryCustomFieldsToShow(
+        story.type,
+        story.customFields,
+        state.dataDependencies.customFields,
+    ));
+  }, [state.dataDependencies?.customFields]);
+
   return (
     <>
       <Stack align="start" gap={10}>
-        <Stack gap={10} vertical>
+        <Stack gap={10} vertical style={{ width: "100%" }}>
           <Title name={story.name} url={story.url} />
           <Property title="Story ID">
             {story.id}
@@ -123,6 +145,26 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
               </Stack>
             </Property>
           )}
+          <HorizontalDivider style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }} />
+          {chunk(customFields, 2).map((fields, idx) => {
+            return (fields.length === 2)
+                ? (
+                    <Stack key={idx} align="stretch">
+                      <Property title={fields[0].label} width="108px">
+                        {fields[0].value}
+                      </Property>
+                      <VerticalDivider width={1} />
+                      <Property title={fields[1].label}>
+                        {fields[1].value}
+                      </Property>
+                    </Stack>
+                )
+                : (
+                    <Property key={idx} title={fields[0].label}>
+                      {fields[0].value}
+                    </Property>
+                )
+          })}
         </Stack>
       </Stack>
     </>

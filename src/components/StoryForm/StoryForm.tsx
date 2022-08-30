@@ -14,22 +14,28 @@ import { IntlProvider } from "react-intl";
 import "./StoryForm.css";
 import { DropdownSelect } from "../DropdownSelect/DropdownSelect";
 import { useStore } from "../../context/StoreProvider/hooks";
+import { CustomField } from "../../context/StoreProvider/types";
 import { useLoadDataDependencies } from "../../hooks";
-import { capitalize, orderBy } from "lodash";
+import { capitalize, orderBy, isEmpty } from "lodash";
 import {
-  DropdownMultiSelect,
-  DropdownMultiSelectValueType
+    DropdownMultiSelect,
+    DropdownMultiSelectValueType,
 } from "../DropdownMultiSelect/DropdownMultiSelect";
 import { Label as StorybookLabel } from "../Label/Label";
 import {
   ShortcutEpic,
   ShortcutIteration,
   ShortcutLabel,
-  ShortcutMember, ShortcutProject, ShortcutState, ShortcutTeam, ShortcutWorkflow,
-  storyTypes
+  ShortcutMember,
+  ShortcutProject,
+  ShortcutState,
+  ShortcutTeam,
+  ShortcutWorkflow,
+  storyTypes,
 } from "./types";
 import { schema } from "./validation";
 import { ErrorBlock } from "../Error/ErrorBlock";
+import { isStoryType } from "../../utils";
 
 export interface StoryFormProps {
   onSubmit: (values: any, formikHelpers: FormikHelpers<any>) => void | Promise<any>;
@@ -68,6 +74,11 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
     iteration: "",
     type: "",
     requester: "",
+    "custom-field-priority": "",
+    "custom-field-product-area": "",
+    "custom-field-severity": "",
+    "custom-field-skill-set": "",
+    "custom-field-technical-area": "",
   };
 
   const teams = orderBy(state.dataDependencies.groups ?? [], (t) => t.name.toLowerCase(), ['asc']);
@@ -217,6 +228,22 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
       type: "value" as const,
     }));
 
+  const buildCustomFieldOptions = (fieldValues: CustomField["values"]): DropdownValueType<any>[] => {
+      if (isEmpty(fieldValues)) {
+          return [];
+      }
+
+      return [
+          getNoneOption(),
+          ...fieldValues.map(({ id, value }) => ({
+              key: id,
+              value: id,
+              label: value,
+              type: "value" as const,
+          }))
+      ];
+  }
+
   return (
     <IntlProvider locale="en">
       <Formik
@@ -284,7 +311,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
             <div className="create-form-field">
               <FormikField<string> name="workflow">
                 {([field, , helpers], { id, error }) => (
-                  <Label htmlFor={id} label="Workflow" error={error}>
+                  <Label required htmlFor={id} label="Workflow" error={error}>
                     <DropdownSelect
                       helpers={helpers}
                       options={buildWorkflowOptions(values.team)}
@@ -300,7 +327,7 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
               <div className="create-form-field">
                 <FormikField<string> name="state">
                   {([field, , helpers], { id, error }) => (
-                    <Label htmlFor={id} label="State" error={error}>
+                    <Label required htmlFor={id} label="State" error={error}>
                       <DropdownSelect
                         helpers={helpers}
                         options={buildStateOptions(values.workflow)}
@@ -433,6 +460,35 @@ export const StoryForm: FC<StoryFormProps> = ({ onSubmit, values, type, loading 
                 )}
               </FormikField>
             </div>
+            {(
+                values.type
+                && Array.isArray(state.dataDependencies.customFields)
+                && state.dataDependencies.customFields.length > 0
+            )
+                ? state.dataDependencies.customFields.map((customField: CustomField) => {
+                    return (customField.enabled && isStoryType(values.type, customField.story_types))
+                        ? (
+                            <div className="create-form-field" key={customField.canonical_name}>
+                                <FormikField<string> name={`custom-field-${customField.canonical_name}`}>
+                                    {([field, , helpers], { id, error }) => (
+                                        <Label htmlFor={id} label={customField.name} error={error}>
+                                            <DropdownSelect
+                                                helpers={helpers}
+                                                options={buildCustomFieldOptions(customField.values)}
+                                                id={id}
+                                                placeholder="Select value"
+                                                value={field.value}
+                                            />
+                                        </Label>
+                                    )}
+                                </FormikField>
+                            </div>
+                        )
+                        : null
+                })
+                : <></>
+            }
+
             <HorizontalDivider />
             <div className="create-form-field">
               <Stack justify="space-between">

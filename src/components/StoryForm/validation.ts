@@ -5,7 +5,7 @@ export const schema = Yup.object().shape({
   name: Yup.string().min(1).max(512).required(),
   description: Yup.string().min(1).max(100000),
   type: Yup.string().oneOf(storyTypes).required(),
-  workflow: Yup.number().notRequired(),
+  workflow: Yup.number().required(),
   state: Yup.number().notRequired().when("workflow", {
     is: (workflow) => !!workflow,
     then: Yup.number().required(),

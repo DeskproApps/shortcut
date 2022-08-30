@@ -21,7 +21,7 @@ export interface State {
   context?: TicketContext;
   linkStorySearchResults?: { loading: boolean, list: StorySearchItem[] };
   linkedStoriesResults?: { loading: boolean, list: StoryItem[] };
-  dataDependencies?: any;
+  dataDependencies?: any; // ToDo: need types
 
   // ...
 
@@ -65,6 +65,30 @@ export interface StoryLabel {
   stats: Record<string, number>;
 }
 
+export interface CustomFieldValue {
+  id: string;
+  value: string;
+  position: number;
+  color_key: string;
+  enabled: boolean;
+  entity_type: "custom-field-enum-value";
+}
+
+export interface CustomField {
+  id: string;
+  name: string;
+  description: string;
+  canonical_name: "technical-area" | "skill-set" | "product-area" | "priority" | "severity";
+  created_at: DateTime;
+  enabled: boolean;
+  entity_type: "custom-field";
+  field_type: "enum";
+  fixed_position: boolean;
+  updated_at: DateTime;
+  values: CustomFieldValue[];
+  story_types?: Array<StoryItem["type"]>;
+}
+
 export interface StoryItem {
   id: string;
   url: string;
@@ -92,6 +116,11 @@ export interface StoryItem {
   deadline?: Date;
   requesterId: string;
   followerIds: string[];
+  customFields: Array<{
+    field_id: CustomField["id"];
+    value: CustomFieldValue["value"];
+    value_id: CustomFieldValue["id"];
+  }>;
 }
 
 export interface StorySearchItem extends StoryItem {
@@ -112,6 +141,11 @@ export interface CreateStoryData {
   epic?: string;
   iteration?: string;
   requester?: string;
+  "custom-field-technical-area": string,
+  "custom-field-skill-set": string,
+  "custom-field-product-area": string,
+  "custom-field-priority": string,
+  "custom-field-severity": string,
 }
 
 export interface ShortcutStoryAssociationPropsLabel {
