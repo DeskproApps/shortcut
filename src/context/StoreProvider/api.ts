@@ -17,7 +17,7 @@ const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
 // Key for search dependency caching (milliseconds)
 const SEARCH_DEPS_CACHE_TTL = 5 * (60 * 1000); // 5 Minutes
 
-const markdownToHtmlConverter = new showdown.Converter();
+export const markdownToHtmlConverter = new showdown.Converter();
 
 /**
  * Fetch a single Shortcut story by ID, e.g. "123"
@@ -254,6 +254,15 @@ export const updateStory = async (
     ...(!data.iteration ? {} : { iteration_id: data.iteration }),
     ...(!data.requester ? {} : { requested_by_id: data.requester }),
   });
+};
+
+export const createStoryComment = (
+    client: IDeskproClient,
+    storyId: StoryItem["id"],
+    comment: Comment["text"],
+) => {
+  const body = { text: comment };
+  return request(client, "POST", `${API_BASE_URL}/stories/${storyId}/comments`, body);
 };
 
 export const getStoryDependencies = async (client: IDeskproClient) => {

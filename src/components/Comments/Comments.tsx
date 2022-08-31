@@ -1,5 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import isEmpty from "lodash/isEmpty";
+import sortBy from "lodash/sortBy";
 import styled from "styled-components";
 import { faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 import ReactTimeAgo from "react-time-ago";
@@ -39,11 +40,29 @@ const Comment = styled(P1)`
         width: 100%;
         height: auto;
     }
+  
+    a {
+      :hover {
+        color: ${({ theme }) => theme.colors.cyan100};
+      }
+      
+      color: ${({ theme }) => theme.colors.cyan100};
+    }
 `;
 
 const TimeAgo = styled(ReactTimeAgo)`
     color: ${({ theme }) => theme.colors.grey80};
 `;
+
+const sortByUpdated = (comments: CommentType[]) => comments.sort(function (a, b) {
+    if (a.updated_at < b.updated_at) {
+        return 1;
+    }
+    if (a.updated_at > b.updated_at) {
+        return -1;
+    }
+    return 0;
+});
 
 const Comments: FC<Props> = ({ onAddComment, comments, members }) => {
     const [count, setCount] = useState(0);
@@ -73,7 +92,7 @@ const Comments: FC<Props> = ({ onAddComment, comments, members }) => {
                 />
             </H1>
 
-            {comments.map(({ id, updated_at, author_id, textHtml }) => (
+            {sortByUpdated(comments).map(({ id, updated_at, author_id, textHtml }) => (
                 <Stack key={id} wrap="nowrap" gap={6} style={{ marginBottom: 10 }}>
                     <Author vertical>
                         <Avatar
