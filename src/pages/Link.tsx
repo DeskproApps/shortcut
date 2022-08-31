@@ -11,7 +11,11 @@ import { useStore } from "../context/StoreProvider/hooks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useDebouncedCallback } from "use-debounce";
-import { addExternalUrlToStory, searchStories } from "../context/StoreProvider/api";
+import {
+    searchStories,
+    createStoryComment,
+    addExternalUrlToStory,
+} from "../context/StoreProvider/api";
 import { SearchResultItem } from "../components/SearchResultItem/SearchResultItem";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
 import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
@@ -20,6 +24,7 @@ import {
     ShortcutStoryAssociationPropsLabel,
     StorySearchItem
 } from "../context/StoreProvider/types";
+import { getLinkedComment } from "../utils";
 
 export const Link: FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -73,7 +78,10 @@ export const Link: FC = () => {
   };
 
   const linkStories = () => {
-    if (!selected.length || !client || !state.context?.data.ticket.id) {
+    const ticketId = state.context?.data.ticket.id;
+    const permalinkUrl = state.context?.data.ticket.permalinkUrl;
+
+    if (!selected.length || !client || !ticketId) {
       return;
     }
 
@@ -113,6 +121,12 @@ export const Link: FC = () => {
       client,
       id,
       state.context?.data.ticket.permalinkUrl as string
+    )));
+
+    updates.push(...selected.map((id: string) => createStoryComment(
+        client,
+        id,
+        getLinkedComment(ticketId, permalinkUrl),
     )));
 
     Promise.all(updates)

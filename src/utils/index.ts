@@ -6,3 +6,4 @@ export {
     getStoryCustomFieldsToSave,
 } from "./getStoryCustomFields";
 export { normalize } from "./normalize";
+export { getLinkedComment } from "./getLinkedComment";
