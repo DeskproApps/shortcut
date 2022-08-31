@@ -11,7 +11,9 @@ import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { useLoadLinkedStories, useWhenNoLinkedItems } from "../hooks";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
-import {removeExternalUrlToStory} from "../context/StoreProvider/api";
+import { AddComment } from "./AddComment";
+import { removeExternalUrlToStory, createStoryComment } from "../context/StoreProvider/api";
+import { getLinkedComment } from "../utils";
 
 export const Main: FC = () => {
   const { client } = useDeskproAppClient();
@@ -47,6 +49,11 @@ export const Main: FC = () => {
         .then(() => dispatch({ type: "linkedStoriesListLoading" }))
         .then(() => removeExternalUrlToStory(client, `${id}`, state.context?.data.ticket.permalinkUrl as string))
         .then(loadLinkedIssues)
+        .then(() => createStoryComment(
+            client,
+            id,
+            getLinkedComment(ticket.id, state.context?.data.ticket.permalinkUrl, "unlink")),
+        )
         .then(() => dispatch({ type: "changePage", page: "home" }))
     ;
   };
@@ -80,6 +87,7 @@ export const Main: FC = () => {
     .with("view", () => <View {...state.pageParams} />)
     .with("create", () => <Create {...state.pageParams} />)
     .with("edit", () => <Edit {...state.pageParams} />)
+    .with("add_comment", () => <AddComment {...state.pageParams} />)
     .otherwise(() => <Home {...state.pageParams} />)
   ;
 

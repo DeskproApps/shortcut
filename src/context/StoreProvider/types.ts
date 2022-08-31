@@ -13,6 +13,7 @@ export type Page =
   | "view"
   | "create"
   | "edit"
+  | "add_comment"
 ;
 
 export interface State {
@@ -49,6 +50,7 @@ export interface TicketContext extends Context {
 
 // Shortcut types
 export type DateTime = string; // eg. 2022-08-24T15:23:51Z
+export type MarkdownString = string;
 
 export interface StoryLabel {
   id: number;
@@ -89,6 +91,54 @@ export interface CustomField {
   story_types?: Array<StoryItem["type"]>;
 }
 
+export interface Member {
+  created_at: DateTime;
+  created_without_invite: boolean;
+  disabled: boolean;
+  entity_type: "member";
+  global_id: string;
+  group_ids: string[];
+  id: string;
+  profile: {
+    deactivated: boolean;
+    display_icon?: {
+      id: string;
+      url: string;
+      entity_type: "user-icon"
+      created_at: DateTime;
+      updated_at: DateTime;
+    };
+    email_address?: string;
+    entity_type: "profile";
+    gravatar_hash?: string;
+    id: string;
+    mention_name: string;
+    name: string;
+  };
+  role: string;
+  state: string;
+  updated_at: DateTime;
+}
+
+export interface Comment {
+  app_url: string;
+  author_id: Member["id"];
+  created_at: DateTime;
+  deleted: boolean;
+  entity_type: "story-comment";
+  external_id?: string;
+  group_mention_ids: string[];
+  id: number;
+  member_mention_ids: Array<Member["id"]>;
+  mention_ids: Array<Member["id"]>;
+  position: number;
+  reactions: any[];
+  story_id: 29
+  text: MarkdownString;
+  textHtml: string;
+  updated_at: DateTime;
+}
+
 export interface StoryItem {
   id: string;
   url: string;
@@ -121,6 +171,7 @@ export interface StoryItem {
     value: CustomFieldValue["value"];
     value_id: CustomFieldValue["id"];
   }>;
+  comments: Comment[];
 }
 
 export interface StorySearchItem extends StoryItem {

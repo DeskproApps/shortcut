@@ -17,9 +17,12 @@ import {
   useLoadDataDependencies,
 } from "../hooks";
 import { getStoryCustomFieldsToShow } from "../utils";
+import { Member } from "../context/StoreProvider/types";
+import { normalize } from "../utils";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
+import { Comments } from "../components/Comments/Comments";
 
 export interface ViewProps {
   id: string;
@@ -31,6 +34,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
   const { theme } = useDeskproAppTheme();
   const { client } = useDeskproAppClient();
   const [customFields, setCustomFields] = useState<Array<any>>([]);
+  const [members, setMembers] = useState<Record<Member["id"], Member>>({});
 
   const story = useMemo(() => findStoryById(id), [id]);
 
@@ -62,6 +66,10 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
         state.dataDependencies.customFields,
     ));
   }, [state.dataDependencies?.customFields]);
+
+  useEffect(() => {
+      setMembers(normalize(state.dataDependencies?.members));
+  }, [state.dataDependencies?.members]);
 
   return (
     <>
@@ -167,6 +175,16 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           })}
         </Stack>
       </Stack>
+      <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }}/>
+      <Comments
+          members={members}
+          comments={story.comments}
+          onAddComment={() => dispatch({
+            type: "changePage",
+            page: "add_comment",
+            params: { storyId: id },
+          })}
+      />
     </>
   );
 };
