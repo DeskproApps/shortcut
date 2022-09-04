@@ -133,7 +133,7 @@ export interface Comment {
   mention_ids: Array<Member["id"]>;
   position: number;
   reactions: any[];
-  story_id: 29
+  story_id: StoryItem["id"];
   text: MarkdownString;
   textHtml: string;
   updated_at: DateTime;

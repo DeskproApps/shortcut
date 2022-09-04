@@ -1,24 +1,29 @@
 import { FC, useEffect } from "react";
 import { __, match } from "ts-pattern";
+import { useDebouncedCallback } from "use-debounce";
 import { TargetAction, useDeskproAppClient, useDeskproAppEvents } from "@deskpro/app-sdk";
 import { useStore } from "../context/StoreProvider/hooks";
+import { Page } from "../context/StoreProvider/types";
+import {useLoadLinkedStories, useWhenNoLinkedItems} from "../hooks";
+import {
+    createStoryComment,
+    removeExternalUrlToStory,
+} from "../context/StoreProvider/api";
 import { Home } from "./Home";
 import { Link } from "./Link";
 import { View } from "./View";
-import { Page } from "../context/StoreProvider/types";
-import { useDebouncedCallback } from "use-debounce";
 import { ErrorBlock } from "../components/Error/ErrorBlock";
-import { useLoadLinkedStories, useWhenNoLinkedItems } from "../hooks";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
 import { AddComment } from "./AddComment";
-import { removeExternalUrlToStory, createStoryComment } from "../context/StoreProvider/api";
 import { getLinkedComment } from "../utils";
+import { useReplyBox } from "../hooks/useReplyBox";
 
 export const Main: FC = () => {
   const { client } = useDeskproAppClient();
   const [state, dispatch] = useStore();
   const loadLinkedIssues = useLoadLinkedStories();
+  const { setSelectionState, deleteSelectionState } = useReplyBox();
 
   if (state._error) {
     console.error(state._error);
@@ -33,7 +38,6 @@ export const Main: FC = () => {
   const debounceTargetAction = useDebouncedCallback<(a: TargetAction) => void>(
     (action: TargetAction) => match<string>(action.name)
       .with("linkTicket", () => dispatch({ type: "changePage", page: "link" }))
-      .run()
     ,
     200
   );
@@ -83,7 +87,7 @@ export const Main: FC = () => {
 
   const page = match<Page|undefined>(state.page)
     .with("home", () => <Home {...state.pageParams} />)
-    .with("link", () => <Link {...state.pageParams} />)
+    .with("link", () => <Link {...state.pageParams} setSelectionState={setSelectionState} />)
     .with("view", () => <View {...state.pageParams} />)
     .with("create", () => <Create {...state.pageParams} />)
     .with("edit", () => <Edit {...state.pageParams} />)
