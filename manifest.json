@@ -33,6 +33,20 @@
       "type": "string",
       "isRequired": true,
       "isBackendOnly": true
+    },
+    "default_comment_on_ticket_reply": {
+      "title": "Ticket reply as comment",
+      "description": "Automatically add Deskpro replies as story comments when a Shortcut story is linked to a Deskpro ticket",
+      "type": "boolean",
+      "isRequired": false,
+      "isBackendOnly": false
+    },
+    "default_comment_on_ticket_note": {
+      "title": "Ticket note as comment",
+      "description": "Automatically add Deskpro notes as story comments when a Shortcut story is linked to a Deskpro ticket",
+      "type": "boolean",
+      "isRequired": false,
+      "isBackendOnly": false
     }
   },
   "proxy": {

@@ -23,7 +23,7 @@ export const Main: FC = () => {
   const { client } = useDeskproAppClient();
   const [state, dispatch] = useStore();
   const loadLinkedIssues = useLoadLinkedStories();
-  const { setSelectionState, deleteSelectionState } = useReplyBox();
+  const { setSelectionState } = useReplyBox();
 
   if (state._error) {
     console.error(state._error);

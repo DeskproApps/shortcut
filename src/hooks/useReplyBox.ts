@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import get from "lodash/get";
 import { match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
@@ -88,12 +88,19 @@ const useReplyBox = (): ReturnUseReplyBox => {
     const [state, dispatch] = useStore();
     const { client } = useDeskproAppClient();
     const ticketId = state?.context?.data.ticket.id;
+    const isCommentOnNote = state.context?.settings?.default_comment_on_ticket_note === true;
+    const isCommentOnEmail = state.context?.settings?.default_comment_on_ticket_reply === true;
 
-    const setSelectionState = useCallback((entityId, selected, type) => {
+    const setSelectionState: SetSelectionState = useCallback((entityId, selected, type) => {
         if (!ticketId) { return }
 
-        const key = (type === "email") ? emailKey : noteKey;
-        return client?.setState(key(ticketId, entityId), { id: entityId, selected })
+        if (type === "note" && isCommentOnNote) {
+            return client?.setState(noteKey(ticketId, entityId), { id: entityId, selected })
+        }
+
+        if (type === "email" && isCommentOnEmail) {
+            return client?.setState(emailKey(ticketId, entityId), { id: entityId, selected })
+        }
     }, [client, ticketId]);
 
     const getSelectionState = useCallback((entityId, type) => {
@@ -111,11 +118,16 @@ const useReplyBox = (): ReturnUseReplyBox => {
     }, [client, ticketId]);
 
     useInitialisedDeskproAppClient((client) => {
-        registerReplyBoxNotesAdditionsTargetAction(client, state);
-        registerReplyBoxEmailsAdditionsTargetAction(client, state);
-        client.registerTargetAction("shortcutOnReplyBoxNote", "on_reply_box_note");
-        client.registerTargetAction("shortcutOnReplyBoxEmail", "on_reply_box_email");
-    }, [get(state, ["linkedStoriesResults", "list"]), state?.context?.data])
+        if (isCommentOnNote) {
+            registerReplyBoxNotesAdditionsTargetAction(client, state);
+            client.registerTargetAction("shortcutOnReplyBoxNote", "on_reply_box_note");
+        }
+
+        if (isCommentOnEmail) {
+            registerReplyBoxEmailsAdditionsTargetAction(client, state);
+            client.registerTargetAction("shortcutOnReplyBoxEmail", "on_reply_box_email");
+        }
+    }, [get(state, ["linkedStoriesResults", "list"]), state?.context?.data, isCommentOnNote, isCommentOnEmail]);
 
     const debounceTargetAction = useDebouncedCallback<(a: TargetAction) => void>(
         (action: TargetAction) => match<string>(action.name)

@@ -119,12 +119,8 @@ export const Link: FC<Props> = ({ setSelectionState }) => {
           name: label.name,
         })),
       })
-      .then(() => {
-          setSelectionState(id, true, "email");
-      })
-      .then(() => {
-          setSelectionState(id, true, "note");
-      })
+      .then(() => { setSelectionState(id, true, "email") })
+      .then(() => { setSelectionState(id, true, "note") })
     );
 
     updates.push(...selected.map((id: string) => addExternalUrlToStory(
