@@ -1,6 +1,5 @@
 import { FC } from "react";
 import * as yup from "yup";
-import has from "lodash/has";
 import { useFormik } from "formik";
 import {
     Label,
@@ -11,9 +10,10 @@ import {
 } from "@deskpro/app-sdk";
 import { StoryItem } from "../context/StoreProvider/types";
 import { useStore } from "../context/StoreProvider/hooks";
-import { createStoryComment, markdownToHtmlConverter } from "../context/StoreProvider/api";
+import { createStoryComment } from "../context/StoreProvider/api";
 import { useSetAppTitle } from "../hooks";
 import { TextAreaField } from "../components/TextArea/TextArea";
+import { addCommentsToStories } from "../utils";
 
 type Props = {
     storyId: StoryItem["id"]
@@ -48,22 +48,10 @@ const AddComment: FC<Props> = ({ storyId }) => {
                     const stories = state.linkedStoriesResults?.list ?? [];
 
                     if (stories.length > 0) {
-                        const list = stories.map((story) => {
-                            if (story.id === storyId) {
-                                story.comments.push({
-                                    ...comment,
-                                    textHtml: markdownToHtmlConverter.makeHtml(comment.text),
-                                });
-                            }
-                            return story;
-                        });
+                        const list = addCommentsToStories(stories, [comment]);
                         dispatch({ type: "linkedStoriesList", list });
                     }
-                    dispatch({
-                        type: "changePage",
-                        page: "view",
-                        params: { id: storyId }
-                    })
+                    dispatch({type: "changePage", page: "view", params: { id: storyId }})
                 })
                 .catch((error) => dispatch({
                     type: "error",

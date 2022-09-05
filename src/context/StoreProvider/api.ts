@@ -197,10 +197,12 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
       descriptionHtml: markdownToHtmlConverter.makeHtml(story.description),
       deadline: story?.deadline ? new Date(story.deadline) : undefined,
       customFields: story?.custom_fields,
-      comments: (story?.comments ?? []).map((comment: Comment) => ({
-        ...comment,
-        textHtml: markdownToHtmlConverter.makeHtml(comment.text),
-      })),
+      comments: (story?.comments ?? [])
+          .filter(({ deleted }: Comment) => !deleted)
+          .map((comment: Comment) => ({
+            ...comment,
+            textHtml: markdownToHtmlConverter.makeHtml(comment.text),
+          })),
     } as StorySearchItem;
   });
 }

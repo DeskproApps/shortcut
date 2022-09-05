@@ -25,8 +25,13 @@ import {
     StorySearchItem
 } from "../context/StoreProvider/types";
 import { getLinkedComment } from "../utils";
+import { SetSelectionState } from "../hooks/useReplyBox";
 
-export const Link: FC = () => {
+type Props = {
+    setSelectionState: SetSelectionState,
+};
+
+export const Link: FC<Props> = ({ setSelectionState }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selected, setSelected] = useState<string[]>([]);
@@ -89,8 +94,7 @@ export const Link: FC = () => {
 
     const selectedItems = (state.linkStorySearchResults?.list ?? [])
         .filter((item) => selected.includes(item.id))
-        .reduce<Record<string, StorySearchItem>>((items, item) => ({ ...items, [item.id]: item }), {})
-    ;
+        .reduce<Record<string, StorySearchItem>>((items, item) => ({ ...items, [item.id]: item }), {});
 
     const updates = selected.map((id: string) => client
       .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
@@ -115,6 +119,8 @@ export const Link: FC = () => {
           name: label.name,
         })),
       })
+      .then(() => { setSelectionState(id, true, "email") })
+      .then(() => { setSelectionState(id, true, "note") })
     );
 
     updates.push(...selected.map((id: string) => addExternalUrlToStory(

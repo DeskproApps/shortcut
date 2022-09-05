@@ -6,9 +6,9 @@ const getLinkedComment = (
     type: "link"|"unlink" = "link",
 ): MarkdownString => {
     if (type === "link") {
-        return `Linked to Deskpro ticket ${ticketId}${ticketUrl ? `, [${ticketUrl}](${ticketUrl}){:target="_blank"}` : ""}`;
+        return `Linked to Deskpro ticket ${ticketId}${ticketUrl ? `, [${ticketUrl}](${ticketUrl})` : ""}`;
     } else {
-        return `Unlinked from Deskpro ticket ${ticketId}${ticketUrl ? `, [${ticketUrl}](${ticketUrl}){:target="_blank"}` : ""}`;
+        return `Unlinked from Deskpro ticket ${ticketId}${ticketUrl ? `, [${ticketUrl}](${ticketUrl})` : ""}`;
     }
 };
 
