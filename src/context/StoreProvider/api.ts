@@ -278,19 +278,19 @@ export const createLabel = (client: IDeskproClient, data: {
 export const addDeskproLabelToStory = async (
     client: IDeskproClient,
     storyId: StoryItem["id"],
-    labels: StoryLabel[],
+    labels: Array<Partial<StoryLabel>>,
 ) => {
   if (!labels.some(({ name }) => name === "Deskpro")) {
-    const allLabels = await request(client, "GET", `${API_BASE_URL}/labels`);
+    const allLabels: StoryLabel[] = await request(client, "GET", `${API_BASE_URL}/labels`);
 
     if (!allLabels.some(({ name }) => name === "Deskpro")) {
       try {
-        const label = await createLabel(client, { name: "Deskpro", color: "#4196d4" });
+        const label: StoryLabel = await createLabel(client, { name: "Deskpro", color: "#4196d4" });
         labels.push({ name: label.name });
       } catch (e) {}
     } else {
       const label = allLabels.find(({ name }) => name === "Deskpro")
-      labels.push({ name: label.name });
+      !!label && labels.push({ name: label.name });
     }
   }
 

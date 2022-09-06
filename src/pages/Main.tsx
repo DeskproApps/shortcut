@@ -44,20 +44,26 @@ export const Main: FC = () => {
     200
   );
 
-  const unlinkTicket = ({ id, story }: any) => {
+  const unlinkTicket = ({ id, story, ticketId }: any) => {
+    const { ticket }: any = state?.context?.data;
+
     if (!client || !state?.context?.data.ticket) {
       return;
     }
 
-    const { ticket }: any = state?.context?.data;
+    if (ticketId !== ticket.id) {
+        return;
+    }
 
     client?.getEntityAssociation("linkedShortcutStories", ticket.id).delete(id)
         .then(() => dispatch({ type: "linkedStoriesListLoading" }))
         .then(() => removeExternalUrlToStory(client, `${id}`, state.context?.data.ticket.permalinkUrl as string))
-        .then(() => isEnableDeskproLabel(state)
-            ? removeDeskproLabelFromStory(client, id, get(story, ["labels"], []))
-            : Promise.resolve()
-        )
+        .then(() => client.entityAssociationCountEntities("linkedShortcutStories", id))
+        .then((count) => {
+            return (isEnableDeskproLabel(state) && count === 0)
+                ? removeDeskproLabelFromStory(client, id, get(story, ["labels"], []))
+                : Promise.resolve()
+        })
         .then(loadLinkedIssues)
         .then(() => createStoryComment(
             client,
