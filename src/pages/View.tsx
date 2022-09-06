@@ -50,7 +50,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
     client?.deregisterElement("edit");
     client?.registerElement("home", { type: "home_button" });
     client?.registerElement("viewContextMenu", { type: "menu", items: [
-        { title: "Unlink Ticket", payload: { action: "unlink", id }, },
+        { title: "Unlink Ticket", payload: { action: "unlink", id, story }, },
     ]});
     client?.registerElement("edit", { type: "edit_button", payload: id });
   }, [client]);

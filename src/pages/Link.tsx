@@ -1,4 +1,5 @@
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import values from "lodash/values";
 import {
     Button,
     Checkbox, H3,
@@ -15,6 +16,7 @@ import {
     searchStories,
     createStoryComment,
     addExternalUrlToStory,
+    addDeskproLabelToStory,
 } from "../context/StoreProvider/api";
 import { SearchResultItem } from "../components/SearchResultItem/SearchResultItem";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
@@ -24,7 +26,7 @@ import {
     ShortcutStoryAssociationPropsLabel,
     StorySearchItem
 } from "../context/StoreProvider/types";
-import { getLinkedComment } from "../utils";
+import { getLinkedComment, isEnableDeskproLabel } from "../utils";
 import { SetSelectionState } from "../hooks/useReplyBox";
 
 type Props = {
@@ -135,13 +137,18 @@ export const Link: FC<Props> = ({ setSelectionState }) => {
         getLinkedComment(ticketId, permalinkUrl),
     )));
 
+    if (isEnableDeskproLabel(state)) {
+        updates.push(...values(selectedItems).map(({ id, labels }) => {
+            return addDeskproLabelToStory(client, id, labels);
+        }))
+    }
+
     Promise.all(updates)
       .then(() => loadLinkedStories())
       .then(() => dispatch({ type: "linkStorySearchListReset" }))
       .then(() => dispatch({ type: "changePage", page: "home" }))
       .catch((error) => dispatch({ type: "error", error }))
-      .finally(() => setIsLinkStoriesLoading(false))
-    ;
+      .finally(() => setIsLinkStoriesLoading(false));
   };
 
   return (

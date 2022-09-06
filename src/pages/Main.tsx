@@ -1,4 +1,5 @@
 import { FC, useEffect } from "react";
+import get from "lodash/get";
 import { __, match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
 import { TargetAction, useDeskproAppClient, useDeskproAppEvents } from "@deskpro/app-sdk";
@@ -8,6 +9,7 @@ import {useLoadLinkedStories, useWhenNoLinkedItems} from "../hooks";
 import {
     createStoryComment,
     removeExternalUrlToStory,
+    removeDeskproLabelFromStory,
 } from "../context/StoreProvider/api";
 import { Home } from "./Home";
 import { Link } from "./Link";
@@ -16,7 +18,7 @@ import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
 import { AddComment } from "./AddComment";
-import { getLinkedComment } from "../utils";
+import { getLinkedComment, isEnableDeskproLabel } from "../utils";
 import { useReplyBox } from "../hooks/useReplyBox";
 
 export const Main: FC = () => {
@@ -42,7 +44,7 @@ export const Main: FC = () => {
     200
   );
 
-  const unlinkTicket = ({ id }: any) => {
+  const unlinkTicket = ({ id, story }: any) => {
     if (!client || !state?.context?.data.ticket) {
       return;
     }
@@ -52,6 +54,10 @@ export const Main: FC = () => {
     client?.getEntityAssociation("linkedShortcutStories", ticket.id).delete(id)
         .then(() => dispatch({ type: "linkedStoriesListLoading" }))
         .then(() => removeExternalUrlToStory(client, `${id}`, state.context?.data.ticket.permalinkUrl as string))
+        .then(() => isEnableDeskproLabel(state)
+            ? removeDeskproLabelFromStory(client, id, get(story, ["labels"], []))
+            : Promise.resolve()
+        )
         .then(loadLinkedIssues)
         .then(() => createStoryComment(
             client,

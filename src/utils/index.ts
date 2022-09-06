@@ -8,3 +8,4 @@ export {
 export { normalize } from "./normalize";
 export { getLinkedComment } from "./getLinkedComment";
 export { addCommentsToStories } from "./addCommentsToStories";
+export { isEnableDeskproLabel } from "./isEnableDeskproLabel";

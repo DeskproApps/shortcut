@@ -267,6 +267,56 @@ export const createStoryComment = (
   return request(client, "POST", `${API_BASE_URL}/stories/${storyId}/comments`, body);
 };
 
+export const createLabel = (client: IDeskproClient, data: {
+  name: string,
+  color?: string,
+  description?: string,
+}) => {
+  return request(client, "POST", `${API_BASE_URL}/labels`, data);
+};
+
+export const addDeskproLabelToStory = async (
+    client: IDeskproClient,
+    storyId: StoryItem["id"],
+    labels: StoryLabel[],
+) => {
+  if (!labels.some(({ name }) => name === "Deskpro")) {
+    const allLabels = await request(client, "GET", `${API_BASE_URL}/labels`);
+
+    if (!allLabels.some(({ name }) => name === "Deskpro")) {
+      try {
+        const label = await createLabel(client, { name: "Deskpro", color: "#4196d4" });
+        labels.push({ name: label.name });
+      } catch (e) {}
+    } else {
+      const label = allLabels.find(({ name }) => name === "Deskpro")
+      labels.push({ name: label.name });
+    }
+  }
+
+  return request(client, "PUT", `${API_BASE_URL}/stories/${storyId}`, {
+    labels: labels.map(({ name }) => ({ name })),
+  });
+};
+
+export const removeDeskproLabelFromStory = (
+    client: IDeskproClient,
+    storyId: StoryItem["id"],
+    labels: StoryLabel[],
+) => {
+  if (labels.some(({ name }) => (name === "Deskpro"))) {
+    labels = labels.filter(({ name }) => (name !== "Deskpro"));
+  }
+
+  if (Array.isArray(labels) && labels.length > 0) {
+    return request(client, "PUT", `${API_BASE_URL}/stories/${storyId}`, {
+      labels: labels.map(({ name }) => ({ name })),
+    });
+  } else {
+    return Promise.resolve();
+  }
+};
+
 export const getStoryDependencies = async (client: IDeskproClient) => {
   const cache_key = "data_deps";
 

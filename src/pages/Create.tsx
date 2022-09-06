@@ -12,6 +12,7 @@ import { useStore } from "../context/StoreProvider/hooks";
 import {
     getLinkedComment,
     getLabelsNameById,
+    isEnableDeskproLabel,
     getStoryCustomFieldsToSave,
 } from "../utils";
 import { StoryForm } from "../components/StoryForm/StoryForm";
@@ -43,9 +44,13 @@ export const Create: FC = () => {
 
     const ticketId = state.context?.data.ticket.id as string;
     const permalinkUrl = state.context?.data.ticket.permalinkUrl as string;
+    const labelNames = getLabelsNameById(data.labels, state.dataDependencies?.labels);
     const storyData = {
         ...data,
-        labels: getLabelsNameById(data.labels, state.dataDependencies?.labels),
+        labels: [
+            ...labelNames,
+            ...((isEnableDeskproLabel(state) && labelNames.includes("Deskpro")) ? [] : ["Deskpro"]),
+        ],
         custom_fields: getStoryCustomFieldsToSave(data, state.dataDependencies?.customFields),
     };
 
