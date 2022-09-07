@@ -4,13 +4,11 @@ import { useDeskproAppClient } from "@deskpro/app-sdk";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
 import {
     createStory,
-    createStoryComment,
     getStoryDependencies,
     addExternalUrlToStory,
 } from "../context/StoreProvider/api";
 import { useStore } from "../context/StoreProvider/hooks";
 import {
-    getLinkedComment,
     getLabelsNameById,
     isEnableDeskproLabel,
     getStoryCustomFieldsToSave,
@@ -69,8 +67,6 @@ export const Create: FC = () => {
             console.error("Failed to create Shortcut story");
             return;
         }
-
-        createStoryComment(client, res.id, getLinkedComment(ticketId, permalinkUrl)).catch(() => {});
 
         const {
             groups,

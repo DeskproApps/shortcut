@@ -14,7 +14,6 @@ import { faSearch, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { useDebouncedCallback } from "use-debounce";
 import {
     searchStories,
-    createStoryComment,
     addExternalUrlToStory,
     addDeskproLabelToStory,
 } from "../context/StoreProvider/api";
@@ -26,7 +25,7 @@ import {
     ShortcutStoryAssociationPropsLabel,
     StorySearchItem
 } from "../context/StoreProvider/types";
-import { getLinkedComment, isEnableDeskproLabel } from "../utils";
+import { isEnableDeskproLabel } from "../utils";
 import { SetSelectionState } from "../hooks/useReplyBox";
 
 type Props = {
@@ -129,12 +128,6 @@ export const Link: FC<Props> = ({ setSelectionState }) => {
       client,
       id,
       state.context?.data.ticket.permalinkUrl as string
-    )));
-
-    updates.push(...selected.map((id: string) => createStoryComment(
-        client,
-        id,
-        getLinkedComment(ticketId, permalinkUrl),
     )));
 
     if (isEnableDeskproLabel(state)) {

@@ -18,7 +18,7 @@ import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
 import { AddComment } from "./AddComment";
-import { getLinkedComment, isEnableDeskproLabel } from "../utils";
+import { isEnableDeskproLabel } from "../utils";
 import { useReplyBox } from "../hooks/useReplyBox";
 
 export const Main: FC = () => {
@@ -65,11 +65,6 @@ export const Main: FC = () => {
                 : Promise.resolve()
         })
         .then(loadLinkedIssues)
-        .then(() => createStoryComment(
-            client,
-            id,
-            getLinkedComment(ticket.id, state.context?.data.ticket.permalinkUrl, "unlink")),
-        )
         .then(() => dispatch({ type: "changePage", page: "home" }))
     ;
   };
