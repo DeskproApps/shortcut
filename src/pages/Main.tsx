@@ -1,4 +1,5 @@
 import { FC, useEffect } from "react";
+import get from "lodash/get";
 import { __, match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
 import { TargetAction, useDeskproAppClient, useDeskproAppEvents } from "@deskpro/app-sdk";
@@ -8,6 +9,7 @@ import {useLoadLinkedStories, useWhenNoLinkedItems} from "../hooks";
 import {
     createStoryComment,
     removeExternalUrlToStory,
+    removeDeskproLabelFromStory,
 } from "../context/StoreProvider/api";
 import { Home } from "./Home";
 import { Link } from "./Link";
@@ -16,7 +18,7 @@ import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
 import { AddComment } from "./AddComment";
-import { getLinkedComment } from "../utils";
+import { isEnableDeskproLabel } from "../utils";
 import { useReplyBox } from "../hooks/useReplyBox";
 
 export const Main: FC = () => {
@@ -42,22 +44,27 @@ export const Main: FC = () => {
     200
   );
 
-  const unlinkTicket = ({ id }: any) => {
+  const unlinkTicket = ({ id, story, ticketId }: any) => {
+    const { ticket }: any = state?.context?.data;
+
     if (!client || !state?.context?.data.ticket) {
       return;
     }
 
-    const { ticket }: any = state?.context?.data;
+    if (ticketId !== ticket.id) {
+        return;
+    }
 
     client?.getEntityAssociation("linkedShortcutStories", ticket.id).delete(id)
         .then(() => dispatch({ type: "linkedStoriesListLoading" }))
         .then(() => removeExternalUrlToStory(client, `${id}`, state.context?.data.ticket.permalinkUrl as string))
+        .then(() => client.entityAssociationCountEntities("linkedShortcutStories", id))
+        .then((count) => {
+            return (isEnableDeskproLabel(state) && count === 0)
+                ? removeDeskproLabelFromStory(client, id, get(story, ["labels"], []))
+                : Promise.resolve()
+        })
         .then(loadLinkedIssues)
-        .then(() => createStoryComment(
-            client,
-            id,
-            getLinkedComment(ticket.id, state.context?.data.ticket.permalinkUrl, "unlink")),
-        )
         .then(() => dispatch({ type: "changePage", page: "home" }))
     ;
   };

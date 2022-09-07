@@ -1,6 +1,7 @@
 import { ChangeEvent, FC, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../context/StoreProvider/hooks";
 import {
+  H3,
   HorizontalDivider,
   IconButton,
   Input,
@@ -58,13 +59,18 @@ export const Home: FC = () => {
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
-      {loading ?  <LoadingSpinner /> : linkedStories.map((item, idx) => (
-        <LinkedStoryResultItem
-          key={idx}
-          item={item}
-          onView={() => dispatch({ type: "changePage", page: "view", params: { id: item.id } })}
-        />
-      ))}
+      {loading
+          ? <LoadingSpinner />
+          : (linkedStories.length > 0)
+          ? linkedStories.map((item, idx) => (
+              <LinkedStoryResultItem
+                  key={idx}
+                  item={item}
+                  onView={() => dispatch({ type: "changePage", page: "view", params: { id: item.id } })}
+              />
+          ))
+          : <H3>No linked stories found.</H3>
+      }
     </>
   );
 };

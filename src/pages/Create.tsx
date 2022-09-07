@@ -4,14 +4,13 @@ import { useDeskproAppClient } from "@deskpro/app-sdk";
 import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
 import {
     createStory,
-    createStoryComment,
     getStoryDependencies,
     addExternalUrlToStory,
 } from "../context/StoreProvider/api";
 import { useStore } from "../context/StoreProvider/hooks";
 import {
-    getLinkedComment,
     getLabelsNameById,
+    isEnableDeskproLabel,
     getStoryCustomFieldsToSave,
 } from "../utils";
 import { StoryForm } from "../components/StoryForm/StoryForm";
@@ -43,9 +42,13 @@ export const Create: FC = () => {
 
     const ticketId = state.context?.data.ticket.id as string;
     const permalinkUrl = state.context?.data.ticket.permalinkUrl as string;
+    const labelNames = getLabelsNameById(data.labels, state.dataDependencies?.labels);
     const storyData = {
         ...data,
-        labels: getLabelsNameById(data.labels, state.dataDependencies?.labels),
+        labels: [
+            ...labelNames,
+            ...((isEnableDeskproLabel(state) && labelNames.includes("Deskpro")) ? [] : ["Deskpro"]),
+        ],
         custom_fields: getStoryCustomFieldsToSave(data, state.dataDependencies?.customFields),
     };
 
@@ -64,8 +67,6 @@ export const Create: FC = () => {
             console.error("Failed to create Shortcut story");
             return;
         }
-
-        createStoryComment(client, res.id, getLinkedComment(ticketId, permalinkUrl)).catch(() => {});
 
         const {
             groups,
