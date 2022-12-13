@@ -119,6 +119,7 @@ const Edit: FC<EditProps> = ({ storyId }) => {
             const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
 
             const metadata: ShortcutStoryAssociationProps = {
+        archived: res.archived,
                 id: `${res.id}`,
                 name: res.name,
                 type: res.story_type,

@@ -83,6 +83,7 @@ export const searchStories = async (client: IDeskproClient, q: string): Promise<
     const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
 
     return {
+      archived: story.archived,
       id: story.id,
       url: story.app_url,
       name: story.name,
@@ -155,6 +156,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
     const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
 
     return {
+      archived: story.archived,
       id: story.id,
       url: story.app_url,
       name: story.name,

@@ -14,6 +14,7 @@ import { StoryItem } from "../../context/StoreProvider/types";
 import { Label } from "../Label/Label";
 import { Title } from "../Title/Title";
 import { useAssociatedEntityCount } from "../../hooks";
+import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 
 export interface LinkedStoryResultItemProps {
   item: StoryItem;
@@ -29,6 +30,14 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical>
           <Title name={item.name} url={item.url} onClick={onView} />
+          {item.archived && (
+            <RoundedLabelTag
+              label={"Archived"}
+              backgroundColor={theme.colors.grey80}
+              textColor={"white"}
+              closeIcon={"" as unknown as AnyIcon}
+            />
+          )}
           <Stack align="stretch">
             <Property title="Story ID" width="108px">
               {item.id}
