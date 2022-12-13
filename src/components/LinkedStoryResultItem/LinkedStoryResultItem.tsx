@@ -8,13 +8,13 @@ import {
   HorizontalDivider,
   useDeskproAppTheme,
 } from "@deskpro/app-sdk";
+import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
 import "./LinkedStoryResultItem.css";
 import { StoryItem } from "../../context/StoreProvider/types";
 import { Label } from "../Label/Label";
 import { Title } from "../Title/Title";
 import { useAssociatedEntityCount } from "../../hooks";
-import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 
 export interface LinkedStoryResultItemProps {
   item: StoryItem;
