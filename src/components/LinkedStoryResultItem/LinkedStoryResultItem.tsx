@@ -57,7 +57,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
             {item.stateId ? (
               <Pill
                 textColor={theme.colors.white}
-                backgroundColor={theme.colors.grey80}
+                backgroundColor={theme.colors.cyan100}
                 label={item.stateName}
               />
             ) : (<span>None</span>)}
