@@ -100,6 +100,7 @@ export const Link: FC<Props> = ({ setSelectionState }) => {
     const updates = selected.map((id: string) => client
       .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
       .set<ShortcutStoryAssociationProps>(`${id}`, {
+        archived: selectedItems[id].archived,
         id: `${id}`,
         name: selectedItems[id].name,
         type: selectedItems[id].type,

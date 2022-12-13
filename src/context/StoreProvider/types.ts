@@ -140,6 +140,7 @@ export interface Comment {
 }
 
 export interface StoryItem {
+  archived: boolean;
   id: string;
   url: string;
   name: string;
@@ -205,6 +206,7 @@ export interface ShortcutStoryAssociationPropsLabel {
 }
 
 export interface ShortcutStoryAssociationProps {
+  archived: boolean;
   id: string;
   name: string;
   type: string;

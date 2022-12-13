@@ -8,6 +8,7 @@ import {
   HorizontalDivider,
   useDeskproAppTheme,
 } from "@deskpro/app-sdk";
+import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
 import "./LinkedStoryResultItem.css";
 import { StoryItem } from "../../context/StoreProvider/types";
@@ -29,6 +30,14 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical>
           <Title name={item.name} url={item.url} onClick={onView} />
+          {item.archived && (
+            <RoundedLabelTag
+              label={"Archived"}
+              backgroundColor={theme.colors.grey80}
+              textColor={"white"}
+              closeIcon={"" as unknown as AnyIcon}
+            />
+          )}
           <Stack align="stretch">
             <Property title="Story ID" width="108px">
               {item.id}
@@ -48,7 +57,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
             {item.stateId ? (
               <Pill
                 textColor={theme.colors.white}
-                backgroundColor={theme.colors.grey80}
+                backgroundColor={theme.colors.cyan100}
                 label={item.stateName}
               />
             ) : (<span>None</span>)}

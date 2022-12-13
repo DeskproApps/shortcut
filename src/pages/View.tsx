@@ -23,6 +23,7 @@ import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
 import { Comments } from "../components/Comments/Comments";
+import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 
 export interface ViewProps {
   id: string;
@@ -76,6 +77,14 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical style={{ width: "100%" }}>
           <Title name={story.name} url={story.url} />
+          {story.archived && (
+            <RoundedLabelTag
+              label={"Archived"}
+              backgroundColor={theme.colors.grey80}
+              textColor={"white"}
+              closeIcon={"" as unknown as AnyIcon}
+            />
+          )}
           <Property title="Story ID">
             {story.id}
           </Property>
@@ -89,7 +98,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
             {story.stateId ? (
               <Pill
                 textColor={theme.colors.white}
-                backgroundColor={theme.colors.grey80}
+                backgroundColor={theme.colors.cyan100}
                 label={story.stateName}
               />
             ) : (<span>None</span>)}
