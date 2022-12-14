@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import capitalize from "lodash/capitalize";
 import chunk from "lodash/chunk";
-import parse from "html-react-parser";
 import {
   Pill,
   Stack,
@@ -126,23 +125,9 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           )}
           <Property title="Description">
             {story.descriptionHtml ? (
-              parse(story.descriptionHtml, {
-                replace: (domNode) => {
-                  //bunch of ts ignores because the types of the lib are wrong
-                  /* @ts-ignore*/
-                  if (domNode.type === "tag" && domNode.name === "a") {
-                    return (
-                      /* @ts-ignore*/ <a
-                        href={domNode.attribs.href}
-                        target="_blank"
-                      >
-                        {/* @ts-ignore*/}
-                        {domNode.children[0].data}
-                      </a>
-                    );
-                  }
-                },
-              })
+              <div
+                dangerouslySetInnerHTML={{ __html: story.descriptionHtml }}
+              />
             ) : (
               <span style={{ color: theme.colors.grey40 }}>---</span>
             )}
