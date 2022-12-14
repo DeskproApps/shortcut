@@ -17,7 +17,10 @@ const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
 // Key for search dependency caching (milliseconds)
 const SEARCH_DEPS_CACHE_TTL = 5 * (60 * 1000); // 5 Minutes
 
-export const markdownToHtmlConverter = new showdown.Converter({ openLinksInNewWindow: true });
+export const markdownToHtmlConverter = new showdown.Converter({
+  openLinksInNewWindow: true,
+  simplifiedAutoLink: true,
+});
 
 /**
  * Fetch a single Shortcut story by ID, e.g. "123"
