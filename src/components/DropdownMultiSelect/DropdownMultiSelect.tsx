@@ -1,13 +1,21 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   DivAsInputWithDisplay,
   Dropdown,
   DropdownTargetProps,
-  DropdownValueType, Stack, Icon, useDeskproAppTheme,
+  DropdownValueType,
+  Stack,
+  Icon,
+  useDeskproAppTheme,
   dropdownRenderOptions,
-  Infinite
+  Infinite,
 } from "@deskpro/app-sdk";
-import { faCaretDown, faTimes, faHandPointer, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faTimes,
+  faHandPointer,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FieldHelperProps } from "formik";
 import { Label } from "../Label/Label";
 import { sortedUniq } from "lodash";
@@ -25,9 +33,18 @@ export interface DropdownMultiSelectProps {
   values?: any[];
 }
 
-export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({ helpers, id, placeholder, values, options }: DropdownMultiSelectProps) => {
-  const { theme: { colors } } = useDeskproAppTheme();
-  const vals = (Array.isArray(values) ? values : []);
+export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({
+  helpers,
+  id,
+  placeholder,
+  values,
+  options,
+}: DropdownMultiSelectProps) => {
+  const {
+    theme: { colors },
+  } = useDeskproAppTheme();
+  const [input, setInput] = useState<string>("");
+  const vals = Array.isArray(values) ? values : [];
 
   const valLabels = vals.map((v) => {
     const option = options.filter((o) => o.value === v)[0];
@@ -36,9 +53,18 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({ helpers, id,
       : [option.value, option.label, option.color];
   });
 
+  const fixedOptions = options.filter((o) => !vals.includes(o.value));
+
+  const filteredOptions = fixedOptions.filter((opt) =>
+    (opt.valueLabel as string).toLowerCase().includes(input.toLowerCase())
+  );
+
   return (
     <Dropdown
-      options={options.filter((o) => !vals.includes(o.value))}
+      showInternalSearch
+      inputValue={input}
+      onInputChange={setInput}
+      options={filteredOptions}
       onSelectOption={(option) => {
         helpers.setTouched(true);
         helpers.setValue(sortedUniq([...vals, option.value]));
@@ -71,8 +97,8 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({ helpers, id,
                 setActiveSubItem,
                 "Fetch more",
                 "Autoscroll",
-                  faHandPointer,
-                  faExternalLinkAlt,
+                faHandPointer,
+                faExternalLinkAlt,
                 hideIcons,
                 0
               )
@@ -89,7 +115,13 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({ helpers, id,
           value={
             <Stack align="center" gap={4} wrap="wrap">
               {valLabels.map(([val, label, color], idx: number) => (
-                <Label color={color ?? colors.grey20} key={idx} onClick={() => helpers.setValue(vals.filter((v) => v !== val))}>
+                <Label
+                  color={color ?? colors.grey20}
+                  key={idx}
+                  onClick={() =>
+                    helpers.setValue(vals.filter((v) => v !== val))
+                  }
+                >
                   <Stack align="center">
                     <span style={{ marginRight: "4px" }}>{label}</span>
                     <Icon icon={faTimes} />
@@ -107,4 +139,4 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({ helpers, id,
       )}
     </Dropdown>
   );
-}
+};

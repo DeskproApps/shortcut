@@ -3,23 +3,25 @@
   "title": "Shortcut",
   "description": "Link tickets to Shortcut stories so agents can track a story's progress from a ticket",
   "appStoreUrl": "https://www.deskpro.com/product-embed/apps/shortcut",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "scope": "agent",
   "isSingleInstall": true,
   "hasDevMode": true,
-  "targets": [{
-    "target": "ticket_sidebar",
-    "entrypoint": "index.html",
-    "options": {
-      "actions": {
-        "linkTicket": {
-          "type": "ticket_addition",
-          "title": "Shortcut Story",
-          "description": "Link ticket to Shortcut story"
+  "targets": [
+    {
+      "target": "ticket_sidebar",
+      "entrypoint": "index.html",
+      "options": {
+        "actions": {
+          "linkTicket": {
+            "type": "ticket_addition",
+            "title": "Shortcut Story",
+            "description": "Link ticket to Shortcut story"
+          }
         }
       }
     }
-  }],
+  ],
   "entityAssociations": {
     "linkedShortcutStories": {
       "title": "Linked Shortcut Stories",
@@ -58,10 +60,17 @@
     }
   },
   "proxy": {
-    "whitelist": [{
-      "url": "https://api.app.shortcut.com/api/v3/.*",
-      "methods": ["GET", "POST", "PUT", "DELETE"],
-      "timeout": 30
-    }]
+    "whitelist": [
+      {
+        "url": "https://api.app.shortcut.com/api/v3/.*",
+        "methods": [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE"
+        ],
+        "timeout": 30
+      }
+    ]
   }
 }

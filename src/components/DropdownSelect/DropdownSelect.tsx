@@ -1,12 +1,17 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   DivAsInputWithDisplay,
   Dropdown,
   dropdownRenderOptions,
   DropdownTargetProps,
-  DropdownValueType, Infinite
+  DropdownValueType,
+  Infinite,
 } from "@deskpro/app-sdk";
-import { faCaretDown, faTimes, faHandPointer, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faHandPointer,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FieldHelperProps } from "formik";
 
 export interface DropdownSelectProps {
@@ -15,17 +20,32 @@ export interface DropdownSelectProps {
   id?: string;
   placeholder?: string;
   value?: any;
+  disabled?: boolean;
 }
 
-export const DropdownSelect: FC<DropdownSelectProps> = ({ helpers, id, placeholder, value, options }: DropdownSelectProps) => {
-  const selectedValue = options
-    .filter((o) => o.value === value)[0]
-    ?.label ?? ""
-  ;
+export const DropdownSelect: FC<DropdownSelectProps> = ({
+  helpers,
+  id,
+  placeholder,
+  value,
+  options,
+  ...props
+}: DropdownSelectProps) => {
+  const [input, setInput] = useState<string>("");
+
+  const selectedValue =
+    options.filter((o) => o.value === value)[0]?.label ?? "";
+  const filteredOptions = options.filter((opt) =>
+    (opt.label as string).toLowerCase().includes(input.toLowerCase())
+  );
 
   return (
     <Dropdown
-      options={options}
+      {...props}
+      showInternalSearch
+      options={filteredOptions}
+      inputValue={input}
+      onInputChange={setInput}
       onSelectOption={(option) => {
         helpers.setTouched(true);
         helpers.setValue(option.value);
@@ -56,10 +76,10 @@ export const DropdownSelect: FC<DropdownSelectProps> = ({ helpers, id, placehold
                 activeItem,
                 activeSubItem,
                 setActiveSubItem,
-                  "Fetch more",
-                  "Autoscroll",
-                  faHandPointer,
-                  faExternalLinkAlt,
+                "Fetch more",
+                "Autoscroll",
+                faHandPointer,
+                faExternalLinkAlt,
                 hideIcons,
                 0
               )
