@@ -13,6 +13,7 @@
     "@deskpro/app-sdk": "^1.0.3",
     "@deskpro/deskpro-ui": "^2.3.5",
     "formik": "^2.2.9",
+    "html-react-parser": "^3.0.4",
     "iframe-resizer": "4.3.2",
     "javascript-time-ago": "^2.5.7",
     "js-cache": "1.0.3",
