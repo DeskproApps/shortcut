@@ -76,8 +76,8 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload release asset
-        id: upload_release_asset
+      - name: Add app asset to release
+        id: add_app_asset_to_release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -86,3 +86,14 @@ jobs:
           asset_path: ./dist/app.zip
           asset_name: app.zip
           asset_content_type: application/zip
+
+      - name: Add app manifest to release
+        id: add_app_manifest_to_release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/manifest.json
+          asset_name: manifest.json
+          asset_content_type: application/json
