@@ -10,6 +10,7 @@ import {
   StorySearchItem,
   ApiRequestMethod,
 } from "./types";
+import { removeTagLinksMD } from "../../utils/removeTagLinksMD";
 
 // Shortcut REST API Base URL
 const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
@@ -206,7 +207,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
           .filter(({ deleted }: Comment) => !deleted)
           .map((comment: Comment) => ({
             ...comment,
-            textHtml: markdownToHtmlConverter.makeHtml(comment.text),
+            textHtml: markdownToHtmlConverter.makeHtml(removeTagLinksMD(comment.text)),
           })),
     } as StorySearchItem;
   });
