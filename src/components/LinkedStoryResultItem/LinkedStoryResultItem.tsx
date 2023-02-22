@@ -90,7 +90,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
           )}
           {(item.labels && item.labels.length > 0) && (
             <Property title="Labels">
-              <Stack gap={2}>
+              <Stack gap={2} wrap="wrap">
                 {item.labels.map((label, idx) => (
                   <Label key={idx} color={label.color}>
                     <span>{label.name}</span>
