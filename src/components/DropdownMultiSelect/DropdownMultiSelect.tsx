@@ -48,6 +48,9 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({
 
   const valLabels = vals.map((v) => {
     const option = options.filter((o) => o.value === v)[0];
+
+    if(!option) return [];
+
     return option.valueLabel
       ? [option.value, option.valueLabel, option.color]
       : [option.value, option.label, option.color];
