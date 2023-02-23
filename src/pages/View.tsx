@@ -152,7 +152,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           )}
           {story.labels && story.labels.length > 0 && (
             <Property title="Labels">
-              <Stack gap={2}>
+              <Stack gap={2} wrap="wrap">
                 {story.labels.map((label, idx) => (
                   <Label key={idx} color={label.color}>
                     <span>{label.name}</span>

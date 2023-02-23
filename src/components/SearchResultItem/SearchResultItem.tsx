@@ -1,9 +1,11 @@
 import {
   H1,
-  HorizontalDivider, Pill,
+  HorizontalDivider,
+  Pill,
   Property,
-  Stack, useDeskproAppTheme,
-  VerticalDivider
+  Stack,
+  useDeskproAppTheme,
+  VerticalDivider,
 } from "@deskpro/app-sdk";
 import { FC, ReactElement } from "react";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
@@ -21,7 +23,11 @@ export interface SearchResultItemProps {
   onSelect?: () => void;
 }
 
-export const SearchResultItem: FC<SearchResultItemProps> = ({ item, checkbox, onSelect }: SearchResultItemProps) => {
+export const SearchResultItem: FC<SearchResultItemProps> = ({
+  item,
+  checkbox,
+  onSelect,
+}: SearchResultItemProps) => {
   const { theme } = useDeskproAppTheme();
   const entityCount = useAssociatedEntityCount(item.id);
 
@@ -49,11 +55,9 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({ item, checkbox, on
               {item.id}
             </Property>
             <VerticalDivider width={1} />
-            <Property title="Deskpro Tickets">
-              {entityCount}
-            </Property>
+            <Property title="Deskpro Tickets">{entityCount}</Property>
           </Stack>
-          {(item.epicId && item.epicUrl) && (
+          {item.epicId && item.epicUrl && (
             <Property title="Epic">
               {item.epicName}
               <ExternalLink href={item.epicUrl} />
@@ -66,20 +70,16 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({ item, checkbox, on
                 backgroundColor={theme.colors.cyan100}
                 label={item.stateName}
               />
-            ) : (<span>None</span>)}
+            ) : (
+              <span>None</span>
+            )}
           </Property>
-          <Property title="Type">
-            {capitalize(item.type)}
-          </Property>
+          <Property title="Type">{capitalize(item.type)}</Property>
           <Property title="Iteration">
-            {item.iterationId ? (item.iterationName) : (<em>None</em>)}
+            {item.iterationId ? item.iterationName : <em>None</em>}
           </Property>
-          {item.teamId && (
-            <Property title="Team">
-              {item.teamName}
-            </Property>
-          )}
-          {(item.owners && item.owners.length > 0) && (
+          {item.teamId && <Property title="Team">{item.teamName}</Property>}
+          {item.owners && item.owners.length > 0 && (
             <Property title="Owners">
               {item.owners.map((owner, idx) => (
                 <div key={idx} style={{ marginBottom: "3px" }}>
@@ -88,9 +88,9 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({ item, checkbox, on
               ))}
             </Property>
           )}
-          {(item.labels && item.labels.length > 0) && (
+          {item.labels && item.labels.length > 0 && (
             <Property title="Labels">
-              <Stack gap={2}>
+              <Stack gap={2} wrap="wrap">
                 {item.labels.map((label, idx) => (
                   <Label key={idx} color={label.color}>
                     <span>{label.name}</span>
