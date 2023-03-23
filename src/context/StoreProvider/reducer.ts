@@ -55,6 +55,21 @@ export const reducer: StoreReducer = (state: State, action: Action): State => {
       ...prevState,
       dataDependencies: action.deps,
     }))
+    //
+    .with([__, { type: "relationsStoriesListLoading" }],  ([prevState]) => ({
+      ...prevState,
+      relationsStoriesResults: {
+        list: [],
+        loading: true,
+      },
+    }))
+    .with([__, { type: "relationsStoriesList" }],  ([prevState, action]) => ({
+      ...prevState,
+      relationsStoriesResults: {
+        list: action.list,
+        loading: false,
+      },
+    }))
 
     // ...
 

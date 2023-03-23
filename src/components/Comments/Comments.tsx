@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import isEmpty from "lodash/isEmpty";
-import sortBy from "lodash/sortBy";
 import styled from "styled-components";
 import { faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 import ReactTimeAgo from "react-time-ago";

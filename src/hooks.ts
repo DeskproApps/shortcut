@@ -3,6 +3,7 @@ import { useDeskproAppClient } from "@deskpro/app-sdk";
 import { useStore } from "./context/StoreProvider/hooks";
 import { getStoryDependencies, listStories } from "./context/StoreProvider/api";
 import { StoryItem } from "./context/StoreProvider/types";
+import { getRelationsStoryIds } from "./utils";
 
 export const useSetAppTitle = (title: string, deps: DependencyList|undefined = []): void => {
   const { client } = useDeskproAppClient();
@@ -41,10 +42,12 @@ export const useLoadLinkedStories = () => {
         .list();
 
       const list = await listStories(client, ids);
+      const relations = await listStories(client, getRelationsStoryIds(list));
 
       client.setBadgeCount(list.length);
 
-      dispatch({ type: "linkedStoriesList", list })
+      dispatch({ type: "linkedStoriesList", list });
+      dispatch({ type: "relationsStoriesList", list: relations });
     } catch (e) {
       dispatch({ type: "error", error: `${e}` });
     }
@@ -58,6 +61,14 @@ export const useFindLinkedStoryById = () => {
     .filter((r) => r.id === id)[0] ?? null
   ;
 }
+
+export const useFindRelationsStoryById = () => {
+  const [ state ] = useStore();
+
+  return (id: string): StoryItem|null => (state.relationsStoriesResults?.list ?? [])
+      .filter((r) => r.id === id)[0] ?? null
+      ;
+};
 
 export const useAssociatedEntityCount = (id: string) => {
   const { client } = useDeskproAppClient();

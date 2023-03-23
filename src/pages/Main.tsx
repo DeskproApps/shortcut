@@ -7,7 +7,6 @@ import { useStore } from "../context/StoreProvider/hooks";
 import { Page } from "../context/StoreProvider/types";
 import {useLoadLinkedStories, useWhenNoLinkedItems} from "../hooks";
 import {
-    createStoryComment,
     removeExternalUrlToStory,
     removeDeskproLabelFromStory,
 } from "../context/StoreProvider/api";

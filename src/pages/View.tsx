@@ -1,11 +1,13 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import capitalize from "lodash/capitalize";
 import chunk from "lodash/chunk";
+import get from "lodash/get";
 import {
   Pill,
   Stack,
   Property,
   VerticalDivider,
+  Title as TitleUI,
   HorizontalDivider,
   useDeskproAppTheme,
   useDeskproAppClient,
@@ -24,6 +26,7 @@ import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
 import { Comments } from "../components/Comments/Comments";
+import { Relationships } from "../components/Relationships/Relationships";
 
 export interface ViewProps {
   id: string;
@@ -88,7 +91,7 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
   return (
     <>
       <Stack align="start" gap={10}>
-        <Stack gap={10} vertical style={{ width: "100%" }}>
+        <Stack gap={10} vertical align="stretch" style={{ width: "100%" }}>
           <Title name={story.name} url={story.url} />
           {story.archived && (
             <RoundedLabelTag
@@ -172,9 +175,10 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
               </Stack>
             </Property>
           )}
-          <HorizontalDivider
+
+          {Boolean(customFields.length) && <HorizontalDivider
             style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
-          />
+          />}
           {chunk(customFields, 2).map((fields, idx) => {
             return fields.length === 2 ? (
               <Stack key={idx} align="stretch">
@@ -190,6 +194,17 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
               </Property>
             );
           })}
+
+          <HorizontalDivider
+              style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+          />
+
+          <TitleUI
+              title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+              marginBottom={0}
+          />
+
+          <Relationships storyLinks={get(story, ["storyLinks"], [])}/>
         </Stack>
       </Stack>
       <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />

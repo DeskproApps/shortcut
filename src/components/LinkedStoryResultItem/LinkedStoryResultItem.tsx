@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { capitalize } from "lodash";
+import { capitalize, get, isEmpty } from "lodash";
 import {
   Pill,
   Stack,
@@ -14,6 +14,7 @@ import "./LinkedStoryResultItem.css";
 import { StoryItem } from "../../context/StoreProvider/types";
 import { Label } from "../Label/Label";
 import { Title } from "../Title/Title";
+import { Relationships } from "../Relationships/Relationships";
 import { useAssociatedEntityCount } from "../../hooks";
 
 export interface LinkedStoryResultItemProps {
@@ -97,6 +98,11 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
                   </Label>
                 ))}
               </Stack>
+            </Property>
+          )}
+          {!isEmpty(get(item, ["storyLinks"], [])) && (
+            <Property title="Relationships">
+              <Relationships storyLinks={get(item, ["storyLinks"], [])}/>
             </Property>
           )}
         </Stack>
