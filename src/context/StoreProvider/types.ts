@@ -14,6 +14,7 @@ export type Page =
   | "create"
   | "edit"
   | "add_comment"
+  | "add_story_relations"
 ;
 
 export interface State {
@@ -22,6 +23,7 @@ export interface State {
   context?: TicketContext;
   linkStorySearchResults?: { loading: boolean, list: StorySearchItem[] };
   linkedStoriesResults?: { loading: boolean, list: StoryItem[] };
+  relationsStoriesResults?: { loading: boolean, list: StoryItem[] },
   dataDependencies?: any; // ToDo: need types
 
   // ...
@@ -38,6 +40,9 @@ export type Action =
   | { type: "linkedStoriesList", list: StoryItem[] }
   | { type: "linkedStoriesListLoading" }
   | { type: "loadDataDependencies", deps: any }
+  | { type: "loadDependencies", deps: any }
+  | { type: "relationsStoriesList", list: StoryItem[] }
+  | { type: "relationsStoriesListLoading" }
 
   // ...
 
@@ -139,6 +144,18 @@ export interface Comment {
   updated_at: DateTime;
 }
 
+export interface StoryLink {
+  entity_type: "story-link";
+  id: number;
+  object_id: StoryItem["id"];
+  subject_id: StoryItem["id"];
+  subject_workflow_state_id: number;
+  type: "object"|"subject";
+  verb: "relates to"|"duplicates"|"blocks";
+  created_at: DateTime;
+  updated_at: DateTime;
+}
+
 export interface StoryItem {
   archived: boolean;
   id: string;
@@ -173,6 +190,7 @@ export interface StoryItem {
     value_id: CustomFieldValue["id"];
   }>;
   comments: Comment[];
+  storyLinks: StoryLink[];
 }
 
 export interface StorySearchItem extends StoryItem {

@@ -197,6 +197,7 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
         name: label.name,
         color: label.color,
       })),
+      storyLinks: story.story_links,
       requesterId: story.requested_by_id,
       followerIds: story.follower_ids,
       description: story.description,
@@ -321,6 +322,17 @@ export const removeDeskproLabelFromStory = (
   } else {
     return Promise.resolve();
   }
+};
+
+export const addRelationsToStory = (
+    client: IDeskproClient,
+    data: {
+      object_id: StoryItem["id"],
+      subject_id: StoryItem["id"],
+      verb: "relates to"|"duplicates"|"blocks",
+    }
+) => {
+  return request(client, "POST", `${API_BASE_URL}/story-links`, data);
 };
 
 export const getStoryDependencies = async (client: IDeskproClient) => {

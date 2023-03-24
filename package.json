@@ -10,8 +10,8 @@
     "test": "cross-env NODE_OPTIONS=--max-old-space-size=1024 jest --maxWorkers=75%"
   },
   "dependencies": {
-    "@deskpro/app-sdk": "^1.0.3",
-    "@deskpro/deskpro-ui": "^2.3.5",
+    "@deskpro/app-sdk": "^1.2.12",
+    "@deskpro/deskpro-ui": "4.7.0",
     "formik": "^2.2.9",
     "iframe-resizer": "4.3.2",
     "javascript-time-ago": "^2.5.7",
@@ -23,7 +23,7 @@
     "react-intl": "^5.24.4",
     "react-time-ago": "^7.2.1",
     "showdown": "1.9.1",
-    "styled-components": "^5.3.3",
+    "styled-components": "^5.3.5",
     "ts-pattern": "3.3.5",
     "use-debounce": "7.0.1",
     "yup": "0.31.1"
@@ -36,6 +36,7 @@
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.10",
     "@types/showdown": "1.9.4",
+    "@types/styled-components": "^5.1.26",
     "@types/testing-library__jest-dom": "^5.14.2",
     "@types/yup": "^0.29.11",
     "@vitejs/plugin-react": "^1.0.7",
