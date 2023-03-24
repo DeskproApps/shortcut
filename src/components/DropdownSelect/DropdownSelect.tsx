@@ -21,6 +21,7 @@ export interface DropdownSelectProps {
   placeholder?: string;
   value?: any;
   disabled?: boolean;
+  showInternalSearch?: boolean,
 }
 
 export const DropdownSelect: FC<DropdownSelectProps> = ({
@@ -29,6 +30,7 @@ export const DropdownSelect: FC<DropdownSelectProps> = ({
   placeholder,
   value,
   options,
+  showInternalSearch = true,
   ...props
 }: DropdownSelectProps) => {
   const [input, setInput] = useState<string>("");
@@ -42,7 +44,7 @@ export const DropdownSelect: FC<DropdownSelectProps> = ({
   return (
     <Dropdown
       {...props}
-      showInternalSearch
+      showInternalSearch={showInternalSearch}
       options={filteredOptions}
       inputValue={input}
       onInputChange={setInput}

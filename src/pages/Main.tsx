@@ -17,6 +17,7 @@ import { ErrorBlock } from "../components/Error/ErrorBlock";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
 import { AddComment } from "./AddComment";
+import { AddStoryRelations } from "./AddStoryRelations";
 import { isEnableDeskproLabel } from "../utils";
 import { useReplyBox } from "../hooks/useReplyBox";
 
@@ -98,6 +99,7 @@ export const Main: FC = () => {
     .with("create", () => <Create {...state.pageParams} />)
     .with("edit", () => <Edit {...state.pageParams} />)
     .with("add_comment", () => <AddComment {...state.pageParams} />)
+    .with("add_story_relations", () => <AddStoryRelations {...state.pageParams} />)
     .otherwise(() => <Home {...state.pageParams} />)
   ;
 

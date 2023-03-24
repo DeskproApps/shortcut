@@ -324,6 +324,17 @@ export const removeDeskproLabelFromStory = (
   }
 };
 
+export const addRelationsToStory = (
+    client: IDeskproClient,
+    data: {
+      object_id: StoryItem["id"],
+      subject_id: StoryItem["id"],
+      verb: "relates to"|"duplicates"|"blocks",
+    }
+) => {
+  return request(client, "POST", `${API_BASE_URL}/story-links`, data);
+};
+
 export const getStoryDependencies = async (client: IDeskproClient) => {
   const cache_key = "data_deps";
 

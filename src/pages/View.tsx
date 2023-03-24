@@ -201,6 +201,11 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
 
           <TitleUI
               title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+              onClick={() => dispatch({
+                type: "changePage",
+                page: "add_story_relations",
+                params: { storyId: id },
+              })}
               marginBottom={0}
           />
 

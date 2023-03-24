@@ -14,6 +14,7 @@ export type Page =
   | "create"
   | "edit"
   | "add_comment"
+  | "add_story_relations"
 ;
 
 export interface State {

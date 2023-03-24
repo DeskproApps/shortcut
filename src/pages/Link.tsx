@@ -142,7 +142,10 @@ export const Link: FC<Props> = ({ setSelectionState }) => {
       .then(() => dispatch({ type: "linkStorySearchListReset" }))
       .then(() => dispatch({ type: "changePage", page: "home" }))
       .catch((error) => dispatch({ type: "error", error }))
-      .finally(() => setIsLinkStoriesLoading(false));
+      .finally(() => {
+          dispatch({ type: "linkStorySearchListLoading" });
+          setIsLinkStoriesLoading(false)
+      });
   };
 
   return (
