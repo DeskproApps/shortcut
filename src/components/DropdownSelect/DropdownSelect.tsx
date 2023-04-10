@@ -21,7 +21,7 @@ export interface DropdownSelectProps {
   placeholder?: string;
   value?: any;
   disabled?: boolean;
-  showInternalSearch?: boolean,
+  showInternalSearch?: boolean;
 }
 
 export const DropdownSelect: FC<DropdownSelectProps> = ({

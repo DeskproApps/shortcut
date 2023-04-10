@@ -1,28 +1,32 @@
-import { FC } from "react";
-import { capitalize, get, isEmpty } from "lodash";
 import {
-  Pill,
-  Stack,
-  Property,
-  VerticalDivider,
   HorizontalDivider,
+  Pill,
+  Property,
+  Stack,
+  VerticalDivider,
   useDeskproAppTheme,
 } from "@deskpro/app-sdk";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
-import { ExternalLink } from "../ExternalLink/ExternalLink";
-import "./LinkedStoryResultItem.css";
+import capitalize from "lodash.capitalize";
+import get from "lodash.get";
+import isEmpty from "lodash.isempty";
+import { FC } from "react";
 import { StoryItem } from "../../context/StoreProvider/types";
-import { Label } from "../Label/Label";
-import { Title } from "../Title/Title";
-import { Relationships } from "../Relationships/Relationships";
 import { useAssociatedEntityCount } from "../../hooks";
-
+import { ExternalLink } from "../ExternalLink/ExternalLink";
+import { Label } from "../Label/Label";
+import { Relationships } from "../Relationships/Relationships";
+import { Title } from "../Title/Title";
+import "./LinkedStoryResultItem.css";
 export interface LinkedStoryResultItemProps {
   item: StoryItem;
   onView?: () => void;
 }
 
-export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, onView }: LinkedStoryResultItemProps) => {
+export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
+  item,
+  onView,
+}: LinkedStoryResultItemProps) => {
   const { theme } = useDeskproAppTheme();
   const entityCount = useAssociatedEntityCount(item.id);
 
@@ -44,15 +48,13 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
               {item.id}
             </Property>
             <VerticalDivider width={1} />
-            <Property title="Deskpro Tickets">
-              {entityCount}
-            </Property>
+            <Property title="Deskpro Tickets">{entityCount}</Property>
           </Stack>
           <Property title="Project">
-            {item.projectName ? (item.projectName) : (<em>None</em>)}
+            {item.projectName ? item.projectName : <em>None</em>}
           </Property>
           <Property title="Workflow">
-            {item.workflowName ? (item.workflowName) : (<em>None</em>)}
+            {item.workflowName ? item.workflowName : <em>None</em>}
           </Property>
           <Property title="State">
             {item.stateId ? (
@@ -61,26 +63,22 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
                 backgroundColor={theme.colors.cyan100}
                 label={item.stateName}
               />
-            ) : (<span>None</span>)}
+            ) : (
+              <span>None</span>
+            )}
           </Property>
-          <Property title="Type">
-            {capitalize(item.type)}
-          </Property>
-          {(item.epicId && item.epicUrl) && (
-              <Property title="Epic">
-                {item.epicName}
-                <ExternalLink href={item.epicUrl} />
-              </Property>
-          )}
-          <Property title="Iteration">
-            {item.iterationId ? (item.iterationName) : (<em>None</em>)}
-          </Property>
-          {item.teamId && (
-            <Property title="Team">
-              {item.teamName}
+          <Property title="Type">{capitalize(item.type)}</Property>
+          {item.epicId && item.epicUrl && (
+            <Property title="Epic">
+              {item.epicName}
+              <ExternalLink href={item.epicUrl} />
             </Property>
           )}
-          {(item.owners && item.owners.length > 0) && (
+          <Property title="Iteration">
+            {item.iterationId ? item.iterationName : <em>None</em>}
+          </Property>
+          {item.teamId && <Property title="Team">{item.teamName}</Property>}
+          {item.owners && item.owners.length > 0 && (
             <Property title="Owners">
               {item.owners.map((owner, idx) => (
                 <div key={idx} style={{ marginBottom: "3px" }}>
@@ -89,7 +87,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
               ))}
             </Property>
           )}
-          {(item.labels && item.labels.length > 0) && (
+          {item.labels && item.labels.length > 0 && (
             <Property title="Labels">
               <Stack gap={2} wrap="wrap">
                 {item.labels.map((label, idx) => (
@@ -102,7 +100,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({ item, on
           )}
           {!isEmpty(get(item, ["storyLinks"], [])) && (
             <Property title="Relationships">
-              <Relationships storyLinks={get(item, ["storyLinks"], [])}/>
+              <Relationships storyLinks={get(item, ["storyLinks"], [])} />
             </Property>
           )}
         </Stack>

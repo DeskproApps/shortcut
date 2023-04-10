@@ -8,49 +8,49 @@ export type StoreReducer = Reducer<State, Action>;
 export type Dispatch = (action: Action) => void;
 
 export type Page =
-  "home"
+  | "home"
   | "link"
   | "view"
   | "create"
   | "edit"
   | "add_comment"
-  | "add_story_relations"
-;
+  | "add_story_relations";
 
 export interface State {
   page?: Page;
   pageParams?: any;
   context?: TicketContext;
-  linkStorySearchResults?: { loading: boolean, list: StorySearchItem[] };
-  linkedStoriesResults?: { loading: boolean, list: StoryItem[] };
-  relationsStoriesResults?: { loading: boolean, list: StoryItem[] },
+  linkStorySearchResults?: { loading: boolean; list: StorySearchItem[] };
+  linkedStoriesResults?: { loading: boolean; list: StoryItem[] };
+  relationsStoriesResults?: { loading: boolean; list: StoryItem[] };
   dataDependencies?: any; // ToDo: need types
 
   // ...
 
-  _error?: Error|unknown;
+  _error?: Error | unknown;
 }
 
 export type Action =
-  | { type: "changePage", page: Page, params?: object }
-  | { type: "loadContext", context: Context }
+  | { type: "changePage"; page: Page; params?: object }
+  | { type: "loadContext"; context: Context }
   | { type: "linkStorySearchListLoading" }
-  | { type: "linkStorySearchList", list: StorySearchItem[] }
+  | { type: "linkStorySearchList"; list: StorySearchItem[] }
   | { type: "linkStorySearchListReset" }
-  | { type: "linkedStoriesList", list: StoryItem[] }
+  | { type: "linkedStoriesList"; list: StoryItem[] }
   | { type: "linkedStoriesListLoading" }
-  | { type: "loadDataDependencies", deps: any }
-  | { type: "loadDependencies", deps: any }
-  | { type: "relationsStoriesList", list: StoryItem[] }
+  | { type: "loadDataDependencies"; deps: any }
+  | { type: "loadDependencies"; deps: any }
+  | { type: "relationsStoriesList"; list: StoryItem[] }
   | { type: "relationsStoriesListLoading" }
 
   // ...
-
-  | { type: "error", error: string }
-;
+  | { type: "error"; error: string };
 
 export interface TicketContext extends Context {
-  data: { ticket: { id: string, permalinkUrl: string }, currentAgent: { primaryEmail: string } }
+  data: {
+    ticket: { id: string; permalinkUrl: string };
+    currentAgent: { primaryEmail: string };
+  };
 }
 
 // Shortcut types
@@ -85,7 +85,12 @@ export interface CustomField {
   id: string;
   name: string;
   description: string;
-  canonical_name: "technical-area" | "skill-set" | "product-area" | "priority" | "severity";
+  canonical_name:
+    | "technical-area"
+    | "skill-set"
+    | "product-area"
+    | "priority"
+    | "severity";
   created_at: DateTime;
   enabled: boolean;
   entity_type: "custom-field";
@@ -109,7 +114,7 @@ export interface Member {
     display_icon?: {
       id: string;
       url: string;
-      entity_type: "user-icon"
+      entity_type: "user-icon";
       created_at: DateTime;
       updated_at: DateTime;
     };
@@ -150,15 +155,15 @@ export interface StoryLink {
   object_id: StoryItem["id"];
   subject_id: StoryItem["id"];
   subject_workflow_state_id: number;
-  type: "object"|"subject";
-  verb: "relates to"|"duplicates"|"blocks";
+  type: "object" | "subject";
+  verb: "relates to" | "duplicates" | "blocks";
   created_at: DateTime;
   updated_at: DateTime;
 }
 
 export interface StoryItem {
   archived: boolean;
-  id: string;
+  id: number;
   url: string;
   name: string;
   type: string;
@@ -193,17 +198,15 @@ export interface StoryItem {
   storyLinks: StoryLink[];
 }
 
-export interface StorySearchItem extends StoryItem {
-
-}
+export type StorySearchItem = StoryItem;
 
 export interface CreateStoryData {
   name: string;
   description: string;
   type: string;
   labels: Array<StoryLabel["id"]>;
-  followers: string[],
-  owners: string[],
+  followers: string[];
+  owners: string[];
   team?: string;
   workflow?: string;
   state?: string;
@@ -211,11 +214,11 @@ export interface CreateStoryData {
   epic?: string;
   iteration?: string;
   requester?: string;
-  "custom-field-technical-area": string,
-  "custom-field-skill-set": string,
-  "custom-field-product-area": string,
-  "custom-field-priority": string,
-  "custom-field-severity": string,
+  "custom-field-technical-area": string;
+  "custom-field-skill-set": string;
+  "custom-field-product-area": string;
+  "custom-field-priority": string;
+  "custom-field-severity": string;
 }
 
 export interface ShortcutStoryAssociationPropsLabel {

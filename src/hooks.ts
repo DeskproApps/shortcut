@@ -5,14 +5,19 @@ import { getStoryDependencies, listStories } from "./context/StoreProvider/api";
 import { StoryItem } from "./context/StoreProvider/types";
 import { getRelationsStoryIds } from "./utils";
 
-export const useSetAppTitle = (title: string, deps: DependencyList|undefined = []): void => {
+export const useSetAppTitle = (
+  title: string,
+  deps: DependencyList | undefined = []
+): void => {
   const { client } = useDeskproAppClient();
-  useEffect(() => client?.setTitle(title), deps);
+  useEffect(() => {
+    client?.setTitle(title);
+  }, deps);
 };
 
 export const useWhenNoLinkedItems = (onNoLinkedItems: () => void) => {
   const { client } = useDeskproAppClient();
-  const [ state ] = useStore();
+  const [state] = useStore();
 
   useEffect(() => {
     if (!client || !state.context?.data.ticket.id) {
@@ -20,78 +25,86 @@ export const useWhenNoLinkedItems = (onNoLinkedItems: () => void) => {
     }
 
     client
-        .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
-        .list()
-        .then((items) => items.length === 0 && onNoLinkedItems())
-    ;
+      .getEntityAssociation(
+        "linkedShortcutStories",
+        state.context?.data.ticket.id as string
+      )
+      .list()
+      .then((items) => items.length === 0 && onNoLinkedItems());
   }, [client, state.context?.data.ticket.id]);
 };
 
 export const useLoadLinkedStories = () => {
   const { client } = useDeskproAppClient();
-  const [ state, dispatch ] = useStore();
+  const [state, dispatch] = useStore();
 
   return async () => {
     if (!client || !state.context?.data.ticket.id) {
       return;
     }
 
-    try {
-      const ids = await client
-        .getEntityAssociation("linkedShortcutStories", state.context?.data.ticket.id as string)
-        .list();
+    const ids = (
+      await client
+        .getEntityAssociation(
+          "linkedShortcutStories",
+          state.context?.data.ticket.id as string
+        )
+        .list()
+    ).map((e) => Number(e));
 
-      const list = await listStories(client, ids);
-      const relations = await listStories(client, getRelationsStoryIds(list));
+    const list = await listStories(client, ids);
 
-      client.setBadgeCount(list.length);
+    const relations = await listStories(client, getRelationsStoryIds(list));
 
-      dispatch({ type: "linkedStoriesList", list });
-      dispatch({ type: "relationsStoriesList", list: relations });
-    } catch (e) {
-      dispatch({ type: "error", error: `${e}` });
-    }
+    client.setBadgeCount(list.length);
+
+    dispatch({ type: "linkedStoriesList", list });
+    dispatch({ type: "relationsStoriesList", list: relations });
   };
 };
 
 export const useFindLinkedStoryById = () => {
-  const [ state ] = useStore();
+  const [state] = useStore();
 
-  return (id: string): StoryItem|null => (state.linkedStoriesResults?.list ?? [])
-    .filter((r) => r.id === id)[0] ?? null
-  ;
-}
-
-export const useFindRelationsStoryById = () => {
-  const [ state ] = useStore();
-
-  return (id: string): StoryItem|null => (state.relationsStoriesResults?.list ?? [])
-      .filter((r) => r.id === id)[0] ?? null
-      ;
+  return (id: string): StoryItem | null =>
+    (state.linkedStoriesResults?.list ?? []).filter(
+      //@ts-ignore
+      (r) => r.id === Number(id)
+    )[0] ?? null;
 };
 
-export const useAssociatedEntityCount = (id: string) => {
+export const useFindRelationsStoryById = () => {
+  const [state] = useStore();
+
+  return (id: number): StoryItem | null =>
+    (state.relationsStoriesResults?.list ?? []).filter((r) => r.id === id)[0] ??
+    null;
+};
+
+export const useAssociatedEntityCount = (id: number) => {
   const { client } = useDeskproAppClient();
   const [entityCount, setEntityCount] = useState<number>(0);
 
   useEffect(() => {
-    client?.entityAssociationCountEntities("linkedShortcutStories", id).then(setEntityCount);
+    client
+      ?.entityAssociationCountEntities("linkedShortcutStories", id.toString())
+      .then(setEntityCount);
   }, [client, id]);
 
   return entityCount;
-}
+};
 
 export const useLoadDataDependencies = () => {
   const { client } = useDeskproAppClient();
-  const [ , dispatch ] = useStore();
+  const [, dispatch] = useStore();
 
   useEffect(() => {
     if (!client) {
       return;
     }
 
-    getStoryDependencies(client)
-      .then((deps) => dispatch({ type: "loadDataDependencies", deps }))
-    ;
+    getStoryDependencies(client).then((deps) =>
+      dispatch({ type: "loadDataDependencies", deps })
+    );
   }, [client, dispatch]);
 };

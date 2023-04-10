@@ -1,4 +1,4 @@
-import get from "lodash/get";
+import get from "lodash.get";
 import { State } from "../context/StoreProvider/types";
 
 const isEnableDeskproLabel = (state: State) => {

@@ -1,5 +1,4 @@
 import {
-  H1,
   HorizontalDivider,
   Pill,
   Property,
@@ -12,10 +11,10 @@ import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
 import "./SearchResultItem.css";
 import { StorySearchItem } from "../../context/StoreProvider/types";
-import { capitalize } from "lodash";
 import { Label } from "../Label/Label";
 import { Title } from "../Title/Title";
 import { useAssociatedEntityCount } from "../../hooks";
+import capitalize from "lodash.capitalize";
 
 export interface SearchResultItemProps {
   item: StorySearchItem;

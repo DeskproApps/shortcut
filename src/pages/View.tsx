@@ -1,7 +1,8 @@
-import { FC, useEffect, useMemo, useState } from "react";
-import capitalize from "lodash/capitalize";
-import chunk from "lodash/chunk";
-import get from "lodash/get";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useEffect, useMemo, useState } from "react";
+import capitalize from "lodash.capitalize";
+import chunk from "lodash.chunk";
+import get from "lodash.get";
 import {
   Pill,
   Stack,
@@ -27,19 +28,17 @@ import { Label } from "../components/Label/Label";
 import { Title } from "../components/Title/Title";
 import { Comments } from "../components/Comments/Comments";
 import { Relationships } from "../components/Relationships/Relationships";
+import { useNavigate, useParams } from "react-router-dom";
 
-export interface ViewProps {
-  id: string;
-}
-
-export const View: FC<ViewProps> = ({ id }: ViewProps) => {
+export const View = () => {
   const [state, dispatch] = useStore();
   const findStoryById = useFindLinkedStoryById();
   const { theme } = useDeskproAppTheme();
   const { client } = useDeskproAppClient();
   const [customFields, setCustomFields] = useState<Array<any>>([]);
   const [members, setMembers] = useState<Record<Member["id"], Member>>({});
-
+  const navigate = useNavigate();
+  const { id } = useParams() as { id: string };
   const story = useMemo(() => findStoryById(id), [id]);
 
   if (!story) {
@@ -47,7 +46,8 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
     return <></>;
   }
 
-  useSetAppTitle(story.id);
+  useSetAppTitle(story.id.toString());
+
   useLoadDataDependencies();
 
   useEffect(() => {
@@ -176,9 +176,11 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
             </Property>
           )}
 
-          {Boolean(customFields.length) && <HorizontalDivider
-            style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
-          />}
+          {Boolean(customFields.length) && (
+            <HorizontalDivider
+              style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+            />
+          )}
           {chunk(customFields, 2).map((fields, idx) => {
             return fields.length === 2 ? (
               <Stack key={idx} align="stretch">
@@ -196,33 +198,23 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           })}
 
           <HorizontalDivider
-              style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+            style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
           />
 
           <TitleUI
-              title={`Relationships (${get(story, ["storyLinks"], []).length})`}
-              onClick={() => dispatch({
-                type: "changePage",
-                page: "add_story_relations",
-                params: { storyId: id },
-              })}
-              marginBottom={0}
+            title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+            onClick={() => () => navigate("/add/storyrelations/" + id)}
+            marginBottom={0}
           />
 
-          <Relationships storyLinks={get(story, ["storyLinks"], [])}/>
+          <Relationships storyLinks={get(story, ["storyLinks"], [])} />
         </Stack>
       </Stack>
       <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />
       <Comments
         members={members}
         comments={story.comments}
-        onAddComment={() =>
-          dispatch({
-            type: "changePage",
-            page: "add_comment",
-            params: { storyId: id },
-          })
-        }
+        onAddComment={() => navigate("/add/comment/" + id)}
       />
     </>
   );

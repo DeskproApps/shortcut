@@ -1,12 +1,15 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
+import ReactDOM from "react-dom/client";
 import App from "./App";
-import "iframe-resizer/js/iframeResizer.contentWindow.js";
+import { DeskproAppProvider } from "@deskpro/app-sdk";
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+root.render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
+    <DeskproAppProvider>
+      <App />
+    </DeskproAppProvider>
+  </React.StrictMode>
 );
