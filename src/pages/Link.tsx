@@ -7,6 +7,9 @@ import {
   Input,
   Stack,
   useDeskproAppClient,
+  useDeskproLatestAppContext,
+  useInitialisedDeskproAppClient,
+  useQueryWithClient,
 } from "@deskpro/app-sdk";
 import {
   faSearch,
@@ -25,25 +28,23 @@ import {
   addExternalUrlToStory,
   searchStories,
 } from "../context/StoreProvider/api";
-import { useStore } from "../context/StoreProvider/hooks";
-import {
-  ShortcutStoryAssociationProps,
-  ShortcutStoryAssociationPropsLabel,
-  StorySearchItem,
-} from "../context/StoreProvider/types";
-import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import { StorySearchItem } from "../context/StoreProvider/types";
+import { useSetAppTitle } from "../hooks";
 import { useReplyBox } from "../hooks/useReplyBox";
 import { isEnableDeskproLabel } from "../utils";
 
 export const Link = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [text, setText] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [linkedStoriesIds, setLinkedStoriesIds] = useState<{ id: string }[]>(
+    []
+  );
   const [selected, setSelected] = useState<number[]>([]);
   const [isLinkStoriesLoading, setIsLinkStoriesLoading] =
     useState<boolean>(false);
-  const [state, dispatch] = useStore();
   const { client } = useDeskproAppClient();
-  const loadLinkedStories = useLoadLinkedStories();
+  const { context } = useDeskproLatestAppContext();
   const { setSelectionState } = useReplyBox();
   const navigate = useNavigate();
 
@@ -55,6 +56,32 @@ export const Link = () => {
     client?.registerElement("home", { type: "home_button" });
   }, [client]);
 
+  useInitialisedDeskproAppClient(
+    (client) => {
+      (async () => {
+        const ids = (await client
+          .getEntityAssociation(
+            "linkedShortcutStories",
+            context?.data.ticket.id as string
+          )
+          ?.list()) as unknown as { id: string }[];
+
+        setLinkedStoriesIds(ids);
+      })();
+    },
+    [context]
+  );
+
+  const searchResQuery = useQueryWithClient(
+    ["search", searchQuery],
+    (client) => searchStories(client, searchQuery),
+    {
+      enabled: !!searchQuery,
+    }
+  );
+
+  const searchRes = searchResQuery.data;
+
   useEffect(() => {
     searchInputRef && searchInputRef.current?.focus();
   }, [searchInputRef]);
@@ -64,14 +91,11 @@ export const Link = () => {
       return;
     }
 
-    searchStories(client, q).then((list) =>
-      dispatch({ type: "linkStorySearchList", list })
-    );
+    setSearchQuery(q)
   }, 500);
 
   const search = (q: string) => {
-    dispatch({ type: "linkStorySearchListLoading" });
-    setSearchQuery(q);
+    setText(q);
     debounced(q);
   };
 
@@ -85,11 +109,10 @@ export const Link = () => {
 
   const clear = () => {
     setSearchQuery("");
-    dispatch({ type: "linkStorySearchListReset" });
   };
 
   const linkStories = () => {
-    const ticketId = state.context?.data.ticket.id;
+    const ticketId = context?.data.ticket.id;
 
     if (!selected.length || !client || !ticketId) {
       return;
@@ -97,7 +120,7 @@ export const Link = () => {
 
     setIsLinkStoriesLoading(true);
 
-    const selectedItems = (state.linkStorySearchResults?.list ?? [])
+    const selectedItems = (searchRes ?? [])
       .filter((item) => selected.includes(item.id))
       .reduce<Record<string, StorySearchItem>>(
         (items, item) => ({ ...items, [item.id]: item }),
@@ -108,41 +131,10 @@ export const Link = () => {
       client
         .getEntityAssociation(
           "linkedShortcutStories",
-          state.context?.data.ticket.id as string
+          context?.data.ticket.id as string
         )
-        .set<ShortcutStoryAssociationProps>(`${id}`, {
-          archived: selectedItems[id].archived,
+        .set<{ id: string }>(`${id}`, {
           id: `${id}`,
-          name: selectedItems[id].name,
-          type: selectedItems[id].type,
-          projectId: selectedItems[id].projectId
-            ? `${selectedItems[id].projectId}`
-            : undefined,
-          projectName: selectedItems[id].projectName,
-          workflowId: `${selectedItems[id].workflowId}`,
-          workflowName: selectedItems[id].workflowName,
-          statusId: selectedItems[id].stateId
-            ? `${selectedItems[id].stateId}`
-            : undefined,
-          statusName: selectedItems[id].stateName,
-          teamId: selectedItems[id].teamId
-            ? `${selectedItems[id].teamId}`
-            : undefined,
-          teamName: selectedItems[id].teamName,
-          iterationId: selectedItems[id].iterationId
-            ? `${selectedItems[id].iterationId}`
-            : undefined,
-          iterationName: selectedItems[id].iterationName,
-          epicId: selectedItems[id].epicId
-            ? `${selectedItems[id].epicId}`
-            : undefined,
-          epicName: selectedItems[id].epicName,
-          labels: selectedItems[
-            id
-          ].labels.map<ShortcutStoryAssociationPropsLabel>((label) => ({
-            id: `${label.id}`,
-            name: label.name,
-          })),
         })
         .then(() => {
           setSelectionState(id, true, "email");
@@ -157,12 +149,12 @@ export const Link = () => {
         addExternalUrlToStory(
           client,
           id,
-          state.context?.data.ticket.permalinkUrl as string
+          context?.data.ticket.permalinkUrl as string
         )
       )
     );
 
-    if (isEnableDeskproLabel(state)) {
+    if (isEnableDeskproLabel(context)) {
       updates.push(
         ...values(selectedItems).map(({ id, labels }) => {
           return addDeskproLabelToStory(client, id, labels);
@@ -171,12 +163,8 @@ export const Link = () => {
     }
 
     Promise.allSettled(updates)
-      .then(() => loadLinkedStories())
-      .then(() => dispatch({ type: "linkStorySearchListReset" }))
       .then(() => navigate("/home"))
-      .catch((error) => dispatch({ type: "error", error }))
       .finally(() => {
-        dispatch({ type: "linkStorySearchListLoading" });
         setIsLinkStoriesLoading(false);
       });
   };
@@ -187,12 +175,12 @@ export const Link = () => {
       <Stack>
         <Input
           ref={searchInputRef}
-          value={searchQuery}
+          value={text}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             search(e.target.value)
           }
           leftIcon={
-            state.linkStorySearchResults?.loading ? (
+            searchResQuery?.isFetching ? (
               <FontAwesomeIcon icon={faSpinner} spin />
             ) : (
               faSearch
@@ -216,10 +204,10 @@ export const Link = () => {
         />
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
-      {state.linkStorySearchResults &&
-        state.linkStorySearchResults.list.map((item, idx) => {
-          const isLinked = !!(state.linkedStoriesResults?.list ?? []).filter(
-            (s) => s.id === item.id
+      {searchRes &&
+        searchRes.map((item, idx) => {
+          const isLinked = !!(linkedStoriesIds ?? []).filter(
+            (s) => Number(s.id) === item.id
           ).length;
           return (
             <SearchResultItem
@@ -236,11 +224,9 @@ export const Link = () => {
             />
           );
         })}
-      {state.linkStorySearchResults &&
-        !state.linkStorySearchResults.list.length &&
-        !state.linkStorySearchResults.loading && (
-          <H3>No matching stories found, please try again</H3>
-        )}
+      {searchRes && !searchRes.length && !searchResQuery.isLoading && (
+        <H3>No matching stories found, please try again</H3>
+      )}
     </>
   );
 };

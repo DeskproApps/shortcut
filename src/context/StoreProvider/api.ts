@@ -9,6 +9,8 @@ import {
   CreateStoryData,
   StorySearchItem,
   ApiRequestMethod,
+  Member,
+  StoryItemRes,
 } from "./types";
 import { removeTagLinksMD } from "../../utils/removeTagLinksMD";
 
@@ -26,8 +28,27 @@ export const markdownToHtmlConverter = new showdown.Converter({
 /**
  * Fetch a single Shortcut story by ID, e.g. "123"
  */
-export const getStoryById = async (client: IDeskproClient, id: string) => {
-  return request(client, "GET", `${API_BASE_URL}/stories/${id}`);
+export const getMemberById = async (
+  client: IDeskproClient,
+  id: string
+): Promise<Member> => {
+  const res = await request(client, "GET", `${API_BASE_URL}/members/${id}`);
+
+  return res;
+};
+export const getStoryById = async (
+  client: IDeskproClient,
+  id: string
+): Promise<StoryItemRes> => {
+  const res = await request(client, "GET", `${API_BASE_URL}/stories/${id}`);
+
+  return {
+    ...res,
+    comments: res.comments.map((comment: Comment) => ({
+      ...comment,
+      textHtml: markdownToHtmlConverter.makeHtml(comment.text),
+    })),
+  };
 };
 
 /**
@@ -110,7 +131,6 @@ export const searchStories = async (
     return {
       archived: story.archived,
       id: story.id,
-      url: story.app_url,
       name: story.name,
       type: story.story_type,
       workflowId: workflow.id,

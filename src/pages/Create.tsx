@@ -1,4 +1,8 @@
-import { useDeskproAppClient } from "@deskpro/app-sdk";
+import {
+  useDeskproAppClient,
+  useDeskproLatestAppContext,
+  useQueryWithClient,
+} from "@deskpro/app-sdk";
 import find from "lodash.find";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,13 +13,12 @@ import {
   createStory,
   getStoryDependencies,
 } from "../context/StoreProvider/api";
-import { useStore } from "../context/StoreProvider/hooks";
 import {
   CreateStoryData,
   ShortcutStoryAssociationProps,
   ShortcutStoryAssociationPropsLabel,
 } from "../context/StoreProvider/types";
-import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import { useSetAppTitle } from "../hooks";
 import {
   getLabelsNameById,
   getStoryCustomFieldsToSave,
@@ -24,12 +27,18 @@ import {
 
 export const Create: FC = () => {
   const { client } = useDeskproAppClient();
-  const [state] = useStore();
-  const loadLinkedStories = useLoadLinkedStories();
+  const { context } = useDeskproLatestAppContext();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useSetAppTitle("Add Story");
+
+  const dataDependenciesQuery = useQueryWithClient(
+    ["dataDependencies"],
+    (client) => getStoryDependencies(client)
+  );
+
+  const dataDependencies = dataDependenciesQuery.data;
 
   useEffect(() => {
     client?.deregisterElement("edit");
@@ -38,27 +47,24 @@ export const Create: FC = () => {
   }, [client]);
 
   const onSubmit = (data: CreateStoryData) => {
-    if (!client || !state.context?.data.ticket.id) {
+    if (!client || !context?.data.ticket.id) {
       return;
     }
 
-    const ticketId = state.context?.data.ticket.id as string;
-    const permalinkUrl = state.context?.data.ticket.permalinkUrl as string;
-    const labelNames = getLabelsNameById(
-      data.labels,
-      state.dataDependencies?.labels
-    );
+    const ticketId = context?.data.ticket.id as string;
+    const permalinkUrl = context?.data.ticket.permalinkUrl as string;
+    const labelNames = getLabelsNameById(data.labels, dataDependencies?.labels);
     const storyData = {
       ...data,
       labels: [
         ...labelNames,
-        ...(isEnableDeskproLabel(state) && labelNames.includes("Deskpro")
+        ...(isEnableDeskproLabel(context) && labelNames.includes("Deskpro")
           ? []
           : ["Deskpro"]),
       ],
       custom_fields: getStoryCustomFieldsToSave(
         data,
-        state.dataDependencies?.customFields
+        dataDependencies?.customFields
       ),
     };
 
@@ -72,7 +78,7 @@ export const Create: FC = () => {
       } catch (e) {
         console.error(e);
       }
-      console.log(res);
+
       if (!res || !res?.id) {
         console.error("Failed to create Shortcut story");
         return;
@@ -141,7 +147,6 @@ export const Create: FC = () => {
       const id = res.id;
 
       await addExternalUrlToStory(client, id, permalinkUrl);
-      await loadLinkedStories();
 
       setLoading(false);
 

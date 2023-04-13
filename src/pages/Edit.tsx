@@ -1,16 +1,15 @@
 import { useMemo, useState, useEffect } from "react";
-import find from "lodash.find";
 import isEmpty from "lodash.isempty";
 import omit from "lodash.omit";
 import _values from "lodash.values";
-import { useDeskproAppClient } from "@deskpro/app-sdk";
-import { StoryForm } from "../components/StoryForm/StoryForm";
-import { useStore } from "../context/StoreProvider/hooks";
 import {
-  useSetAppTitle,
-  useLoadLinkedStories,
-  useFindLinkedStoryById,
-} from "../hooks";
+  LoadingSpinner,
+  useDeskproAppClient,
+  useDeskproLatestAppContext,
+  useQueryWithClient,
+} from "@deskpro/app-sdk";
+import { StoryForm } from "../components/StoryForm/StoryForm";
+import { useSetAppTitle } from "../hooks";
 import {
   normalize,
   getLabelsNameById,
@@ -22,32 +21,51 @@ import {
   CustomField,
   ShortcutStoryAssociationProps,
   ShortcutStoryAssociationPropsLabel,
+  StoryItemRes,
 } from "../context/StoreProvider/types";
 import {
   updateStory,
   getStoryDependencies,
   addExternalUrlToStory,
+  getStoryById,
 } from "../context/StoreProvider/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { getOtherParamsStory } from "../context/StoreProvider/hooks";
 
 const Edit = () => {
   const { client } = useDeskproAppClient();
-  const [state, dispatch] = useStore();
+  const { context } = useDeskproLatestAppContext();
   const [loading, setLoading] = useState(false);
-  const findStoryById = useFindLinkedStoryById();
-  const loadLinkedStories = useLoadLinkedStories();
   const { storyId } = useParams() as { storyId: string };
-  const story = useMemo(() => findStoryById(storyId as string), [storyId]);
+
+  const storyQuery = useQueryWithClient(
+    ["story", storyId],
+    (client) => getStoryById(client, storyId),
+    {
+      enabled: !!storyId,
+    }
+  );
+
+  const dataDependenciesQuery = useQueryWithClient(
+    ["dataDependencies"],
+    (client) => getStoryDependencies(client)
+  );
+
+  const dataDependencies = dataDependenciesQuery.data;
+
+  const story = storyQuery.data as StoryItemRes;
+
   const navigate = useNavigate();
 
   const customFields = useMemo(() => {
-    return isEmpty(state.dataDependencies?.customFields)
+    return isEmpty(dataDependencies?.customFields)
       ? {}
-      : normalizeCustomFields(state.dataDependencies.customFields);
-  }, [state.dataDependencies?.customFields]);
+      : normalizeCustomFields(dataDependencies.customFields);
+  }, [dataDependencies?.customFields]);
+
   const selectedCustomFields = useMemo(
-    () => normalize(story?.customFields, "field_id"),
-    [story?.customFields]
+    () => normalize(storyQuery.data?.custom_fields, "field_id"),
+    [storyQuery.data?.custom_fields]
   );
   const notSelectedCustomFields = useMemo(
     () => omit(customFields, Object.keys(selectedCustomFields)),
@@ -66,24 +84,27 @@ const Edit = () => {
     client?.registerElement("home", { type: "home_button" });
   }, [client]);
 
-  if (!story) {
-    dispatch({ type: "error", error: "Story not found" });
-    return <></>;
+  if (storyQuery.isLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
+  }
+
+  if (storyQuery.error) {
+    throw new Error("Story not found");
   }
 
   const onSubmit = (data: CreateStoryData) => {
-    if (!client || !state.context?.data.ticket.id) {
+    if (!client || !context?.data.ticket.id) {
       return;
     }
 
-    const ticketId = state.context?.data.ticket.id as string;
-    const permalinkUrl = state.context?.data.ticket.permalinkUrl as string;
+    const ticketId = context?.data.ticket.id as string;
+    const permalinkUrl = context?.data.ticket.permalinkUrl as string;
     const storyData = {
       ...data,
-      labels: getLabelsNameById(data.labels, state.dataDependencies?.labels),
+      labels: getLabelsNameById(data.labels, dataDependencies?.labels),
       custom_fields: getStoryCustomFieldsToSave(
         data,
-        state.dataDependencies?.customFields
+        dataDependencies?.customFields
       ),
     };
 
@@ -103,32 +124,8 @@ const Edit = () => {
         return;
       }
 
-      const { groups, epics, workflows, iterations, projects } =
-        await getStoryDependencies(client);
-
-      const states = (workflows ?? []).reduce(
-        (all: any[], workflow: any) => [...all, ...workflow.states],
-        []
-      );
-
-      const epic =
-        (epics ?? []).filter((e: any) => e.id === res.epic_id)[0] ?? null;
-      const state =
-        (states ?? []).filter((s: any) => s.id === res.workflow_state_id)[0] ??
-        null;
-      const iteration =
-        (iterations ?? []).filter((i: any) => i.id === res.iteration_id)[0] ??
-        null;
-      const group =
-        (groups ?? []).filter((g: any) => g.id === res.group_id)[0] ?? null;
-      const project =
-        (projects ?? []).filter((p: any) => p.id === res.project_id)[0] ?? null;
-
-      const stateId = state ? state.id : undefined;
-      const workflow =
-        (workflows ?? []).filter((w: { states: { id: number }[] }) =>
-          find(w.states, { id: stateId })
-        )[0] ?? null;
+      const { workflow, stateId, state, group, iteration, epic } =
+        getOtherParamsStory(res, dataDependencies);
 
       const metadata: ShortcutStoryAssociationProps = {
         archived: res.archived,
@@ -164,28 +161,30 @@ const Edit = () => {
       }
 
       await addExternalUrlToStory(client, Number(storyId), permalinkUrl);
-      await loadLinkedStories();
 
       setLoading(false);
       navigate("/view/" + storyId);
     })();
   };
 
+  const { group, workflows, state, project, epic, iteration } =
+    getOtherParamsStory(story, dataDependencies);
+
   const values = {
     archived: story.archived,
     name: story.name,
     description: story.description,
-    team: story.teamId,
-    workflow: story.workflowId,
-    state: story.stateId,
-    project: story?.projectId ?? "",
-    epic: story.epicId,
-    iteration: story.iterationId,
-    type: story.type,
-    requester: story.requesterId,
-    owners: story.owners?.map(({ id }) => id) ?? [],
+    team: group.id,
+    workflow: workflows.id,
+    state: state.id,
+    project: project.id ?? "",
+    epic: epic.id,
+    iteration: iteration.id,
+    type: story.story_type,
+    requester: story.requested_by_id,
+    owners: story.owner_ids?.map(({ id }) => id) ?? [],
     labels: story.labels?.map(({ id }) => id) ?? [],
-    followers: story.followerIds,
+    followers: story.follower_ids?.map((id) => `${id}`) ?? [],
     ...(isEmpty(selectedCustomFields)
       ? {}
       : (_values(selectedCustomFields).reduce((acc, { field_id, value_id }) => {

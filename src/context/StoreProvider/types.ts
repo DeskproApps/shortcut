@@ -130,6 +130,78 @@ export interface Member {
   updated_at: DateTime;
 }
 
+export interface StoryItemRes {
+  descriptionHtml: string;
+  app_url: string;
+  description: string;
+  archived: boolean;
+  started: boolean;
+  story_links: any[];
+  entity_type: string;
+  labels: Label[];
+  mention_ids: any[];
+  member_mention_ids: any[];
+  story_type: string;
+  custom_fields: any[];
+  linked_files: any[];
+  workflow_id: number;
+  completed_at_override: null;
+  started_at: null;
+  completed_at: null;
+  name: string;
+  global_id: string;
+  completed: boolean;
+  comments: any[];
+  blocker: boolean;
+  branches: any[];
+  epic_id: null;
+  story_template_id: null;
+  external_links: string[];
+  previous_iteration_ids: any[];
+  requested_by_id: string;
+  iteration_id: null;
+  tasks: any[];
+  label_ids: number[];
+  started_at_override: null;
+  group_id: null;
+  workflow_state_id: number;
+  updated_at: string;
+  pull_requests: any[];
+  group_mention_ids: any[];
+  follower_ids: string[];
+  owner_ids: any[];
+  external_id: null;
+  id: number;
+  estimate: null;
+  commits: any[];
+  files: any[];
+  position: number;
+  blocked: boolean;
+  project_id: null;
+  deadline: Date;
+  stats: Stats;
+  created_at: string;
+  moved_at: string;
+}
+
+export interface Label {
+  app_url: string;
+  description: string;
+  archived: boolean;
+  entity_type: string;
+  color: string;
+  name: string;
+  global_id: string;
+  updated_at: string;
+  external_id: null;
+  id: number;
+  created_at: string;
+}
+
+export interface Stats {
+  num_related_documents: number;
+}
+
 export interface Comment {
   app_url: string;
   author_id: Member["id"];
@@ -162,6 +234,7 @@ export interface StoryLink {
 }
 
 export interface StoryItem {
+  app_url: string;
   archived: boolean;
   id: number;
   url: string;

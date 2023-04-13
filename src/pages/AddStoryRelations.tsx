@@ -8,9 +8,10 @@ import {
   Stack,
   useDeskproAppClient,
   useDeskproElements,
+  useQueryWithClient,
 } from "@deskpro/app-sdk";
 import { Formik } from "formik";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
@@ -22,14 +23,11 @@ import {
   addRelationsToStory,
   searchStories,
 } from "../context/StoreProvider/api";
-import { useStore } from "../context/StoreProvider/hooks";
 import { StoryLink } from "../context/StoreProvider/types";
-import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import { useSetAppTitle } from "../hooks";
 
 const AddStoryRelations = () => {
   const { client } = useDeskproAppClient();
-  const [state, dispatch] = useStore();
-  const loadLinkedStories = useLoadLinkedStories();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selected, setSelected] = useState<number[]>([]);
   const [isLinkStoriesLoading, setIsLinkStoriesLoading] =
@@ -37,29 +35,30 @@ const AddStoryRelations = () => {
   const navigate = useNavigate();
   const storyId = Number(useParams().storyId);
 
+  const searchResQuery = useQueryWithClient(
+    ["search", searchQuery],
+    (client) => searchStories(client, searchQuery),
+    {
+      enabled: !!searchQuery,
+    }
+  );
+
+  const searchRes = searchResQuery.data;
+
   const debounced = useDebouncedCallback<(v: string) => void>((q) => {
     if (!q || !client) {
-      dispatch({ type: "linkStorySearchListReset" });
-      return Promise.resolve();
+      return;
     }
 
-    return searchStories(client, q).then((list) =>
-      dispatch({ type: "linkStorySearchList", list })
-    );
+    setSearchQuery(q);
   }, 500);
-
-  useEffect(() => {
-    dispatch({ type: "linkStorySearchListReset" });
-  }, [dispatch]);
 
   const onClearSearch = () => {
     setSearchQuery("");
-    dispatch({ type: "linkStorySearchListReset" });
   };
 
   const onChangeSearch = useCallback(
     ({ target: { value: q } }: ChangeEvent<HTMLInputElement>) => {
-      dispatch({ type: "linkStorySearchListLoading" });
       setSearchQuery(q);
       debounced(q);
     },
@@ -76,9 +75,10 @@ const AddStoryRelations = () => {
 
   const onCancel = useCallback(() => {
     navigate("/view/" + storyId);
-  }, [dispatch, storyId]);
+  }, [storyId]);
 
   const onLinkStories = useCallback(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     ({ type }) => {
       if (!client) {
@@ -129,7 +129,6 @@ const AddStoryRelations = () => {
         })
       )
         .catch(() => true)
-        .then(() => loadLinkedStories())
         .then(() => {
           navigate("/view/" + storyId);
         })
@@ -155,7 +154,7 @@ const AddStoryRelations = () => {
         value={searchQuery}
         onClear={onClearSearch}
         onChange={onChangeSearch}
-        isFetching={Boolean(state.linkStorySearchResults?.loading)}
+        isFetching={Boolean(searchResQuery?.isFetching)}
       />
 
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
@@ -237,8 +236,8 @@ const AddStoryRelations = () => {
 
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
-      {state.linkStorySearchResults &&
-        state.linkStorySearchResults.list.map((item, idx) => {
+      {searchRes &&
+        searchRes.map((item, idx) => {
           return (
             <SearchResultItem
               key={idx}
@@ -253,11 +252,9 @@ const AddStoryRelations = () => {
             />
           );
         })}
-      {state.linkStorySearchResults &&
-        !state.linkStorySearchResults.list.length &&
-        !state.linkStorySearchResults.loading && (
-          <H3>No matching stories found, please try again</H3>
-        )}
+      {searchRes && !searchRes.length && !searchResQuery.isLoading && (
+        <H3>No matching stories found, please try again</H3>
+      )}
     </>
   );
 };

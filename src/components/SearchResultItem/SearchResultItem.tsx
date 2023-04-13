@@ -37,7 +37,7 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
         <Stack gap={10} vertical>
           <Title
             name={item.name}
-            url={item.url}
+            url={item.app_url}
             width="2x"
             onClick={() => onSelect && onSelect()}
           />

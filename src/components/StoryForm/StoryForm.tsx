@@ -10,6 +10,8 @@ import {
   TextArea,
   TooltipCommonIcon,
   useDeskproAppTheme,
+  useDeskproLatestAppContext,
+  useQueryWithClient,
 } from "@deskpro/app-sdk";
 import { Formik, FormikHelpers } from "formik";
 import capitalize from "lodash.capitalize";
@@ -17,9 +19,7 @@ import isEmpty from "lodash.isempty";
 import orderBy from "lodash.orderby";
 import { FC } from "react";
 import { IntlProvider } from "react-intl";
-import { useStore } from "../../context/StoreProvider/hooks";
 import { CustomField } from "../../context/StoreProvider/types";
-import { useLoadDataDependencies } from "../../hooks";
 import { isStoryType } from "../../utils";
 import {
   DropdownMultiSelect,
@@ -41,6 +41,7 @@ import {
   storyTypes,
 } from "./types";
 import { schema } from "./validation";
+import { getStoryDependencies } from "../../context/StoreProvider/api";
 
 export interface StoryFormProps {
   onSubmit: (
@@ -65,14 +66,19 @@ export const StoryForm: FC<StoryFormProps> = ({
   type,
   loading = false,
 }: StoryFormProps) => {
+  const { context } = useDeskproLatestAppContext();
   const {
     theme: { colors },
   } = useDeskproAppTheme();
-  const [state] = useStore();
 
-  useLoadDataDependencies();
+  const dataDependenciesQuery = useQueryWithClient(
+    ["dataDependencies"],
+    (client) => getStoryDependencies(client)
+  );
 
-  if (!state.dataDependencies) {
+  const dataDependencies = dataDependenciesQuery.data;
+
+  if (!dataDependencies) {
     return <LoadingSpinner />;
   }
 
@@ -95,43 +101,42 @@ export const StoryForm: FC<StoryFormProps> = ({
   };
 
   const teams = orderBy(
-    state.dataDependencies.groups ?? [],
+    dataDependencies.groups ?? [],
     (t) => t.name.toLowerCase(),
     ["asc"]
   );
   const workflows = orderBy(
-    state.dataDependencies.workflows ?? [],
+    dataDependencies.workflows ?? [],
     (w) => w.name.toLowerCase(),
     ["asc"]
   );
   const projects = orderBy(
-    state.dataDependencies.projects ?? [],
+    dataDependencies.projects ?? [],
     (p) => p.name.toLowerCase(),
     ["asc"]
   );
   const epics = orderBy(
-    state.dataDependencies.epics ?? [],
+    dataDependencies.epics ?? [],
     (e) => e.name.toLowerCase(),
     ["asc"]
   );
   const iterations = orderBy(
-    state.dataDependencies.iterations ?? [],
+    dataDependencies.iterations ?? [],
     (i) => i.name.toLowerCase(),
     ["asc"]
   );
   const members = orderBy(
-    state.dataDependencies.members ?? [],
+    dataDependencies.members ?? [],
     (m) => m.profile.name.toLowerCase(),
     ["asc"]
   );
   const labels = orderBy(
-    state.dataDependencies.labels ?? [],
+    dataDependencies.labels ?? [],
     (l) => l.name.toLowerCase(),
     ["asc"]
   );
 
-  const currentAgentEmail =
-    state?.context?.data.currentAgent.primaryEmail ?? null;
+  const currentAgentEmail = context?.data.currentAgent.primaryEmail ?? null;
 
   const currentRequester = values
     ? undefined
@@ -529,41 +534,39 @@ export const StoryForm: FC<StoryFormProps> = ({
               </FormikField>
             </div>
             {values.type &&
-            Array.isArray(state.dataDependencies.customFields) &&
-            state.dataDependencies.customFields.length > 0 ? (
-              state.dataDependencies.customFields.map(
-                (customField: CustomField) => {
-                  return customField.enabled &&
-                    isStoryType(values.type, customField.story_types) ? (
-                    <div
-                      className="create-form-field"
-                      key={customField.canonical_name}
+            Array.isArray(dataDependencies.customFields) &&
+            dataDependencies.customFields.length > 0 ? (
+              dataDependencies.customFields.map((customField: CustomField) => {
+                return customField.enabled &&
+                  isStoryType(values.type, customField.story_types) ? (
+                  <div
+                    className="create-form-field"
+                    key={customField.canonical_name}
+                  >
+                    <FormikField<string>
+                      name={`custom-field-${customField.canonical_name}`}
                     >
-                      <FormikField<string>
-                        name={`custom-field-${customField.canonical_name}`}
-                      >
-                        {([field, , helpers], { id, error }) => (
-                          <Label
-                            htmlFor={id}
-                            label={customField.name}
-                            error={error}
-                          >
-                            <DropdownSelect
-                              helpers={helpers}
-                              options={buildCustomFieldOptions(
-                                customField.values
-                              )}
-                              id={id}
-                              placeholder="Select value"
-                              value={field.value}
-                            />
-                          </Label>
-                        )}
-                      </FormikField>
-                    </div>
-                  ) : null;
-                }
-              )
+                      {([field, , helpers], { id, error }) => (
+                        <Label
+                          htmlFor={id}
+                          label={customField.name}
+                          error={error}
+                        >
+                          <DropdownSelect
+                            helpers={helpers}
+                            options={buildCustomFieldOptions(
+                              customField.values
+                            )}
+                            id={id}
+                            placeholder="Select value"
+                            value={field.value}
+                          />
+                        </Label>
+                      )}
+                    </FormikField>
+                  </div>
+                ) : null;
+              })
             ) : (
               <></>
             )}

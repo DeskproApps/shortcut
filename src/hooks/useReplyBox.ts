@@ -1,19 +1,19 @@
-import { useCallback } from "react";
-import get from "lodash.get";
-import { match } from "ts-pattern";
-import { useDebouncedCallback } from "use-debounce";
 import {
-  TargetAction,
-  IDeskproClient,
+  Context,
   GetStateResponse,
+  IDeskproClient,
+  TargetAction,
   useDeskproAppClient,
   useDeskproAppEvents,
+  useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
 } from "@deskpro/app-sdk";
-import { useStore } from "../context/StoreProvider/hooks";
-import { Comment, State, StoryItem } from "../context/StoreProvider/types";
+import get from "lodash.get";
+import { useCallback } from "react";
+import { match } from "ts-pattern";
+import { useDebouncedCallback } from "use-debounce";
 import { createStoryComment } from "../context/StoreProvider/api";
-import { addCommentsToStories } from "../utils";
+import { StoryItem } from "../context/StoreProvider/types";
 
 export type ReplyBoxType = "note" | "email";
 
@@ -49,11 +49,11 @@ export const emailKey = (ticketId: string, entityId: StoryItem["id"]) => {
 
 export const registerReplyBoxNotesAdditionsTargetAction = (
   client: IDeskproClient,
-  state: State
+  context: Context
 ) => {
-  const ticketId = state?.context?.data.ticket.id;
+  const ticketId = context?.data.ticket.id;
   const entities: Array<StoryItem> = get(
-    state,
+    context,
     ["linkedStoriesResults", "list"],
     []
   );
@@ -84,11 +84,11 @@ export const registerReplyBoxNotesAdditionsTargetAction = (
 
 export const registerReplyBoxEmailsAdditionsTargetAction = (
   client: IDeskproClient,
-  state: State
+  context: Context
 ): void => {
-  const ticketId = state?.context?.data.ticket.id;
+  const ticketId = context?.data.ticket.id;
   const entities: Array<StoryItem> = get(
-    state,
+    context,
     ["linkedStoriesResults", "list"],
     []
   );
@@ -120,13 +120,15 @@ export const registerReplyBoxEmailsAdditionsTargetAction = (
 };
 
 const useReplyBox = (): ReturnUseReplyBox => {
-  const [state, dispatch] = useStore();
   const { client } = useDeskproAppClient();
-  const ticketId = state?.context?.data.ticket.id;
+  const { context } = useDeskproLatestAppContext();
+
+  const ticketId = context?.data.ticket.id;
+
   const isCommentOnNote =
-    state.context?.settings?.default_comment_on_ticket_note === true;
+    context?.settings?.default_comment_on_ticket_note === true;
   const isCommentOnEmail =
-    state.context?.settings?.default_comment_on_ticket_reply === true;
+    context?.settings?.default_comment_on_ticket_reply === true;
 
   const setSelectionState: SetSelectionState = useCallback(
     (entityId, selected, type) => {
@@ -178,7 +180,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
   useInitialisedDeskproAppClient(
     (client) => {
       if (isCommentOnNote) {
-        registerReplyBoxNotesAdditionsTargetAction(client, state);
+        registerReplyBoxNotesAdditionsTargetAction(client, context);
         client.registerTargetAction(
           "shortcutOnReplyBoxNote",
           "on_reply_box_note"
@@ -186,19 +188,14 @@ const useReplyBox = (): ReturnUseReplyBox => {
       }
 
       if (isCommentOnEmail) {
-        registerReplyBoxEmailsAdditionsTargetAction(client, state);
+        registerReplyBoxEmailsAdditionsTargetAction(client, context);
         client.registerTargetAction(
           "shortcutOnReplyBoxEmail",
           "on_reply_box_email"
         );
       }
     },
-    [
-      get(state, ["linkedStoriesResults", "list"]),
-      state?.context?.data,
-      isCommentOnNote,
-      isCommentOnEmail,
-    ]
+    [context?.data, isCommentOnNote, isCommentOnEmail]
   );
 
   const debounceTargetAction = useDebouncedCallback<(a: TargetAction) => void>(
@@ -212,7 +209,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
             return;
           }
 
-          if (ticketId !== state.context?.data.ticket.id) {
+          if (ticketId !== context?.data.ticket.id) {
             return;
           }
 
@@ -232,14 +229,6 @@ const useReplyBox = (): ReturnUseReplyBox => {
                 )
               );
             })
-            .then((comments: Comment[]) => {
-              const stories = state.linkedStoriesResults?.list ?? [];
-
-              if (stories.length > 0) {
-                const list = addCommentsToStories(stories, comments);
-                dispatch({ type: "linkedStoriesList", list });
-              }
-            })
             .finally(() => client.setBlocking(false));
         })
         .with("shortcutOnReplyBoxNote", () => {
@@ -250,7 +239,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
             return;
           }
 
-          if (ticketId !== state.context?.data.ticket.id) {
+          if (ticketId !== context?.data.ticket.id) {
             return;
           }
 
@@ -270,14 +259,6 @@ const useReplyBox = (): ReturnUseReplyBox => {
                 )
               );
             })
-            .then((comments: Comment[]) => {
-              const stories = state.linkedStoriesResults?.list ?? [];
-
-              if (stories.length > 0) {
-                const list = addCommentsToStories(stories, comments);
-                dispatch({ type: "linkedStoriesList", list });
-              }
-            })
             .finally(() => client.setBlocking(false));
         })
         .with("shortcutReplyBoxEmailAdditions", () => {
@@ -285,7 +266,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
             (selection: { id: string; selected: boolean }) => {
               const ticketId = action.subject;
 
-              if (state.context?.data.ticket.id) {
+              if (context?.data.ticket.id) {
                 client
                   ?.setState(emailKey(ticketId, Number(selection.id)), {
                     id: selection.id,
@@ -295,7 +276,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
                     if (result.isSuccess) {
                       registerReplyBoxEmailsAdditionsTargetAction(
                         client,
-                        state
+                        context
                       );
                     }
                   });
@@ -308,7 +289,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
             (selection: { id: string; selected: boolean }) => {
               const ticketId = action.subject;
 
-              if (state.context?.data.ticket.id) {
+              if (context?.data.ticket.id) {
                 client
                   ?.setState(noteKey(ticketId, Number(selection.id)), {
                     id: selection.id,
@@ -316,7 +297,10 @@ const useReplyBox = (): ReturnUseReplyBox => {
                   })
                   .then((result) => {
                     if (result.isSuccess) {
-                      registerReplyBoxNotesAdditionsTargetAction(client, state);
+                      registerReplyBoxNotesAdditionsTargetAction(
+                        client,
+                        context
+                      );
                     }
                   });
               }
@@ -331,7 +315,7 @@ const useReplyBox = (): ReturnUseReplyBox => {
     {
       onTargetAction: debounceTargetAction,
     },
-    [state?.context?.data]
+    [context?.data]
   );
 
   return {

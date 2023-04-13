@@ -9,9 +9,6 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { TextAreaField } from "../components/TextArea/TextArea";
 import { createStoryComment } from "../context/StoreProvider/api";
-import { useStore } from "../context/StoreProvider/hooks";
-import { useSetAppTitle } from "../hooks";
-import { addCommentsToStories } from "../utils";
 import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = yup.object().shape({
@@ -24,7 +21,6 @@ const initValues = {
 
 const AddComment = () => {
   const navigate = useNavigate();
-  const [state, dispatch] = useStore();
   const { client } = useDeskproAppClient();
   const { storyId } = useParams();
 
@@ -37,25 +33,14 @@ const AddComment = () => {
       }
 
       await createStoryComment(client, Number(storyId), values.comment)
-        .then((comment) => {
-          const stories = state.linkedStoriesResults?.list ?? [];
-
-          if (stories.length > 0) {
-            const list = addCommentsToStories(stories, [comment]);
-            dispatch({ type: "linkedStoriesList", list });
-          }
+        .then(() => {
           navigate("/view/" + storyId);
         })
-        .catch((error) =>
-          dispatch({
-            type: "error",
-            error: `Can't create comment: ${error}`,
-          })
-        );
+        .catch((error) => {
+          throw new Error(`Can't create comment: ${error}`);
+        });
     },
   });
-
-  useSetAppTitle("Add Comment");
 
   useInitialisedDeskproAppClient((client) => {
     client.deregisterElement("home");
@@ -63,8 +48,9 @@ const AddComment = () => {
     client.deregisterElement("home");
     client.deregisterElement("viewContextMenu");
     client.deregisterElement("edit");
-
     client.registerElement("home", { type: "home_button" });
+
+    client.setTitle("Add Comment");
   });
 
   return (

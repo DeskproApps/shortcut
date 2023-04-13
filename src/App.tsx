@@ -3,8 +3,6 @@ import en from "javascript-time-ago/locale/en.json";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { StoreProvider } from "./context/StoreProvider/StoreProvider";
-
 import "@deskpro/deskpro-ui/dist/deskpro-custom-icons.css";
 import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
 import {
@@ -22,6 +20,8 @@ import { View } from "./pages/View";
 import { query } from "./utils/query";
 import { Suspense } from "react";
 import { LoadingSpinner } from "@deskpro/app-sdk";
+import { StoreProvider } from "./context/StoreProvider/StoreProvider";
+
 import { ErrorFallback } from "./components/ErrorFallback/ErrorFallback";
 
 TimeAgo.addDefaultLocale(en);
@@ -29,13 +29,15 @@ TimeAgo.addDefaultLocale(en);
 function App() {
   return (
     <HashRouter>
-      <QueryClientProvider client={query}>
-        <Suspense fallback={<LoadingSpinner />}>
-          <QueryErrorResetBoundary>
-            {({ reset }) => (
-              //@ts-ignore
-              <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
-                <StoreProvider>
+      <StoreProvider>
+        <QueryClientProvider client={query}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <QueryErrorResetBoundary>
+              {({ reset }) => (
+                <ErrorBoundary
+                  onReset={reset}
+                  FallbackComponent={ErrorFallback}
+                >
                   <Routes>
                     <Route path="/">
                       <Route index element={<Home />} />
@@ -53,12 +55,12 @@ function App() {
                     </Route>
                     <Route path="home" element={<Redirect />} />
                   </Routes>
-                </StoreProvider>
-              </ErrorBoundary>
-            )}
-          </QueryErrorResetBoundary>
-        </Suspense>
-      </QueryClientProvider>
+                </ErrorBoundary>
+              )}
+            </QueryErrorResetBoundary>
+          </Suspense>
+        </QueryClientProvider>
+      </StoreProvider>
     </HashRouter>
   );
 }

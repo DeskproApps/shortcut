@@ -1,5 +1,5 @@
-import { ChangeEvent, FC, useEffect, useMemo, useRef, useState } from "react";
-import { useStore } from "../context/StoreProvider/hooks";
+/* eslint-disable no-unsafe-optional-chaining */
+import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import {
   H3,
   HorizontalDivider,
@@ -8,21 +8,24 @@ import {
   LoadingSpinner,
   Stack,
   useDeskproAppClient,
+  useDeskproLatestAppContext,
+  useInitialisedDeskproAppClient,
   useQueryWithClient,
 } from "@deskpro/app-sdk";
-import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import { useSetAppTitle } from "../hooks";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/LinkedStoryResultItem";
 import { useNavigate } from "react-router-dom";
+import { getStoryById } from "../context/StoreProvider/api";
+import { StoryItemRes } from "../context/StoreProvider/types";
 
 export const Home: FC = () => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const { context } = useDeskproLatestAppContext();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [state] = useStore();
-  const loadLinkedStories = useLoadLinkedStories();
+  const [linkedStoriesIds, setLinkedStoriesIds] = useState<string[]>([]);
   const { client } = useDeskproAppClient();
   const navigate = useNavigate();
-  const [hasChecked, setHasChecked] = useState<boolean>(false);
   useSetAppTitle("Shortcut Stories");
 
   useEffect(() => {
@@ -32,26 +35,37 @@ export const Home: FC = () => {
     client?.registerElement("addStory", { type: "plus_button" });
   }, [client]);
 
-  const linkedStories = useMemo(() => {
-    if (!searchQuery) {
-      return state.linkedStoriesResults?.list || [];
-    }
+  useInitialisedDeskproAppClient(
+    (client) => {
+      (async () => {
+        const ids = await client
+          .getEntityAssociation(
+            "linkedShortcutStories",
+            context?.data.ticket.id as string
+          )
+          ?.list();
 
-    return (state.linkedStoriesResults?.list || []).filter((item) =>
-      item.id.toString().includes(searchQuery)
-    );
-  }, [state.linkedStoriesResults, searchQuery]);
-
-  const query = useQueryWithClient(
-    ["linkedStories"],
-    () => {
-      setHasChecked(true);
-      return loadLinkedStories;
+        setLinkedStoriesIds(ids);
+      })();
     },
-    { enabled: state.linkedStoriesResults === undefined || !hasChecked }
+    [context]
   );
 
-  const loading = query.isLoading;
+  const linkedStoriesQuery = useQueryWithClient(
+    ["linkedStories", ...linkedStoriesIds],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    (client) => {
+      return Promise.all(
+        linkedStoriesIds.map((id) => getStoryById(client, id))
+      );
+    },
+    {
+      enabled: linkedStoriesIds.length > 0,
+    }
+  );
+
+  const linkedStories = linkedStoriesQuery.data as StoryItemRes[];
 
   return (
     <>
@@ -74,7 +88,7 @@ export const Home: FC = () => {
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
-      {loading ? (
+      {linkedStoriesQuery.isLoading ? (
         <LoadingSpinner />
       ) : linkedStories.length > 0 ? (
         linkedStories.map((item, idx) => (

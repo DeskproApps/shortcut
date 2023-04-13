@@ -1,19 +1,23 @@
 import { FC, useState, useEffect } from "react";
-import isEmpty from "lodash.isempty";
 import styled from "styled-components";
 import { faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 import ReactTimeAgo from "react-time-ago";
 import { Avatar } from "@deskpro/deskpro-ui";
-import { H1, P1, P11, Stack, Button } from "@deskpro/app-sdk";
 import {
-  Member,
-  Comment as CommentType,
-} from "../../context/StoreProvider/types";
+  H1,
+  P1,
+  P11,
+  Stack,
+  Button,
+  useQueryWithClient,
+} from "@deskpro/app-sdk";
+import { Comment as CommentType } from "../../context/StoreProvider/types";
+import { getMemberById } from "../../context/StoreProvider/api";
+import isEmpty from "lodash.isempty";
 
 type Props = {
   onAddComment: () => void;
   comments: CommentType[];
-  members: Record<Member["id"], Member>;
 };
 
 const Author = styled(Stack)`
@@ -58,8 +62,24 @@ const sortByUpdated = (comments: CommentType[]) =>
     return 0;
   });
 
-const Comments: FC<Props> = ({ onAddComment, comments, members }) => {
+const Comments: FC<Props> = ({ onAddComment, comments }) => {
   const [count, setCount] = useState(0);
+
+  const isEmptyBool = isEmpty(comments);
+
+  const membersQuery = useQueryWithClient(
+    ["members", ...comments.map((e) => e.id.toString())],
+    (client) => {
+      return Promise.all(
+        comments.map((comment) => getMemberById(client, comment.author_id))
+      );
+    },
+    {
+      enabled: !isEmptyBool,
+    }
+  );
+
+  const members = membersQuery.data;
 
   useEffect(() => {
     if (Array.isArray(comments)) {
@@ -69,7 +89,7 @@ const Comments: FC<Props> = ({ onAddComment, comments, members }) => {
     }
   }, [comments]);
 
-  if (isEmpty(members)) {
+  if (isEmptyBool) {
     return <></>;
   }
 
@@ -88,10 +108,12 @@ const Comments: FC<Props> = ({ onAddComment, comments, members }) => {
       {sortByUpdated(comments).map(
         ({ id, updated_at, author_id, textHtml }) => (
           <Stack key={id} wrap="nowrap" gap={6} style={{ marginBottom: 10 }}>
-            <Author vertical>
+            <Author vertical style={{ marginTop: 15 }}>
               <Avatar
                 size={18}
-                name={members[author_id]?.profile?.name ?? ""}
+                name={
+                  members?.find((e) => e.id === author_id)?.profile.name ?? ""
+                }
                 backupIcon={faUser}
               />
               <P11>

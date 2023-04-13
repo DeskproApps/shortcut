@@ -69,9 +69,9 @@ const getStoryCustomFieldsToShow = (
       ({ enabled, story_types }) =>
         enabled && isStoryType(storyType, story_types)
     )
-    .reduce(normalizeFields, {});
+    ?.reduce(normalizeFields, {});
 
-  return storyCustomFields.reduce<StoryCustomField[]>(
+  return storyCustomFields?.reduce<StoryCustomField[]>(
     (acc, { field_id, value_id }) => {
       if (fieldsByStoryType[field_id]) {
         acc.push({
