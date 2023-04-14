@@ -44,7 +44,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
     () => getOtherParamsStory(item, dataDependencies),
     [item, dataDependencies]
   );
-  console.log(owners);
+
   return (
     <>
       <Stack align="start" gap={10}>

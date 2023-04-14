@@ -170,19 +170,23 @@ const Edit = () => {
   const { group, workflows, state, project, epic, iteration } =
     getOtherParamsStory(story, dataDependencies);
 
+  if (storyQuery.isLoading || dataDependenciesQuery.isLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
+  }
+
   const values = {
     archived: story.archived,
     name: story.name,
     description: story.description,
-    team: group.id,
-    workflow: workflows.id,
-    state: state.id,
-    project: project.id ?? "",
-    epic: epic.id,
-    iteration: iteration.id,
+    team: group?.id,
+    workflow: workflows?.id,
+    state: state?.id,
+    project: project?.id ?? "",
+    epic: epic?.id,
+    iteration: iteration?.id,
     type: story.story_type,
     requester: story.requested_by_id,
-    owners: story.owner_ids?.map(({ id }) => id) ?? [],
+    owners: story.owner_ids?.map(({ id }) => `${id}`) ?? [],
     labels: story.labels?.map(({ id }) => id) ?? [],
     followers: story.follower_ids?.map((id) => `${id}`) ?? [],
     ...(isEmpty(selectedCustomFields)
