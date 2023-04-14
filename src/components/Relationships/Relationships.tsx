@@ -4,7 +4,7 @@ import isEmpty from "lodash.isempty";
 import capitalize from "lodash.capitalize";
 import { LoadingSpinner, P5, useQueryWithClient } from "@deskpro/app-sdk";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
-import { StoryItem } from "../../context/StoreProvider/types";
+import { StoryItemRes } from "../../context/StoreProvider/types";
 import { getStoryById } from "../../context/StoreProvider/api";
 
 const Relationships: FC<{ storyLinks?: any[] }> = ({ storyLinks = [] }) => {
@@ -47,12 +47,13 @@ const Relationships: FC<{ storyLinks?: any[] }> = ({ storyLinks = [] }) => {
           .otherwise(() => capitalize(link.verb));
 
         return isEmpty(story) ? null : (
-          <div style={{ marginBottom: "2px" }} key={(story as StoryItem).id}>
+          <div style={{ marginBottom: "2px" }} key={(story as StoryItemRes).id}>
             <P5 key={link.id}>
-              {verb} <strong>{(story as StoryItem).name}</strong>
+              {verb} <strong>{(story as StoryItemRes).name}</strong>
             </P5>
             <P5>
-              {story?.id}:<ExternalLink href={(story as StoryItem).app_url} />
+              {story?.id}:
+              <ExternalLink href={(story as StoryItemRes).app_url} />
             </P5>
           </div>
         );
