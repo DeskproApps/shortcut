@@ -1,11 +1,6 @@
 import { Context } from "@deskpro/app-sdk";
-import { Reducer } from "react";
 
 export type ApiRequestMethod = "GET" | "POST" | "PUT" | "DELETE";
-
-export type StoreReducer = Reducer<State, Action>;
-
-export type Dispatch = (action: Action) => void;
 
 export type Page =
   | "home"
@@ -15,36 +10,6 @@ export type Page =
   | "edit"
   | "add_comment"
   | "add_story_relations";
-
-export interface State {
-  page?: Page;
-  pageParams?: any;
-  context?: TicketContext;
-  linkStorySearchResults?: { loading: boolean; list: StorySearchItem[] };
-  linkedStoriesResults?: { loading: boolean; list: StoryItem[] };
-  relationsStoriesResults?: { loading: boolean; list: StoryItem[] };
-  dataDependencies?: any; // ToDo: need types
-
-  // ...
-
-  _error?: Error | unknown;
-}
-
-export type Action =
-  | { type: "changePage"; page: Page; params?: object }
-  | { type: "loadContext"; context: Context }
-  | { type: "linkStorySearchListLoading" }
-  | { type: "linkStorySearchList"; list: StorySearchItem[] }
-  | { type: "linkStorySearchListReset" }
-  | { type: "linkedStoriesList"; list: StoryItem[] }
-  | { type: "linkedStoriesListLoading" }
-  | { type: "loadDataDependencies"; deps: any }
-  | { type: "loadDependencies"; deps: any }
-  | { type: "relationsStoriesList"; list: StoryItem[] }
-  | { type: "relationsStoriesListLoading" }
-
-  // ...
-  | { type: "error"; error: string };
 
 export interface TicketContext extends Context {
   data: {

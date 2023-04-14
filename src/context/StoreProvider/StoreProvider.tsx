@@ -13,14 +13,8 @@ import { __, match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
 import { isEnableDeskproLabel } from "../../utils";
 import { removeDeskproLabelFromStory, removeExternalUrlToStory } from "./api";
-import { useStoreReducer } from "./hooks";
-import { initialState, reducer } from "./reducer";
-import { Dispatch, State } from "./types";
 
-export const StoreContext = createContext<[State, Dispatch]>([
-  initialState,
-  () => {},
-]);
+export const StoreContext = createContext([{}, () => {}]);
 
 export interface StoreProviderProps {
   children: ReactNode | JSX.Element;
@@ -29,8 +23,6 @@ export interface StoreProviderProps {
 export const StoreProvider: FC<StoreProviderProps> = ({
   children,
 }: StoreProviderProps) => {
-  const [state, dispatch] = useStoreReducer(reducer, initialState);
-
   const { client } = useDeskproAppClient();
   const { context } = useDeskproLatestAppContext();
   const navigate = useNavigate();
@@ -101,9 +93,5 @@ export const StoreProvider: FC<StoreProviderProps> = ({
     return <LoadingSpinner />;
   }
 
-  return (
-    <StoreContext.Provider value={[state, dispatch]}>
-      {children}
-    </StoreContext.Provider>
-  );
+  return <StoreContext.Provider value={[]}>{children}</StoreContext.Provider>;
 };
