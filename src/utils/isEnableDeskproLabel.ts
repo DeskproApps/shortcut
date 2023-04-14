@@ -1,10 +1,10 @@
-import get from "lodash/get";
-import { State } from "../context/StoreProvider/types";
+import { Context } from "@deskpro/app-sdk";
+import get from "lodash.get";
 
-const isEnableDeskproLabel = (state: State) => {
-    const dontAddLabel = get(state, ["context", "settings", "dont_add_deskpro_label"]);
+const isEnableDeskproLabel = (context: Context) => {
+  const dontAddLabel = get(context, ["settings", "dont_add_deskpro_label"]);
 
-    return dontAddLabel !== true;
+  return dontAddLabel !== true;
 };
 
 export { isEnableDeskproLabel };

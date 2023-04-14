@@ -1,24 +1,24 @@
-import { FC, useState } from "react";
 import {
   DivAsInputWithDisplay,
   Dropdown,
   DropdownTargetProps,
   DropdownValueType,
-  Stack,
   Icon,
-  useDeskproAppTheme,
-  dropdownRenderOptions,
   Infinite,
+  Stack,
+  dropdownRenderOptions,
+  useDeskproAppTheme,
 } from "@deskpro/app-sdk";
 import {
   faCaretDown,
-  faTimes,
-  faHandPointer,
   faExternalLinkAlt,
+  faHandPointer,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldHelperProps } from "formik";
+import sortedUniq from "lodash.sorteduniq";
+import { FC, useState } from "react";
 import { Label } from "../Label/Label";
-import { sortedUniq } from "lodash";
 
 export interface DropdownMultiSelectValueType extends DropdownValueType<any> {
   valueLabel?: string;
@@ -49,7 +49,7 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({
   const valLabels = vals.map((v) => {
     const option = options.filter((o) => o.value === v)[0];
 
-    if(!option) return [];
+    if (!option) return [];
 
     return option.valueLabel
       ? [option.value, option.valueLabel, option.color]

@@ -1,98 +1,120 @@
-import { FC, useEffect, useMemo, useState } from "react";
-import capitalize from "lodash/capitalize";
-import chunk from "lodash/chunk";
-import get from "lodash/get";
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
-  Pill,
-  Stack,
-  Property,
-  VerticalDivider,
-  Title as TitleUI,
   HorizontalDivider,
+  LoadingSpinner,
+  Pill,
+  Property,
+  Stack,
+  Title as TitleUI,
+  VerticalDivider,
   useDeskproAppTheme,
-  useDeskproAppClient,
+  useDeskproLatestAppContext,
+  useInitialisedDeskproAppClient,
+  useQueryWithClient,
 } from "@deskpro/app-sdk";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
-import { useStore } from "../context/StoreProvider/hooks";
-import {
-  useSetAppTitle,
-  useFindLinkedStoryById,
-  useLoadDataDependencies,
-} from "../hooks";
-import { getStoryCustomFieldsToShow } from "../utils";
-import { Member } from "../context/StoreProvider/types";
-import { normalize } from "../utils";
+import capitalize from "lodash.capitalize";
+import chunk from "lodash.chunk";
+import get from "lodash.get";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Comments } from "../components/Comments/Comments";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
-import { Title } from "../components/Title/Title";
-import { Comments } from "../components/Comments/Comments";
 import { Relationships } from "../components/Relationships/Relationships";
+import { Title } from "../components/Title/Title";
+import {
+  getStoryById,
+  getStoryDependencies,
+} from "../context/StoreProvider/api";
+import { StoryItemRes } from "../context/StoreProvider/types";
+import { getStoryCustomFieldsToShow } from "../utils";
+import { getOtherParamsStory } from "../context/StoreProvider/hooks";
 
-export interface ViewProps {
-  id: string;
-}
-
-export const View: FC<ViewProps> = ({ id }: ViewProps) => {
-  const [state, dispatch] = useStore();
-  const findStoryById = useFindLinkedStoryById();
+export const View = () => {
+  const { context } = useDeskproLatestAppContext();
   const { theme } = useDeskproAppTheme();
-  const { client } = useDeskproAppClient();
   const [customFields, setCustomFields] = useState<Array<any>>([]);
-  const [members, setMembers] = useState<Record<Member["id"], Member>>({});
+  const navigate = useNavigate();
+  const { id } = useParams() as { id: string };
 
-  const story = useMemo(() => findStoryById(id), [id]);
+  const storyQuery = useQueryWithClient(
+    ["story", id],
+    (client) => getStoryById(client, id),
+    {
+      enabled: !!id,
+    }
+  );
 
-  if (!story) {
-    dispatch({ type: "error", error: "Story not found" });
-    return <></>;
-  }
+  const dataDependenciesQuery = useQueryWithClient(
+    ["dataDependencies"],
+    (client) => getStoryDependencies(client)
+  );
 
-  useSetAppTitle(story.id);
-  useLoadDataDependencies();
+  const story = storyQuery.data as StoryItemRes;
 
-  useEffect(() => {
-    client?.deregisterElement("edit");
-    client?.registerElement("home", { type: "home_button" });
-    client?.registerElement("viewContextMenu", {
-      type: "menu",
-      items: [
-        {
-          title: "Unlink Ticket",
-          payload: {
-            action: "unlink",
-            id,
-            story,
-            ticketId: state.context?.data.ticket.id,
+  const dataDependencies = dataDependenciesQuery.data;
+
+  const { group, workflows, state, project, epic, iteration, stateId, owners } =
+    getOtherParamsStory(story, dataDependencies);
+
+  useInitialisedDeskproAppClient(
+    (client) => {
+      storyQuery.isSuccess && client?.setTitle(story.id.toString());
+    },
+    [storyQuery.isSuccess]
+  );
+
+  useInitialisedDeskproAppClient(
+    (client) => {
+      client?.deregisterElement("edit");
+      client?.registerElement("home", { type: "home_button" });
+      client?.registerElement("viewContextMenu", {
+        type: "menu",
+        items: [
+          {
+            title: "Unlink Ticket",
+            payload: {
+              action: "unlink",
+              id,
+              story,
+              ticketId: context?.data.ticket.id,
+            },
           },
-        },
-      ],
-    });
-    client?.registerElement("edit", { type: "edit_button", payload: id });
-  }, [client]);
+        ],
+      });
+      client?.registerElement("edit", { type: "edit_button", payload: id });
+    },
+    [context]
+  );
 
   useEffect(() => {
-    if (!state.dataDependencies?.customFields) {
+    if (!dataDependencies?.customFields || storyQuery.isLoading) {
       return;
     }
 
     setCustomFields(
       getStoryCustomFieldsToShow(
-        story.type,
-        story.customFields,
-        state.dataDependencies.customFields
-      )
+        story.story_type,
+        story.custom_fields,
+        dataDependencies.customFields
+      ) || []
     );
-  }, [state.dataDependencies?.customFields]);
+  }, [dataDependencies?.customFields, storyQuery.isLoading]);
 
-  useEffect(() => {
-    setMembers(normalize(state.dataDependencies?.members));
-  }, [state.dataDependencies?.members]);
+  if (storyQuery.isLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
+  }
+
+  if (storyQuery.error) {
+    throw new Error("Story not found");
+  }
 
   return (
     <>
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical align="stretch" style={{ width: "100%" }}>
-          <Title name={story.name} url={story.url} />
+          <Title name={story.name} url={story.app_url} />
           {story.archived && (
             <RoundedLabelTag
               label={"Archived"}
@@ -102,32 +124,30 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
             />
           )}
           <Property title="Story ID">{story.id}</Property>
-          <Property title="Project">
-            {story.projectName ?? <em>None</em>}
-          </Property>
+          <Property title="Project">{project?.name ?? <em>None</em>}</Property>
           <Property title="Workflow">
-            {story.workflowName ?? <em>None</em>}
+            {workflows?.name ?? <em>None</em>}
           </Property>
           <Property title="State">
-            {story.stateId ? (
+            {stateId ? (
               <Pill
                 textColor={theme.colors.white}
                 backgroundColor={theme.colors.cyan100}
-                label={story.stateName}
+                label={state.name}
               />
             ) : (
               <span>None</span>
             )}
           </Property>
-          <Property title="Type">{capitalize(story.type)}</Property>
-          {story.epicId && story.epicUrl && (
+          <Property title="Type">{capitalize(story.story_type)}</Property>
+          {epic?.id && epic?.url && (
             <Property title="Epic">
-              {story.epicName}
-              <ExternalLink href={story.epicUrl} />
+              {epic.name}
+              <ExternalLink href={epic.url} />
             </Property>
           )}
           <Property title="Description">
-            {story.descriptionHtml ? (
+            {story?.descriptionHtml ? (
               <div
                 dangerouslySetInnerHTML={{ __html: story.descriptionHtml }}
               />
@@ -136,24 +156,24 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
             )}
           </Property>
           <Property title="Iteration">
-            {story.iterationId ? story.iterationName : <em>None</em>}
+            {iteration?.id ? iteration.name : <em>None</em>}
           </Property>
-          {story.teamId && <Property title="Team">{story.teamName}</Property>}
-          {story.owners && story.owners.length > 0 && (
+          {group?.id && <Property title="Team">{group.name}</Property>}
+          {owners && owners.length > 0 && (
             <Property title="Owners">
-              {story.owners.map((owner, idx) => (
+              {owners.map((owner, idx) => (
                 <div key={idx} style={{ marginBottom: "3px" }}>
                   {owner.name}
                 </div>
               ))}
             </Property>
           )}
-          {story.deadline && (
+          {story?.deadline && (
             <Property title="Due Date">
               {story.deadline.toLocaleDateString()}
             </Property>
           )}
-          {story.labels && story.labels.length > 0 && (
+          {story?.labels && story.labels.length > 0 && (
             <Property title="Labels">
               <Stack gap={2} wrap="wrap">
                 {story.labels.map((label, idx) => (
@@ -164,21 +184,28 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
               </Stack>
             </Property>
           )}
-          {story.epicLabels && story.epicLabels.length > 0 && (
+          {epic?.labels && epic.labels.length > 0 && (
             <Property title="Epic Labels">
               <Stack gap={2}>
-                {story.epicLabels.map((label, idx) => (
-                  <Label key={idx} color={label.color}>
-                    <span>{label.name}</span>
-                  </Label>
-                ))}
+                {epic.labels.map(
+                  (
+                    label: { id: string; color: string; name: string },
+                    idx: number
+                  ) => (
+                    <Label key={idx} color={label.color}>
+                      <span>{label.name}</span>
+                    </Label>
+                  )
+                )}
               </Stack>
             </Property>
           )}
 
-          {Boolean(customFields.length) && <HorizontalDivider
-            style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
-          />}
+          {Boolean(customFields?.length) && (
+            <HorizontalDivider
+              style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+            />
+          )}
           {chunk(customFields, 2).map((fields, idx) => {
             return fields.length === 2 ? (
               <Stack key={idx} align="stretch">
@@ -196,33 +223,22 @@ export const View: FC<ViewProps> = ({ id }: ViewProps) => {
           })}
 
           <HorizontalDivider
-              style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+            style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
           />
 
           <TitleUI
-              title={`Relationships (${get(story, ["storyLinks"], []).length})`}
-              onClick={() => dispatch({
-                type: "changePage",
-                page: "add_story_relations",
-                params: { storyId: id },
-              })}
-              marginBottom={0}
+            title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+            onClick={() => navigate("/add/storyrelations/" + id)}
+            marginBottom={0}
           />
 
-          <Relationships storyLinks={get(story, ["storyLinks"], [])}/>
+          <Relationships storyLinks={get(story, ["storyLinks"], [])} />
         </Stack>
       </Stack>
       <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />
       <Comments
-        members={members}
         comments={story.comments}
-        onAddComment={() =>
-          dispatch({
-            type: "changePage",
-            page: "add_comment",
-            params: { storyId: id },
-          })
-        }
+        onAddComment={() => navigate("/add/comment/" + id)}
       />
     </>
   );

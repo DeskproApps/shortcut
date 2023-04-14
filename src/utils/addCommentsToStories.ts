@@ -1,4 +1,4 @@
-import has from "lodash/has";
+import has from "lodash.has";
 import { StoryItem, Comment } from "../context/StoreProvider/types";
 import { markdownToHtmlConverter } from "../context/StoreProvider/api";
 import { normalize } from "./normalize";

@@ -1,1 +1,1 @@
-declare module 'js-cache';
+declare module "js-cache";

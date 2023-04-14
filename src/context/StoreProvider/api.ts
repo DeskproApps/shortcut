@@ -1,7 +1,7 @@
 import { IDeskproClient, proxyFetch } from "@deskpro/app-sdk";
 import cache from "js-cache";
 import showdown from "showdown";
-import { find } from "lodash";
+import find from "lodash.find";
 import {
   Comment,
   StoryItem,
@@ -9,6 +9,8 @@ import {
   CreateStoryData,
   StorySearchItem,
   ApiRequestMethod,
+  Member,
+  StoryItemRes,
 } from "./types";
 import { removeTagLinksMD } from "../../utils/removeTagLinksMD";
 
@@ -26,20 +28,40 @@ export const markdownToHtmlConverter = new showdown.Converter({
 /**
  * Fetch a single Shortcut story by ID, e.g. "123"
  */
-export const getStoryById = async (client: IDeskproClient, id: string) => {
-  return request(client, "GET", `${API_BASE_URL}/stories/${id}`);
-}
+export const getMemberById = async (
+  client: IDeskproClient,
+  id: string
+): Promise<Member> => {
+  const res = await request(client, "GET", `${API_BASE_URL}/members/${id}`);
+
+  return res;
+};
+export const getStoryById = async (
+  client: IDeskproClient,
+  id: string
+): Promise<StoryItemRes> => {
+  const res = await request(client, "GET", `${API_BASE_URL}/stories/${id}`);
+
+  return {
+    ...res,
+    comments: res.comments.map((comment: Comment) => ({
+      ...comment,
+      textHtml: markdownToHtmlConverter.makeHtml(comment.text),
+    })),
+  };
+};
 
 /**
  * Add an external link to a story
  */
-export const addExternalUrlToStory = async (client: IDeskproClient, id: string, url: string): Promise<void> => {
+export const addExternalUrlToStory = async (
+  client: IDeskproClient,
+  id: number,
+  url: string
+): Promise<void> => {
   const story = await request(client, "GET", `${API_BASE_URL}/stories/${id}`);
 
-  const externalLinks = [
-    ...(story.external_links ?? []),
-    url,
-  ];
+  const externalLinks = [...(story.external_links ?? []), url];
 
   await request(client, "PUT", `${API_BASE_URL}/stories/${id}`, {
     external_links: externalLinks,
@@ -49,10 +71,16 @@ export const addExternalUrlToStory = async (client: IDeskproClient, id: string, 
 /**
  * Remove an external link from a story
  */
-export const removeExternalUrlToStory = async (client: IDeskproClient, id: string, url: string): Promise<void> => {
+export const removeExternalUrlToStory = async (
+  client: IDeskproClient,
+  id: string,
+  url: string
+): Promise<void> => {
   const story = await request(client, "GET", `${API_BASE_URL}/stories/${id}`);
 
-  const externalLinks = (story.external_links ?? []).filter((existing: string) => existing !== url);
+  const externalLinks = (story.external_links ?? []).filter(
+    (existing: string) => existing !== url
+  );
 
   await request(client, "PUT", `${API_BASE_URL}/stories/${id}`, {
     external_links: externalLinks,
@@ -62,34 +90,47 @@ export const removeExternalUrlToStory = async (client: IDeskproClient, id: strin
 /**
  * Search stories in Shortcut
  */
-export const searchStories = async (client: IDeskproClient, q: string): Promise<StorySearchItem[]> => {
-  const { data: stories } = await request(client, "GET", `${API_BASE_URL}/search/stories?query=${q}&page_size=25`);
+export const searchStories = async (
+  client: IDeskproClient,
+  q: string
+): Promise<StorySearchItem[]> => {
+  const { data: stories } = await request(
+    client,
+    "GET",
+    `${API_BASE_URL}/search/stories?query=${q}&page_size=25`
+  );
 
-  const {
-    groups,
-    epics,
-    members,
-    workflows,
-    iterations,
-    projects,
-  } = await getStoryDependencies(client);
+  const { groups, epics, members, workflows, iterations, projects } =
+    await getStoryDependencies(client);
 
-  const states = (workflows ?? []).reduce((all: any[], workflow: any) => [...all, ...workflow.states], []);
+  const states = (workflows ?? []).reduce(
+    (all: any[], workflow: any) => [...all, ...workflow.states],
+    []
+  );
 
   return (stories ?? []).map((story: any) => {
-    const epic = (epics ?? []).filter((e: any) => e.id === story.epic_id)[0] ?? null;
-    const state = (states ?? []).filter((s: any) => s.id === story.workflow_state_id)[0] ?? null;
-    const iteration = (iterations ?? []).filter((i: any) => i.id === story.iteration_id)[0] ?? null;
-    const group = (groups ?? []).filter((g: any) => g.id === story.group_id)[0] ?? null;
-    const project = (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
+    const epic =
+      (epics ?? []).filter((e: any) => e.id === story.epic_id)[0] ?? null;
+    const state =
+      (states ?? []).filter((s: any) => s.id === story.workflow_state_id)[0] ??
+      null;
+    const iteration =
+      (iterations ?? []).filter((i: any) => i.id === story.iteration_id)[0] ??
+      null;
+    const group =
+      (groups ?? []).filter((g: any) => g.id === story.group_id)[0] ?? null;
+    const project =
+      (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
 
     const stateId = state ? state.id : undefined;
-    const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
+    const workflow =
+      (workflows ?? []).filter((w: { states: { id: number }[] }) =>
+        find(w.states, { id: stateId })
+      )[0] ?? null;
 
     return {
       archived: story.archived,
       id: story.id,
-      url: story.app_url,
       name: story.name,
       type: story.story_type,
       workflowId: workflow.id,
@@ -105,9 +146,12 @@ export const searchStories = async (client: IDeskproClient, q: string): Promise<
       iterationName: iteration ? iteration.name : undefined,
       teamId: group ? group.id : undefined,
       teamName: group ? group.name : undefined,
-      teamIconUrl: group?.display_icon?.url ? group.display_icon.url : undefined,
+      teamIconUrl: group?.display_icon?.url
+        ? group.display_icon.url
+        : undefined,
       owners: (story.owner_ids ?? []).map((ownerId: string) => {
-        const member = (members ?? []).filter((m: any) => m.id === ownerId)[0] ?? null;
+        const member =
+          (members ?? []).filter((m: any) => m.id === ownerId)[0] ?? null;
         return {
           id: ownerId,
           name: member.profile.name,
@@ -121,43 +165,58 @@ export const searchStories = async (client: IDeskproClient, q: string): Promise<
       })),
     } as StorySearchItem;
   });
-}
+};
 
 /**
  * List stories by ID from Shortcut
  */
-export const listStories = async (client: IDeskproClient, ids: string[]): Promise<StorySearchItem[]> => {
-  const requests = ids.map((id) => [request(client, "GET", `${API_BASE_URL}/stories/${id}`), id]);
+export const listStories = async (
+  client: IDeskproClient,
+  ids: number[]
+): Promise<StorySearchItem[]> => {
+  const requests = ids.map((id) => [
+    request(client, "GET", `${API_BASE_URL}/stories/${id}`),
+    id,
+  ]);
 
   const stories = [];
   for (const [req, id] of requests) {
     try {
       stories.push(await req);
     } catch (e) {
-      console.warn(`Failed to find Shortcut story ID [${id}], this story may have been deleted`);
+      console.warn(
+        `Failed to find Shortcut story ID [${id}], this story may have been deleted`
+      );
     }
   }
 
-  const {
-    groups,
-    epics,
-    members,
-    workflows,
-    iterations,
-    projects,
-  } = await getStoryDependencies(client);
+  const { groups, epics, members, workflows, iterations, projects } =
+    await getStoryDependencies(client);
 
-  const states = (workflows ?? []).reduce((all: any[], workflow: any) => [...all, ...workflow.states], []);
+  const states = (workflows ?? []).reduce(
+    (all: any[], workflow: any) => [...all, ...workflow.states],
+    []
+  );
 
   return (stories ?? []).map((story: any) => {
-    const epic = (epics ?? []).filter((e: any) => e.id === story.epic_id)[0] ?? null;
-    const state = (states ?? []).filter((s: any) => s.id === story.workflow_state_id)[0] ?? null;
-    const iteration = (iterations ?? []).filter((i: any) => i.id === story.iteration_id)[0] ?? null;
-    const group = (groups ?? []).filter((g: any) => g.id === story.group_id)[0] ?? null;
-    const project = (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
+    const epic =
+      (epics ?? []).filter((e: any) => e.id === story.epic_id)[0] ?? null;
+    const state =
+      (states ?? []).filter((s: any) => s.id === story.workflow_state_id)[0] ??
+      null;
+    const iteration =
+      (iterations ?? []).filter((i: any) => i.id === story.iteration_id)[0] ??
+      null;
+    const group =
+      (groups ?? []).filter((g: any) => g.id === story.group_id)[0] ?? null;
+    const project =
+      (projects ?? []).filter((p: any) => p.id === story.project_id)[0] ?? null;
 
     const stateId = state ? state.id : undefined;
-    const workflow = (workflows ?? []).filter((w: { states: { id: number }[] }) => find(w.states, { id: stateId }))[0] ?? null;
+    const workflow =
+      (workflows ?? []).filter((w: { states: { id: number }[] }) =>
+        find(w.states, { id: stateId })
+      )[0] ?? null;
 
     return {
       archived: story.archived,
@@ -183,9 +242,12 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
       iterationName: iteration ? iteration.name : undefined,
       teamId: group ? group.id : undefined,
       teamName: group ? group.name : undefined,
-      teamIconUrl: group?.display_icon?.url ? group.display_icon.url : undefined,
+      teamIconUrl: group?.display_icon?.url
+        ? group.display_icon.url
+        : undefined,
       owners: (story.owner_ids ?? []).map((ownerId: string) => {
-        const member = (members ?? []).filter((m: any) => m.id === ownerId)[0] ?? null;
+        const member =
+          (members ?? []).filter((m: any) => m.id === ownerId)[0] ?? null;
         return {
           id: ownerId,
           name: member.profile.name,
@@ -205,21 +267,23 @@ export const listStories = async (client: IDeskproClient, ids: string[]): Promis
       deadline: story?.deadline ? new Date(story.deadline) : undefined,
       customFields: story?.custom_fields,
       comments: (story?.comments ?? [])
-          .filter(({ deleted }: Comment) => !deleted)
-          .map((comment: Comment) => ({
-            ...comment,
-            textHtml: markdownToHtmlConverter.makeHtml(removeTagLinksMD(comment.text)),
-          })),
+        .filter(({ deleted }: Comment) => !deleted)
+        .map((comment: Comment) => ({
+          ...comment,
+          textHtml: markdownToHtmlConverter.makeHtml(
+            removeTagLinksMD(comment.text)
+          ),
+        })),
     } as StorySearchItem;
   });
-}
+};
 
 export const createStory = async (
-    client: IDeskproClient,
-    data: Omit<CreateStoryData, "labels"> & {
-      labels: Array<StoryLabel["name"]>,
-      custom_fields: StoryItem["customFields"],
-    },
+  client: IDeskproClient,
+  data: Omit<CreateStoryData, "labels"> & {
+    labels: Array<StoryLabel["name"]>;
+    custom_fields: StoryItem["customFields"];
+  }
 ): Promise<any> => {
   const body: any = {
     name: data.name,
@@ -227,8 +291,14 @@ export const createStory = async (
     labels: (data.labels ?? []).map((label) => ({ name: label })),
     story_type: data.type,
     custom_fields: data.custom_fields,
-    ...(!data.followers ? {} : { follower_ids: (data.followers ?? []).map((follower) => `${follower}`) }),
-    ...(!data.owners ? {} : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
+    ...(!data.followers
+      ? {}
+      : {
+          follower_ids: (data.followers ?? []).map((follower) => `${follower}`),
+        }),
+    ...(!data.owners
+      ? {}
+      : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
     ...(!data.team ? {} : { group_id: data.team }),
     ...(!data.state ? {} : { workflow_state_id: data.state }),
     ...(!data.project ? {} : { project_id: data.project }),
@@ -241,12 +311,12 @@ export const createStory = async (
 };
 
 export const updateStory = async (
-    client: IDeskproClient,
-    storyId: StoryItem["id"],
-    data: Omit<CreateStoryData, "labels"> & {
-      labels: Array<StoryLabel["name"]>,
-      custom_fields: StoryItem["customFields"],
-    },
+  client: IDeskproClient,
+  storyId: StoryItem["id"],
+  data: Omit<CreateStoryData, "labels"> & {
+    labels: Array<StoryLabel["name"]>;
+    custom_fields: StoryItem["customFields"];
+  }
 ): Promise<any> => {
   return await request(client, "PUT", `${API_BASE_URL}/stories/${storyId}`, {
     name: data.name,
@@ -254,8 +324,14 @@ export const updateStory = async (
     labels: (data.labels ?? []).map((label) => ({ name: label })),
     story_type: data.type,
     custom_fields: data.custom_fields,
-    ...(!data.followers ? {} : { follower_ids: (data.followers ?? []).map((follower) => `${follower}`) }),
-    ...(!data.owners ? {} : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
+    ...(!data.followers
+      ? {}
+      : {
+          follower_ids: (data.followers ?? []).map((follower) => `${follower}`),
+        }),
+    ...(!data.owners
+      ? {}
+      : { owner_ids: (data.owners ?? []).map((owner) => `${owner}`) }),
     ...(!data.team ? {} : { group_id: data.team }),
     ...(!data.state ? {} : { workflow_state_id: data.state }),
     ...(!data.project ? {} : { project_id: data.project }),
@@ -266,37 +342,54 @@ export const updateStory = async (
 };
 
 export const createStoryComment = (
-    client: IDeskproClient,
-    storyId: StoryItem["id"],
-    comment: Comment["text"],
+  client: IDeskproClient,
+  storyId: StoryItem["id"],
+  comment: Comment["text"]
 ) => {
   const body = { text: comment };
-  return request(client, "POST", `${API_BASE_URL}/stories/${storyId}/comments`, body);
+  return request(
+    client,
+    "POST",
+    `${API_BASE_URL}/stories/${storyId}/comments`,
+    body
+  );
 };
 
-export const createLabel = (client: IDeskproClient, data: {
-  name: string,
-  color?: string,
-  description?: string,
-}) => {
+export const createLabel = (
+  client: IDeskproClient,
+  data: {
+    name: string;
+    color?: string;
+    description?: string;
+  }
+) => {
   return request(client, "POST", `${API_BASE_URL}/labels`, data);
 };
 
 export const addDeskproLabelToStory = async (
-    client: IDeskproClient,
-    storyId: StoryItem["id"],
-    labels: Array<Partial<StoryLabel>>,
+  client: IDeskproClient,
+  storyId: StoryItem["id"],
+  labels: Array<Partial<StoryLabel>>
 ) => {
   if (!labels.some(({ name }) => name === "Deskpro")) {
-    const allLabels: StoryLabel[] = await request(client, "GET", `${API_BASE_URL}/labels`);
+    const allLabels: StoryLabel[] = await request(
+      client,
+      "GET",
+      `${API_BASE_URL}/labels`
+    );
 
     if (!allLabels.some(({ name }) => name === "Deskpro")) {
       try {
-        const label: StoryLabel = await createLabel(client, { name: "Deskpro", color: "#4196d4" });
+        const label: StoryLabel = await createLabel(client, {
+          name: "Deskpro",
+          color: "#4196d4",
+        });
         labels.push({ name: label.name });
-      } catch (e) {}
+      } catch (e) {
+        null;
+      }
     } else {
-      const label = allLabels.find(({ name }) => name === "Deskpro")
+      const label = allLabels.find(({ name }) => name === "Deskpro");
       !!label && labels.push({ name: label.name });
     }
   }
@@ -307,12 +400,12 @@ export const addDeskproLabelToStory = async (
 };
 
 export const removeDeskproLabelFromStory = (
-    client: IDeskproClient,
-    storyId: StoryItem["id"],
-    labels: StoryLabel[],
+  client: IDeskproClient,
+  storyId: StoryItem["id"],
+  labels: StoryLabel[]
 ) => {
-  if (labels.some(({ name }) => (name === "Deskpro"))) {
-    labels = labels.filter(({ name }) => (name !== "Deskpro"));
+  if (labels.some(({ name }) => name === "Deskpro")) {
+    labels = labels.filter(({ name }) => name !== "Deskpro");
   }
 
   if (Array.isArray(labels) && labels.length > 0) {
@@ -325,12 +418,12 @@ export const removeDeskproLabelFromStory = (
 };
 
 export const addRelationsToStory = (
-    client: IDeskproClient,
-    data: {
-      object_id: StoryItem["id"],
-      subject_id: StoryItem["id"],
-      verb: "relates to"|"duplicates"|"blocks",
-    }
+  client: IDeskproClient,
+  data: {
+    object_id: StoryItem["id"];
+    subject_id: StoryItem["id"];
+    verb: "relates to" | "duplicates" | "blocks";
+  }
 ) => {
   return request(client, "POST", `${API_BASE_URL}/story-links`, data);
 };
@@ -378,7 +471,12 @@ export const getStoryDependencies = async (client: IDeskproClient) => {
   return cache.get(cache_key);
 };
 
-const request = async (client: IDeskproClient, method: ApiRequestMethod, url: string, body?: any) => {
+const request = async (
+  client: IDeskproClient,
+  method: ApiRequestMethod,
+  url: string,
+  body?: any
+) => {
   const dpFetch = await proxyFetch(client);
   const res = await dpFetch(url, {
     method,
@@ -386,7 +484,7 @@ const request = async (client: IDeskproClient, method: ApiRequestMethod, url: st
     headers: {
       "Shortcut-Token": "__api_key__",
       "Content-Type": "application/json",
-    }
+    },
   });
 
   if (res.status < 200 || res.status >= 400) {

@@ -1,56 +1,21 @@
 import { Context } from "@deskpro/app-sdk";
-import { Reducer } from "react";
 
 export type ApiRequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-export type StoreReducer = Reducer<State, Action>;
-
-export type Dispatch = (action: Action) => void;
-
 export type Page =
-  "home"
+  | "home"
   | "link"
   | "view"
   | "create"
   | "edit"
   | "add_comment"
-  | "add_story_relations"
-;
-
-export interface State {
-  page?: Page;
-  pageParams?: any;
-  context?: TicketContext;
-  linkStorySearchResults?: { loading: boolean, list: StorySearchItem[] };
-  linkedStoriesResults?: { loading: boolean, list: StoryItem[] };
-  relationsStoriesResults?: { loading: boolean, list: StoryItem[] },
-  dataDependencies?: any; // ToDo: need types
-
-  // ...
-
-  _error?: Error|unknown;
-}
-
-export type Action =
-  | { type: "changePage", page: Page, params?: object }
-  | { type: "loadContext", context: Context }
-  | { type: "linkStorySearchListLoading" }
-  | { type: "linkStorySearchList", list: StorySearchItem[] }
-  | { type: "linkStorySearchListReset" }
-  | { type: "linkedStoriesList", list: StoryItem[] }
-  | { type: "linkedStoriesListLoading" }
-  | { type: "loadDataDependencies", deps: any }
-  | { type: "loadDependencies", deps: any }
-  | { type: "relationsStoriesList", list: StoryItem[] }
-  | { type: "relationsStoriesListLoading" }
-
-  // ...
-
-  | { type: "error", error: string }
-;
+  | "add_story_relations";
 
 export interface TicketContext extends Context {
-  data: { ticket: { id: string, permalinkUrl: string }, currentAgent: { primaryEmail: string } }
+  data: {
+    ticket: { id: string; permalinkUrl: string };
+    currentAgent: { primaryEmail: string };
+  };
 }
 
 // Shortcut types
@@ -85,7 +50,12 @@ export interface CustomField {
   id: string;
   name: string;
   description: string;
-  canonical_name: "technical-area" | "skill-set" | "product-area" | "priority" | "severity";
+  canonical_name:
+    | "technical-area"
+    | "skill-set"
+    | "product-area"
+    | "priority"
+    | "severity";
   created_at: DateTime;
   enabled: boolean;
   entity_type: "custom-field";
@@ -109,7 +79,7 @@ export interface Member {
     display_icon?: {
       id: string;
       url: string;
-      entity_type: "user-icon"
+      entity_type: "user-icon";
       created_at: DateTime;
       updated_at: DateTime;
     };
@@ -123,6 +93,78 @@ export interface Member {
   role: string;
   state: string;
   updated_at: DateTime;
+}
+
+export interface StoryItemRes {
+  descriptionHtml: string;
+  app_url: string;
+  description: string;
+  archived: boolean;
+  started: boolean;
+  story_links: any[];
+  entity_type: string;
+  labels: Label[];
+  mention_ids: any[];
+  member_mention_ids: any[];
+  story_type: string;
+  custom_fields: any[];
+  linked_files: any[];
+  workflow_id: number;
+  completed_at_override: null;
+  started_at: null;
+  completed_at: null;
+  name: string;
+  global_id: string;
+  completed: boolean;
+  comments: any[];
+  blocker: boolean;
+  branches: any[];
+  epic_id: null;
+  story_template_id: null;
+  external_links: string[];
+  previous_iteration_ids: any[];
+  requested_by_id: string;
+  iteration_id: null;
+  tasks: any[];
+  label_ids: number[];
+  started_at_override: null;
+  group_id: null;
+  workflow_state_id: number;
+  updated_at: string;
+  pull_requests: any[];
+  group_mention_ids: any[];
+  follower_ids: string[];
+  owner_ids: any[];
+  external_id: null;
+  id: number;
+  estimate: null;
+  commits: any[];
+  files: any[];
+  position: number;
+  blocked: boolean;
+  project_id: null;
+  deadline: Date;
+  stats: Stats;
+  created_at: string;
+  moved_at: string;
+}
+
+export interface Label {
+  app_url: string;
+  description: string;
+  archived: boolean;
+  entity_type: string;
+  color: string;
+  name: string;
+  global_id: string;
+  updated_at: string;
+  external_id: null;
+  id: number;
+  created_at: string;
+}
+
+export interface Stats {
+  num_related_documents: number;
 }
 
 export interface Comment {
@@ -150,15 +192,16 @@ export interface StoryLink {
   object_id: StoryItem["id"];
   subject_id: StoryItem["id"];
   subject_workflow_state_id: number;
-  type: "object"|"subject";
-  verb: "relates to"|"duplicates"|"blocks";
+  type: "object" | "subject";
+  verb: "relates to" | "duplicates" | "blocks";
   created_at: DateTime;
   updated_at: DateTime;
 }
 
 export interface StoryItem {
+  app_url: string;
   archived: boolean;
-  id: string;
+  id: number;
   url: string;
   name: string;
   type: string;
@@ -193,17 +236,15 @@ export interface StoryItem {
   storyLinks: StoryLink[];
 }
 
-export interface StorySearchItem extends StoryItem {
-
-}
+export type StorySearchItem = StoryItem;
 
 export interface CreateStoryData {
   name: string;
   description: string;
   type: string;
   labels: Array<StoryLabel["id"]>;
-  followers: string[],
-  owners: string[],
+  followers: string[];
+  owners: string[];
   team?: string;
   workflow?: string;
   state?: string;
@@ -211,11 +252,11 @@ export interface CreateStoryData {
   epic?: string;
   iteration?: string;
   requester?: string;
-  "custom-field-technical-area": string,
-  "custom-field-skill-set": string,
-  "custom-field-product-area": string,
-  "custom-field-priority": string,
-  "custom-field-severity": string,
+  "custom-field-technical-area": string;
+  "custom-field-skill-set": string;
+  "custom-field-product-area": string;
+  "custom-field-priority": string;
+  "custom-field-severity": string;
 }
 
 export interface ShortcutStoryAssociationPropsLabel {

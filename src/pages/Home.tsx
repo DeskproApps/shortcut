@@ -1,5 +1,5 @@
-import { ChangeEvent, FC, useEffect, useMemo, useRef, useState } from "react";
-import { useStore } from "../context/StoreProvider/hooks";
+/* eslint-disable no-unsafe-optional-chaining */
+import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import {
   H3,
   HorizontalDivider,
@@ -7,19 +7,25 @@ import {
   Input,
   LoadingSpinner,
   Stack,
-  useDeskproAppClient
+  useDeskproAppClient,
+  useDeskproLatestAppContext,
+  useInitialisedDeskproAppClient,
+  useQueryWithClient,
 } from "@deskpro/app-sdk";
-import { useLoadLinkedStories, useSetAppTitle } from "../hooks";
+import { useSetAppTitle } from "../hooks";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/LinkedStoryResultItem";
+import { useNavigate } from "react-router-dom";
+import { getStoryById } from "../context/StoreProvider/api";
+import { StoryItemRes } from "../context/StoreProvider/types";
 
 export const Home: FC = () => {
-  const searchInputRef = useRef<HTMLInputElement|null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const { context } = useDeskproLatestAppContext();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [state, dispatch] = useStore();
-  const loadLinkedStories = useLoadLinkedStories();
+  const [linkedStoriesIds, setLinkedStoriesIds] = useState<string[]>([]);
   const { client } = useDeskproAppClient();
-
+  const navigate = useNavigate();
   useSetAppTitle("Shortcut Stories");
 
   useEffect(() => {
@@ -29,22 +35,37 @@ export const Home: FC = () => {
     client?.registerElement("addStory", { type: "plus_button" });
   }, [client]);
 
-  const linkedStories = useMemo(() => {
-    if (!searchQuery) {
-      return state.linkedStoriesResults?.list || [];
+  useInitialisedDeskproAppClient(
+    (client) => {
+      (async () => {
+        const ids = await client
+          .getEntityAssociation(
+            "linkedShortcutStories",
+            context?.data.ticket.id as string
+          )
+          ?.list();
+
+        setLinkedStoriesIds(ids);
+      })();
+    },
+    [context]
+  );
+
+  const linkedStoriesQuery = useQueryWithClient(
+    ["linkedStories", ...linkedStoriesIds],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    (client) => {
+      return Promise.all(
+        linkedStoriesIds.map((id) => getStoryById(client, id))
+      );
+    },
+    {
+      enabled: linkedStoriesIds.length > 0,
     }
+  );
 
-    return (state.linkedStoriesResults?.list || [])
-      .filter((item) => item.id.toString().includes(searchQuery));
-  }, [state.linkedStoriesResults, searchQuery]);
-
-  useEffect(() => {
-    if (state.linkedStoriesResults === undefined) {
-      loadLinkedStories();
-    }
-  }, [state.context?.data, state.linkedStoriesResults]);
-
-  const loading = state.linkedStoriesResults?.loading || state.linkedStoriesResults?.loading === undefined;
+  const linkedStories = linkedStoriesQuery.data as StoryItemRes[];
 
   return (
     <>
@@ -52,25 +73,34 @@ export const Home: FC = () => {
         <Input
           ref={searchInputRef}
           value={searchQuery}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setSearchQuery(e.target.value)
+          }
           leftIcon={faSearch}
-          rightIcon={<IconButton icon={faTimes} onClick={() => setSearchQuery("")} minimal />}
+          rightIcon={
+            <IconButton
+              icon={faTimes}
+              onClick={() => setSearchQuery("")}
+              minimal
+            />
+          }
         />
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
-      {loading
-          ? <LoadingSpinner />
-          : (linkedStories.length > 0)
-          ? linkedStories.map((item, idx) => (
-              <LinkedStoryResultItem
-                  key={idx}
-                  item={item}
-                  onView={() => dispatch({ type: "changePage", page: "view", params: { id: item.id } })}
-              />
-          ))
-          : <H3>No linked stories found.</H3>
-      }
+      {linkedStoriesQuery.isLoading ? (
+        <LoadingSpinner />
+      ) : linkedStories.length > 0 ? (
+        linkedStories.map((item, idx) => (
+          <LinkedStoryResultItem
+            key={idx}
+            item={item}
+            onView={() => navigate("/view/" + item.id)}
+          />
+        ))
+      ) : (
+        <H3>No linked stories found.</H3>
+      )}
     </>
   );
 };
