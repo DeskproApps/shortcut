@@ -3,7 +3,7 @@
   "title": "Shortcut",
   "description": "Link tickets to Shortcut stories so agents can track a story's progress from a ticket",
   "appStoreUrl": "https://www.deskpro.com/product-embed/apps/shortcut",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "scope": "agent",
   "isSingleInstall": true,
   "hasDevMode": true,
@@ -63,12 +63,7 @@
     "whitelist": [
       {
         "url": "https://api.app.shortcut.com/api/v3/.*",
-        "methods": [
-          "GET",
-          "POST",
-          "PUT",
-          "DELETE"
-        ],
+        "methods": ["GET", "POST", "PUT", "DELETE"],
         "timeout": 30
       }
     ]
