@@ -44,6 +44,7 @@ export const getStoryById = async (
 
   return {
     ...res,
+    descriptionHtml: markdownToHtmlConverter.makeHtml(res.description),
     comments: res.comments.map((comment: Comment) => ({
       ...comment,
       textHtml: markdownToHtmlConverter.makeHtml(comment.text),

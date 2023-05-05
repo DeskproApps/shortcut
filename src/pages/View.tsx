@@ -12,7 +12,7 @@ import {
   useInitialisedDeskproAppClient,
   useQueryWithClient,
 } from "@deskpro/app-sdk";
-import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
+import { AnyIcon, H2, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
 import chunk from "lodash.chunk";
 import get from "lodash.get";
@@ -146,15 +146,17 @@ export const View = () => {
               <ExternalLink href={epic.url} />
             </Property>
           )}
-          <Property title="Description">
+          <Stack vertical>
+            <H2 style={{ color: theme.colors.grey80 }}>Description</H2>
             {story?.descriptionHtml ? (
               <div
+                style={{ width: "100%" }}
                 dangerouslySetInnerHTML={{ __html: story.descriptionHtml }}
               />
             ) : (
               <span style={{ color: theme.colors.grey40 }}>---</span>
             )}
-          </Property>
+          </Stack>
           <Property title="Iteration">
             {iteration?.id ? iteration.name : <em>None</em>}
           </Property>
