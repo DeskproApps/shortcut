@@ -23,6 +23,9 @@ const SEARCH_DEPS_CACHE_TTL = 5 * (60 * 1000); // 5 Minutes
 export const markdownToHtmlConverter = new showdown.Converter({
   openLinksInNewWindow: true,
   simplifiedAutoLink: true,
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
 });
 
 /**

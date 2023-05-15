@@ -30,6 +30,7 @@ import {
 import { StoryItemRes } from "../context/StoreProvider/types";
 import { getStoryCustomFieldsToShow } from "../utils";
 import { getOtherParamsStory } from "../context/StoreProvider/hooks";
+import { ContainerMarkdown } from "../components/ContainerMarkdown/ContainerMarkdown";
 
 export const View = () => {
   const { context } = useDeskproLatestAppContext();
@@ -148,14 +149,9 @@ export const View = () => {
           )}
           <Stack vertical>
             <H2 style={{ color: theme.colors.grey80 }}>Description</H2>
-            {story?.descriptionHtml ? (
-              <div
-                style={{ width: "100%" }}
-                dangerouslySetInnerHTML={{ __html: story.descriptionHtml }}
-              />
-            ) : (
-              <span style={{ color: theme.colors.grey40 }}>---</span>
-            )}
+            <ContainerMarkdown
+              dangerouslySetInnerHTML={{ __html: story?.descriptionHtml || "-" }}
+            />
           </Stack>
           <Property title="Iteration">
             {iteration?.id ? iteration.name : <em>None</em>}
