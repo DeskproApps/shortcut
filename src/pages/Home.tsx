@@ -54,7 +54,7 @@ export const Home: FC = () => {
     },
     [context]
   );
-  console.log(linkedStoriesIds);
+
   const linkedStoriesQuery = useQueryWithClient(
     ["linkedStories", ...((linkedStoriesIds as string[]) || [])],
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
