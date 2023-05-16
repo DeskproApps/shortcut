@@ -23,7 +23,9 @@ export const Home: FC = () => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const { context } = useDeskproLatestAppContext();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [linkedStoriesIds, setLinkedStoriesIds] = useState<string[]>([]);
+  const [linkedStoriesIds, setLinkedStoriesIds] = useState<string[] | null>(
+    null
+  );
   const { client } = useDeskproAppClient();
   const navigate = useNavigate();
   useSetAppTitle("Shortcut Stories");
@@ -38,6 +40,8 @@ export const Home: FC = () => {
   useInitialisedDeskproAppClient(
     (client) => {
       (async () => {
+        if (!context?.data.ticket?.id) return;
+
         const ids = await client
           .getEntityAssociation(
             "linkedShortcutStories",
@@ -52,16 +56,16 @@ export const Home: FC = () => {
   );
 
   const linkedStoriesQuery = useQueryWithClient(
-    ["linkedStories", ...linkedStoriesIds],
+    ["linkedStories", ...((linkedStoriesIds as string[]) || [])],
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     (client) => {
       return Promise.all(
-        linkedStoriesIds.map((id) => getStoryById(client, id))
+        (linkedStoriesIds as string[]).map((id) => getStoryById(client, id))
       );
     },
     {
-      enabled: linkedStoriesIds.length > 0,
+      enabled: !!linkedStoriesIds && linkedStoriesIds.length > 0,
     }
   );
 
@@ -88,9 +92,9 @@ export const Home: FC = () => {
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
-      {linkedStoriesQuery.isLoading ? (
+      {linkedStoriesQuery.isFetching ? (
         <LoadingSpinner />
-      ) : linkedStories.length > 0 ? (
+      ) : linkedStories?.length > 0 ? (
         linkedStories.map((item, idx) => (
           <LinkedStoryResultItem
             key={idx}
@@ -99,7 +103,7 @@ export const Home: FC = () => {
           />
         ))
       ) : (
-        <H3>No linked stories found.</H3>
+        linkedStoriesIds?.length === 0 && <H3>No linked stories found.</H3>
       )}
     </>
   );

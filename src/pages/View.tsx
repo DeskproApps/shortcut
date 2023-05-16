@@ -12,7 +12,7 @@ import {
   useInitialisedDeskproAppClient,
   useQueryWithClient,
 } from "@deskpro/app-sdk";
-import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
+import { AnyIcon, H2, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
 import chunk from "lodash.chunk";
 import get from "lodash.get";
@@ -30,6 +30,7 @@ import {
 import { StoryItemRes } from "../context/StoreProvider/types";
 import { getStoryCustomFieldsToShow } from "../utils";
 import { getOtherParamsStory } from "../context/StoreProvider/hooks";
+import { ContainerMarkdown } from "../components/ContainerMarkdown/ContainerMarkdown";
 
 export const View = () => {
   const { context } = useDeskproLatestAppContext();
@@ -146,15 +147,12 @@ export const View = () => {
               <ExternalLink href={epic.url} />
             </Property>
           )}
-          <Property title="Description">
-            {story?.descriptionHtml ? (
-              <div
-                dangerouslySetInnerHTML={{ __html: story.descriptionHtml }}
-              />
-            ) : (
-              <span style={{ color: theme.colors.grey40 }}>---</span>
-            )}
-          </Property>
+          <Stack vertical>
+            <H2 style={{ color: theme.colors.grey80 }}>Description</H2>
+            <ContainerMarkdown
+              dangerouslySetInnerHTML={{ __html: story?.descriptionHtml || "-" }}
+            />
+          </Stack>
           <Property title="Iteration">
             {iteration?.id ? iteration.name : <em>None</em>}
           </Property>

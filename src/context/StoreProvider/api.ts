@@ -23,6 +23,9 @@ const SEARCH_DEPS_CACHE_TTL = 5 * (60 * 1000); // 5 Minutes
 export const markdownToHtmlConverter = new showdown.Converter({
   openLinksInNewWindow: true,
   simplifiedAutoLink: true,
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
 });
 
 /**
@@ -44,6 +47,7 @@ export const getStoryById = async (
 
   return {
     ...res,
+    descriptionHtml: markdownToHtmlConverter.makeHtml(res.description),
     comments: res.comments.map((comment: Comment) => ({
       ...comment,
       textHtml: markdownToHtmlConverter.makeHtml(comment.text),
