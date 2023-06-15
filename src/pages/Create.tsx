@@ -5,7 +5,7 @@ import {
   useDeskproElements,
 } from "@deskpro/app-sdk";
 import find from "lodash.find";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
 import { StoryForm } from "../components/StoryForm/StoryForm";

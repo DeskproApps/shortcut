@@ -4,6 +4,7 @@ import { HashRouter } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import { DeskproAppProvider, LoadingSpinner } from "@deskpro/app-sdk";
 import { query } from "./utils/query";
+import { ReplyBoxProvider } from "./hooks";
 import { ErrorFallback } from "./components/ErrorFallback/ErrorFallback";
 import { StoreProvider } from "./context/StoreProvider/StoreProvider";
 import {
@@ -34,7 +35,9 @@ root.render(
               <QueryErrorResetBoundary>
                 {({ reset }) => (
                   <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
-                    <App />
+                    <ReplyBoxProvider>
+                      <App />
+                    </ReplyBoxProvider>
                   </ErrorBoundary>
                 )}
               </QueryErrorResetBoundary>

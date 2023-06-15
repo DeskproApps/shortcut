@@ -12,7 +12,9 @@ import { useNavigate } from "react-router-dom";
 import { __, match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
 import { isEnableDeskproLabel } from "../../utils";
+import { useReplyBox } from "../../hooks";
 import { removeDeskproLabelFromStory, removeExternalUrlToStory } from "./api";
+import { query } from "../../utils/query";
 
 export const StoreContext = createContext([{}, () => {}]);
 
@@ -26,6 +28,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({
   const { client } = useDeskproAppClient();
   const { context } = useDeskproLatestAppContext();
   const navigate = useNavigate();
+  const { deleteSelectionState } = useReplyBox();
 
   useEffect(() => {
     client?.registerElement("refresh", { type: "refresh_button" });
@@ -66,6 +69,9 @@ export const StoreProvider: FC<StoreProviderProps> = ({
           ? removeDeskproLabelFromStory(client, id, get(story, ["labels"], []))
           : Promise.resolve();
       })
+      .then(() => deleteSelectionState(story.id, "note"))
+      .then(() => deleteSelectionState(story.id, "email"))
+      .then(() => query.invalidateQueries())
       .then(() => navigate("home"));
   };
 

@@ -132,15 +132,9 @@ export const Link = () => {
           "linkedShortcutStories",
           context?.data.ticket.id as string
         )
-        .set<{ id: string }>(`${id}`, {
-          id: `${id}`,
-        })
-        .then(() => {
-          setSelectionState(id, true, "email");
-        })
-        .then(() => {
-          setSelectionState(id, true, "note");
-        })
+        .set<{ id: string }>(`${id}`, { id: `${id}` })
+        .then(() => setSelectionState(id, true, "email"))
+        .then(() => setSelectionState(id, true, "note"))
     );
 
     updates.push(
