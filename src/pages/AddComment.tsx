@@ -2,14 +2,15 @@ import {
   Button,
   Label,
   Stack,
+  useDeskproElements,
   useDeskproAppClient,
-  useInitialisedDeskproAppClient,
 } from "@deskpro/app-sdk";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { TextAreaField } from "../components/TextArea/TextArea";
 import { createStoryComment } from "../context/StoreProvider/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSetAppTitle } from "../hooks";
 
 const validationSchema = yup.object().shape({
   comment: yup.string(),
@@ -42,15 +43,11 @@ const AddComment = () => {
     },
   });
 
-  useInitialisedDeskproAppClient((client) => {
-    client.deregisterElement("home");
-    client.deregisterElement("addStory");
-    client.deregisterElement("home");
-    client.deregisterElement("viewContextMenu");
-    client.deregisterElement("edit");
-    client.registerElement("home", { type: "home_button" });
+  useSetAppTitle("Add Comment");
 
-    client.setTitle("Add Comment");
+  useDeskproElements(({ clearElements, registerElement }) => {
+    clearElements();
+    registerElement("home", { type: "home_button" });
   });
 
   return (

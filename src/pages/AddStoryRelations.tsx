@@ -139,12 +139,8 @@ const AddStoryRelations = () => {
 
   useSetAppTitle("Add Relationship");
 
-  useDeskproElements(({ registerElement, deRegisterElement }) => {
-    deRegisterElement("home");
-    deRegisterElement("viewContextMenu");
-    deRegisterElement("edit");
-    deRegisterElement("addStory");
-
+  useDeskproElements(({ registerElement, clearElements }) => {
+    clearElements();
     registerElement("home", { type: "home_button" });
   });
 

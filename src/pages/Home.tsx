@@ -1,5 +1,6 @@
-/* eslint-disable no-unsafe-optional-chaining */
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import {
   H3,
   HorizontalDivider,
@@ -7,15 +8,13 @@ import {
   Input,
   LoadingSpinner,
   Stack,
-  useDeskproAppClient,
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
   useQueryWithClient,
+  useDeskproElements,
 } from "@deskpro/app-sdk";
-import { useSetAppTitle } from "../hooks";
-import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useSetAppTitle, useSetBadgeCount } from "../hooks";
 import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/LinkedStoryResultItem";
-import { useNavigate } from "react-router-dom";
 import { getStoryById } from "../context/StoreProvider/api";
 import { StoryItemRes } from "../context/StoreProvider/types";
 
@@ -26,16 +25,29 @@ export const Home: FC = () => {
   const [linkedStoriesIds, setLinkedStoriesIds] = useState<string[] | null>(
     null
   );
-  const { client } = useDeskproAppClient();
   const navigate = useNavigate();
-  useSetAppTitle("Shortcut Stories");
 
-  useEffect(() => {
-    client?.deregisterElement("home");
-    client?.deregisterElement("edit");
-    client?.deregisterElement("viewContextMenu");
-    client?.registerElement("addStory", { type: "plus_button" });
-  }, [client]);
+  const linkedStoriesQuery = useQueryWithClient(
+    ["linkedStories", ...((linkedStoriesIds as string[]) || [])],
+    (client) => {
+      return Promise.all(
+        (linkedStoriesIds as string[]).map((id) => getStoryById(client, id))
+      );
+    },
+    {
+      enabled: !!linkedStoriesIds && linkedStoriesIds.length > 0,
+    }
+  );
+
+  const linkedStories = linkedStoriesQuery.data as StoryItemRes[];
+
+  useSetAppTitle("Shortcut Stories");
+  useSetBadgeCount(linkedStories);
+
+  useDeskproElements(({ clearElements, registerElement }) => {
+    clearElements();
+    registerElement("addStory", { type: "plus_button" });
+  });
 
   useInitialisedDeskproAppClient(
     (client) => {
@@ -54,22 +66,6 @@ export const Home: FC = () => {
     },
     [context]
   );
-
-  const linkedStoriesQuery = useQueryWithClient(
-    ["linkedStories", ...((linkedStoriesIds as string[]) || [])],
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    (client) => {
-      return Promise.all(
-        (linkedStoriesIds as string[]).map((id) => getStoryById(client, id))
-      );
-    },
-    {
-      enabled: !!linkedStoriesIds && linkedStoriesIds.length > 0,
-    }
-  );
-
-  const linkedStories = linkedStoriesQuery.data as StoryItemRes[];
 
   return (
     <>
