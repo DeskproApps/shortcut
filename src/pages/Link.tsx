@@ -10,6 +10,7 @@ import {
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
   useQueryWithClient,
+  useDeskproElements,
 } from "@deskpro/app-sdk";
 import {
   faSearch,
@@ -29,8 +30,7 @@ import {
   searchStories,
 } from "../context/StoreProvider/api";
 import { StorySearchItem } from "../context/StoreProvider/types";
-import { useSetAppTitle } from "../hooks";
-import { useReplyBox } from "../hooks/useReplyBox";
+import { useSetAppTitle, useReplyBox } from "../hooks";
 import { isEnableDeskproLabel } from "../utils";
 
 export const Link = () => {
@@ -50,11 +50,10 @@ export const Link = () => {
 
   useSetAppTitle("Add Story");
 
-  useEffect(() => {
-    client?.deregisterElement("edit");
-    client?.deregisterElement("addStory");
-    client?.registerElement("home", { type: "home_button" });
-  }, [client]);
+  useDeskproElements(({ clearElements, registerElement }) => {
+    clearElements();
+    registerElement("home", { type: "home_button" });
+  });
 
   useInitialisedDeskproAppClient(
     (client) => {
@@ -133,15 +132,9 @@ export const Link = () => {
           "linkedShortcutStories",
           context?.data.ticket.id as string
         )
-        .set<{ id: string }>(`${id}`, {
-          id: `${id}`,
-        })
-        .then(() => {
-          setSelectionState(id, true, "email");
-        })
-        .then(() => {
-          setSelectionState(id, true, "note");
-        })
+        .set<{ id: string }>(`${id}`, { id: `${id}` })
+        .then(() => setSelectionState(id, true, "email"))
+        .then(() => setSelectionState(id, true, "note"))
     );
 
     updates.push(

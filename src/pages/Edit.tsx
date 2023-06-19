@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import isEmpty from "lodash.isempty";
 import omit from "lodash.omit";
 import _values from "lodash.values";
@@ -7,6 +7,7 @@ import {
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useQueryWithClient,
+  useDeskproElements,
 } from "@deskpro/app-sdk";
 import { StoryForm } from "../components/StoryForm/StoryForm";
 import { useSetAppTitle } from "../hooks";
@@ -74,15 +75,10 @@ const Edit = () => {
 
   useSetAppTitle("Edit Story");
 
-  useEffect(() => {
-    client?.deregisterElement("home");
-    client?.deregisterElement("addStory");
-    client?.deregisterElement("home");
-    client?.deregisterElement("viewContextMenu");
-    client?.deregisterElement("edit");
-
-    client?.registerElement("home", { type: "home_button" });
-  }, [client]);
+  useDeskproElements(({ clearElements, registerElement }) => {
+    clearElements();
+    registerElement("home", { type: "home_button" });
+  });
 
   if (storyQuery.isLoading) {
     return <LoadingSpinner></LoadingSpinner>;

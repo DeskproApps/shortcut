@@ -1,75 +1,38 @@
-/* eslint-disable no-unsafe-optional-chaining */
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, useRef, useState } from "react";
+import size from "lodash.size";
+import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import {
   H3,
-  HorizontalDivider,
-  IconButton,
   Input,
-  LoadingSpinner,
   Stack,
-  useDeskproAppClient,
-  useDeskproLatestAppContext,
-  useInitialisedDeskproAppClient,
-  useQueryWithClient,
+  IconButton,
+  LoadingSpinner,
+  HorizontalDivider,
+  useDeskproElements,
 } from "@deskpro/app-sdk";
-import { useSetAppTitle } from "../hooks";
-import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useSetAppTitle, useSetBadgeCount, useLinkedStories } from "../hooks";
 import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/LinkedStoryResultItem";
-import { useNavigate } from "react-router-dom";
-import { getStoryById } from "../context/StoreProvider/api";
-import { StoryItemRes } from "../context/StoreProvider/types";
 
 export const Home: FC = () => {
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const { context } = useDeskproLatestAppContext();
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [linkedStoriesIds, setLinkedStoriesIds] = useState<string[] | null>(
-    null
-  );
-  const { client } = useDeskproAppClient();
   const navigate = useNavigate();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { isLoading, stories } = useLinkedStories();
+
   useSetAppTitle("Shortcut Stories");
+  useSetBadgeCount(stories);
 
-  useEffect(() => {
-    client?.deregisterElement("home");
-    client?.deregisterElement("edit");
-    client?.deregisterElement("viewContextMenu");
-    client?.registerElement("addStory", { type: "plus_button" });
-  }, [client]);
+  useDeskproElements(({ clearElements, registerElement }) => {
+    clearElements();
+    registerElement("addStory", { type: "plus_button" });
+  });
 
-  useInitialisedDeskproAppClient(
-    (client) => {
-      (async () => {
-        if (!context?.data.ticket?.id) return;
-
-        const ids = await client
-          .getEntityAssociation(
-            "linkedShortcutStories",
-            context?.data.ticket.id as string
-          )
-          ?.list();
-
-        setLinkedStoriesIds(ids);
-      })();
-    },
-    [context]
-  );
-
-  const linkedStoriesQuery = useQueryWithClient(
-    ["linkedStories", ...((linkedStoriesIds as string[]) || [])],
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    (client) => {
-      return Promise.all(
-        (linkedStoriesIds as string[]).map((id) => getStoryById(client, id))
-      );
-    },
-    {
-      enabled: !!linkedStoriesIds && linkedStoriesIds.length > 0,
-    }
-  );
-
-  const linkedStories = linkedStoriesQuery.data as StoryItemRes[];
+  if (isLoading) {
+    return (
+      <LoadingSpinner/>
+    );
+  }
 
   return (
     <>
@@ -92,19 +55,18 @@ export const Home: FC = () => {
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
-      {linkedStoriesQuery.isFetching ? (
-        <LoadingSpinner />
-      ) : linkedStories?.length > 0 ? (
-        linkedStories.map((item, idx) => (
+      {size(stories)
+        ? stories.map((item, idx) => (
           <LinkedStoryResultItem
             key={idx}
             item={item}
             onView={() => navigate("/view/" + item.id)}
           />
         ))
-      ) : (
-        linkedStoriesIds?.length === 0 && <H3>No linked stories found.</H3>
-      )}
+        : (
+          <H3>No linked stories found.</H3>
+        )
+      }
     </>
   );
 };

@@ -11,6 +11,7 @@ import {
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
   useQueryWithClient,
+  useDeskproElements,
 } from "@deskpro/app-sdk";
 import { AnyIcon, H2, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
@@ -66,28 +67,26 @@ export const View = () => {
     [storyQuery.isSuccess]
   );
 
-  useInitialisedDeskproAppClient(
-    (client) => {
-      client?.deregisterElement("edit");
-      client?.registerElement("home", { type: "home_button" });
-      client?.registerElement("viewContextMenu", {
-        type: "menu",
-        items: [
-          {
-            title: "Unlink Ticket",
-            payload: {
-              action: "unlink",
-              id,
-              story,
-              ticketId: context?.data.ticket.id,
-            },
+  useDeskproElements(({ registerElement, clearElements }) => {
+    clearElements();
+
+    registerElement("home", { type: "home_button" });
+    registerElement("edit", { type: "edit_button", payload: id });
+    registerElement("viewContextMenu", {
+      type: "menu",
+      items: [
+        {
+          title: "Unlink Ticket",
+          payload: {
+            action: "unlink",
+            id,
+            story,
+            ticketId: context?.data.ticket.id,
           },
-        ],
-      });
-      client?.registerElement("edit", { type: "edit_button", payload: id });
-    },
-    [context]
-  );
+        },
+      ],
+    });
+  }, [context, id, story]);
 
   useEffect(() => {
     if (!dataDependencies?.customFields || storyQuery.isLoading) {
@@ -104,7 +103,7 @@ export const View = () => {
   }, [dataDependencies?.customFields, storyQuery.isLoading]);
 
   if (storyQuery.isLoading) {
-    return <LoadingSpinner></LoadingSpinner>;
+    return <LoadingSpinner />;
   }
 
   if (storyQuery.error) {

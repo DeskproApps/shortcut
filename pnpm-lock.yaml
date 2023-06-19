@@ -20,6 +20,7 @@ specifiers:
   '@types/lodash.isempty': ^4.4.7
   '@types/lodash.omit': ^4.5.7
   '@types/lodash.orderby': ^4.6.7
+  '@types/lodash.size': ^4.2.7
   '@types/lodash.sorteduniq': ^4.2.7
   '@types/lodash.uniq': ^4.5.7
   '@types/lodash.values': ^4.3.7
@@ -52,6 +53,7 @@ specifiers:
   lodash.isempty: ^4.4.0
   lodash.omit: ^4.5.0
   lodash.orderby: ^4.6.0
+  lodash.size: ^4.2.0
   lodash.sorteduniq: ^4.2.0
   lodash.uniq: ^4.5.0
   lodash.values: ^4.3.0
@@ -98,6 +100,7 @@ dependencies:
   lodash.isempty: 4.4.0
   lodash.omit: 4.5.0
   lodash.orderby: 4.6.0
+  lodash.size: 4.2.0
   lodash.sorteduniq: 4.2.0
   lodash.uniq: 4.5.0
   lodash.values: 4.3.0
@@ -130,6 +133,7 @@ devDependencies:
   '@types/lodash.isempty': 4.4.7
   '@types/lodash.omit': 4.5.7
   '@types/lodash.orderby': 4.6.7
+  '@types/lodash.size': 4.2.7
   '@types/lodash.sorteduniq': 4.2.7
   '@types/lodash.uniq': 4.5.7
   '@types/lodash.values': 4.3.7
@@ -1451,6 +1455,12 @@ packages:
 
   /@types/lodash.orderby/4.6.7:
     resolution: {integrity: sha512-GaaUBTS4RTjL8gz1ZXkwAB/defpGMOWwCG9C4HL9g81i4wghIoVVESQCUa1xRsyUBqAb5JwLbSwvL0q36rK0sA==}
+    dependencies:
+      '@types/lodash': 4.14.192
+    dev: true
+
+  /@types/lodash.size/4.2.7:
+    resolution: {integrity: sha512-hj3Kts7il4eWDTQ/ex6yfDGR9Z8evE79604rpCkzIVwMlmh/U+shBoAyTkRgj0Sd8fEOrqM4IqdLOWQB5LhKRw==}
     dependencies:
       '@types/lodash': 4.14.192
     dev: true
@@ -4128,6 +4138,10 @@ packages:
 
   /lodash.orderby/4.6.0:
     resolution: {integrity: sha512-T0rZxKmghOOf5YPnn8EY5iLYeWCpZq8G41FfqoVHH5QDTAFaghJRmAdLiadEDq+ztgM2q5PjA+Z1fOwGrLgmtg==}
+    dev: false
+
+  /lodash.size/4.2.0:
+    resolution: {integrity: sha512-wbu3SF1XC5ijqm0piNxw59yCbuUf2kaShumYBLWUrcCvwh6C8odz6SY/wGVzCWTQTFL/1Ygbvqg2eLtspUVVAQ==}
     dev: false
 
   /lodash.sorteduniq/4.2.0:

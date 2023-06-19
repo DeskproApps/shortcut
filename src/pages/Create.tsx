@@ -2,9 +2,10 @@ import {
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useQueryWithClient,
+  useDeskproElements,
 } from "@deskpro/app-sdk";
 import find from "lodash.find";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreateLinkStory } from "../components/CreateLinkStory/CreateLinkStory";
 import { StoryForm } from "../components/StoryForm/StoryForm";
@@ -40,11 +41,10 @@ export const Create: FC = () => {
 
   const dataDependencies = dataDependenciesQuery.data;
 
-  useEffect(() => {
-    client?.deregisterElement("edit");
-    client?.deregisterElement("addStory");
-    client?.registerElement("home", { type: "home_button" });
-  }, [client]);
+  useDeskproElements(({ clearElements, registerElement }) => {
+    clearElements();
+    registerElement("home", { type: "home_button" });
+  });
 
   const onSubmit = (data: CreateStoryData) => {
     if (!client || !context?.data.ticket.id) {
