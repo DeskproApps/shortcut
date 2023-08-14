@@ -3,7 +3,7 @@
   "title": "Shortcut",
   "description": "Link tickets to Shortcut stories so agents can track a story's progress from a ticket",
   "appStoreUrl": "https://www.deskpro.com/product-embed/apps/shortcut",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "scope": "agent",
   "isSingleInstall": true,
   "hasDevMode": true,
