@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { useMemo } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { AddComment } from "./pages/AddComment";
 import { AddStoryRelations } from "./pages/AddStoryRelations";
 import { Create } from "./pages/Create";
@@ -6,12 +7,17 @@ import { Edit } from "./pages/Edit";
 import { Home } from "./pages/Home";
 import { Link } from "./pages/Link";
 import { View } from "./pages/View";
+import { VerifySettings } from "./pages/VerifySettings";
 import { LoadingAppPage } from "./pages/LoadingAppPage";
 
 const App = () => {
+  const { pathname } = useLocation();
+  const isAdmin = useMemo(() => pathname.includes("/admin/"), [pathname]);
+
   return (
     <>
       <Routes>
+        <Route path="/admin/verify_settings" element={<VerifySettings/>} />
         <Route path="home" element={<Home/>}/>
         <Route path="view/:id" element={<View/>}/>
         <Route path="create" element={<Create/>}/>
@@ -26,7 +32,7 @@ const App = () => {
         </Route>
         <Route index element={<LoadingAppPage/>}/>
       </Routes>
-      <br/><br/><br/>
+      {!isAdmin && (<><br/><br/><br/></>)}
     </>
   );
 }

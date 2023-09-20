@@ -18,6 +18,13 @@ export interface TicketContext extends Context {
   };
 }
 
+export interface Settings {
+  api_key?: string;
+  default_comment_on_ticket_reply?: boolean;
+  default_comment_on_ticket_note?: boolean;
+  dont_add_deskpro_label?: boolean;
+}
+
 // Shortcut types
 export type DateTime = string; // eg. 2022-08-24T15:23:51Z
 export type MarkdownString = string;
@@ -64,6 +71,12 @@ export interface CustomField {
   updated_at: DateTime;
   values: CustomFieldValue[];
   story_types?: Array<StoryItem["type"]>;
+}
+
+export interface CurrentMember {
+  id: string;
+  name: string;
+  mention_name: string;
 }
 
 export interface Member {
