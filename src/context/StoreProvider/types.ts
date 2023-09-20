@@ -199,7 +199,7 @@ export interface StoryLink {
 }
 
 export interface StoryItem {
-  app_url: string;
+  appUrl: string;
   archived: boolean;
   id: number;
   url: string;

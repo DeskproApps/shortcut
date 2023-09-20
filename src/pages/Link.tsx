@@ -209,6 +209,7 @@ export const Link = () => {
               onSelect={() => !isLinked && toggleSelection(item.id)}
               checkbox={
                 <Checkbox
+                  containerStyle={{ marginTop: 4 }}
                   onChange={() => toggleSelection(item.id)}
                   checked={selected.includes(item.id) || isLinked}
                   disabled={isLinked}

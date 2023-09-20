@@ -136,6 +136,7 @@ export const searchStories = async (
       archived: story.archived,
       id: story.id,
       name: story.name,
+      appUrl: story.app_url,
       type: story.story_type,
       workflowId: workflow.id,
       workflowName: workflow.name,
