@@ -36,28 +36,40 @@
       "description": "Your Shortcut API key",
       "type": "string",
       "isRequired": true,
-      "isBackendOnly": true
+      "isBackendOnly": true,
+      "order": 10
+    },
+    "verify_settings": {
+      "title": "",
+      "type": "app_embedded",
+      "options": { "entrypoint": "#/admin/verify_settings" },
+      "isRequired": false,
+      "isBackendOnly": true,
+      "order": 20
     },
     "default_comment_on_ticket_reply": {
       "title": "Ticket reply as comment",
       "description": "Enable option to add Deskpro replies as story comments when a Shortcut story is linked to a Deskpro ticket",
       "type": "boolean",
       "isRequired": false,
-      "isBackendOnly": false
+      "isBackendOnly": false,
+      "order": 30
     },
     "default_comment_on_ticket_note": {
       "title": "Ticket note as comment",
       "description": "Enable option to add Deskpro notes as story comments when a Shortcut story is linked to a Deskpro ticket",
       "type": "boolean",
       "isRequired": false,
-      "isBackendOnly": false
+      "isBackendOnly": false,
+      "order": 40
     },
     "dont_add_deskpro_label": {
       "title": "Do not add \"Deskpro\" label when creating or linking Shortcut stories",
       "description": "Disable automatically adding a label to indicate in Shortcut that the story is currently linked to a Deskpro ticket",
       "type": "boolean",
       "isRequired": false,
-      "isBackendOnly": false
+      "isBackendOnly": false,
+      "order": 50
     }
   },
   "proxy": {

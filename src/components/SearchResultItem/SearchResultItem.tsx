@@ -1,3 +1,4 @@
+import { useCallback, MouseEventHandler } from "react";
 import {
   HorizontalDivider,
   Pill,
@@ -5,14 +6,16 @@ import {
   Stack,
   useDeskproAppTheme,
   VerticalDivider,
+  Title,
 } from "@deskpro/app-sdk";
 import { FC, ReactElement } from "react";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
+import { Link } from "../Link/Link";
+import { ShortcutLogo } from "../ShortcutLogo/ShortcutLogo";
 import "./SearchResultItem.css";
 import { StorySearchItem } from "../../context/StoreProvider/types";
 import { Label } from "../Label/Label";
-import { Title } from "../Title/Title";
 import { useAssociatedEntityCount } from "../../hooks";
 import capitalize from "lodash.capitalize";
 
@@ -30,22 +33,32 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
   const { theme } = useDeskproAppTheme();
   const entityCount = useAssociatedEntityCount(item.id);
 
+  const onSelectItem: MouseEventHandler<HTMLAnchorElement> = useCallback((e) => {
+    e.preventDefault();
+
+    if (onSelect) {
+      onSelect();
+    }
+  }, [onSelect]);
+
   return (
     <>
       <Stack align="start" gap={10}>
         {checkbox && checkbox}
-        <Stack gap={10} vertical>
+        <Stack gap={10} vertical style={{ width: "100%" }}>
           <Title
-            name={item.name}
-            url={item.app_url}
-            width="2x"
-            onClick={() => onSelect && onSelect()}
+            title={(
+              <Link href="#" onClick={onSelectItem}>{item.name}</Link>
+            )}
+            link={item.appUrl}
+            icon={<ShortcutLogo />}
+            marginBottom={0}
           />
           {item.archived && (
             <RoundedLabelTag
               label={"Archived"}
               backgroundColor={theme.colors.grey80}
-              textColor={"white"}
+              textColor="white"
               closeIcon={"" as unknown as AnyIcon}
             />
           )}

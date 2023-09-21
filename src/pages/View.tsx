@@ -12,6 +12,7 @@ import {
   useInitialisedDeskproAppClient,
   useQueryWithClient,
   useDeskproElements,
+  Title,
 } from "@deskpro/app-sdk";
 import { AnyIcon, H2, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
@@ -23,7 +24,7 @@ import { Comments } from "../components/Comments/Comments";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
 import { Relationships } from "../components/Relationships/Relationships";
-import { Title } from "../components/Title/Title";
+import { ShortcutLogo } from "../components/ShortcutLogo/ShortcutLogo";
 import {
   getStoryById,
   getStoryDependencies,
@@ -114,7 +115,12 @@ export const View = () => {
     <>
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical align="stretch" style={{ width: "100%" }}>
-          <Title name={story.name} url={story.app_url} />
+          <Title
+            title={story.name}
+            link={story.app_url}
+            icon={<ShortcutLogo />}
+            marginBottom={0}
+          />
           {story.archived && (
             <RoundedLabelTag
               label={"Archived"}

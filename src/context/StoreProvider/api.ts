@@ -1,7 +1,8 @@
-import { IDeskproClient, proxyFetch } from "@deskpro/app-sdk";
+import { IDeskproClient, proxyFetch, adminGenericProxyFetch } from "@deskpro/app-sdk";
 import cache from "js-cache";
 import showdown from "showdown";
 import find from "lodash.find";
+import has from "lodash.has";
 import {
   Comment,
   StoryItem,
@@ -11,6 +12,8 @@ import {
   ApiRequestMethod,
   Member,
   StoryItemRes,
+  Settings,
+  CurrentMember,
 } from "./types";
 import { removeTagLinksMD } from "../../utils/removeTagLinksMD";
 
@@ -28,9 +31,15 @@ export const markdownToHtmlConverter = new showdown.Converter({
   strikethrough: true,
 });
 
-/**
- * Fetch a single Shortcut story by ID, e.g. "123"
- */
+export const getCurrentMember = (
+  client: IDeskproClient,
+  settings?: Settings,
+): Promise<CurrentMember> => {
+  return has(settings, ["api_key"])
+    ? uninstallrequest(client, "GET", `${API_BASE_URL}/member`, settings as Settings)
+    : request(client, "GET", `${API_BASE_URL}/member`);
+};
+
 export const getMemberById = async (
   client: IDeskproClient,
   id: string
@@ -39,6 +48,9 @@ export const getMemberById = async (
 
   return res;
 };
+/**
+ * Fetch a single Shortcut story by ID, e.g. "123"
+ */
 export const getStoryById = async (
   client: IDeskproClient,
   id: string
@@ -136,6 +148,7 @@ export const searchStories = async (
       archived: story.archived,
       id: story.id,
       name: story.name,
+      appUrl: story.app_url,
       type: story.story_type,
       workflowId: workflow.id,
       workflowName: workflow.name,
@@ -487,6 +500,28 @@ const request = async (
     body: body ? JSON.stringify(body) : undefined,
     headers: {
       "Shortcut-Token": "__api_key__",
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status < 200 || res.status >= 400) {
+    throw new Error(`${method} ${url}: Response Status [${res.status}]`);
+  }
+
+  return res.json();
+};
+
+const uninstallrequest = async (
+  client: IDeskproClient,
+  method: ApiRequestMethod,
+  url: string,
+  settings: Settings,
+) => {
+  const dpFetch = await adminGenericProxyFetch(client);
+  const res = await dpFetch(url, {
+    method,
+    headers: {
+      "Shortcut-Token": settings?.api_key || "",
       "Content-Type": "application/json",
     },
   });

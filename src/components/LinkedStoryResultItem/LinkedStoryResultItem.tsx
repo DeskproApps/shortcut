@@ -6,18 +6,20 @@ import {
   VerticalDivider,
   useDeskproAppTheme,
   useQueryWithClient,
+  Title,
 } from "@deskpro/app-sdk";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
 import get from "lodash.get";
 import isEmpty from "lodash.isempty";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useCallback, MouseEventHandler } from "react";
 import { StoryItemRes } from "../../context/StoreProvider/types";
 import { useAssociatedEntityCount } from "../../hooks";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
+import { ShortcutLogo } from "../ShortcutLogo/ShortcutLogo";
 import { Label } from "../Label/Label";
 import { Relationships } from "../Relationships/Relationships";
-import { Title } from "../Title/Title";
+import { Link } from "../Link/Link";
 import "./LinkedStoryResultItem.css";
 import { getStoryDependencies } from "../../context/StoreProvider/api";
 import { getOtherParamsStory } from "../../context/StoreProvider/hooks";
@@ -45,11 +47,26 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
     [item, dataDependencies]
   );
 
+  const onClickView: MouseEventHandler<HTMLAnchorElement> = useCallback((e) => {
+    e.preventDefault();
+
+    if (onView) {
+      onView();
+    }
+  }, [onView]);
+
   return (
     <>
       <Stack align="start" gap={10}>
         <Stack gap={10} vertical>
-          <Title name={item.name} url={item.app_url} onClick={onView} />
+          <Title
+            title={(
+              <Link href="#" onClick={onClickView}>{item.name}</Link>
+            )}
+            link={item.app_url}
+            icon={<ShortcutLogo />}
+            marginBottom={0}
+          />
           {item.archived && (
             <RoundedLabelTag
               label={"Archived"}
