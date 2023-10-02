@@ -29,7 +29,11 @@ import {
   addExternalUrlToStory,
   searchStories,
 } from "../context/StoreProvider/api";
-import { StorySearchItem } from "../context/StoreProvider/types";
+import {
+  ShortcutStoryAssociationProps,
+  ShortcutStoryAssociationPropsLabel,
+  StorySearchItem
+} from "../context/StoreProvider/types";
 import { useSetAppTitle, useReplyBox } from "../hooks";
 import { isEnableDeskproLabel } from "../utils";
 
@@ -132,7 +136,28 @@ export const Link = () => {
           "linkedShortcutStories",
           context?.data.ticket.id as string
         )
-        .set<{ id: string }>(`${id}`, { id: `${id}` })
+        .set<ShortcutStoryAssociationProps>(`${id}`, {
+          archived: selectedItems[id].archived,
+          id: `${id}`,
+          name: selectedItems[id].name,
+          type: selectedItems[id].type,
+          projectId: selectedItems[id].projectId ? `${selectedItems[id].projectId}` : undefined,
+          projectName: selectedItems[id].projectName,
+          workflowId: `${selectedItems[id].workflowId}`,
+          workflowName: selectedItems[id].workflowName,
+          statusId: selectedItems[id].stateId ? `${selectedItems[id].stateId}` : undefined,
+          statusName: selectedItems[id].stateName,
+          teamId: selectedItems[id].teamId ? `${selectedItems[id].teamId}` : undefined,
+          teamName: selectedItems[id].teamName,
+          iterationId: selectedItems[id].iterationId ? `${selectedItems[id].iterationId}` : undefined,
+          iterationName: selectedItems[id].iterationName,
+          epicId: selectedItems[id].epicId ? `${selectedItems[id].epicId}` : undefined,
+          epicName: selectedItems[id].epicName,
+          labels: selectedItems[id].labels.map<ShortcutStoryAssociationPropsLabel>((label) => ({
+            id: `${label.id}`,
+            name: label.name,
+          })),
+        })
         .then(() => setSelectionState(id, true, "email"))
         .then(() => setSelectionState(id, true, "note"))
     );
