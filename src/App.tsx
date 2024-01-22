@@ -25,10 +25,7 @@ const App = () => {
         <Route path="link" element={<Link/>}/>
         <Route path="add">
           <Route path="comment/:storyId" element={<AddComment/>}/>
-          <Route
-            path="storyrelations/:storyId"
-            element={<AddStoryRelations/>}
-          />
+          <Route path="storyrelations/:storyId" element={<AddStoryRelations/>}/>
         </Route>
         <Route index element={<LoadingAppPage/>}/>
       </Routes>

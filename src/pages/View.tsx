@@ -1,20 +1,18 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { P5, Pill, Stack, } from "@deskpro/deskpro-ui";
 import {
-  HorizontalDivider,
-  LoadingSpinner,
-  Pill,
+  Title,
   Property,
-  Stack,
-  Title as TitleUI,
-  VerticalDivider,
+  TwoProperties,
+  LoadingSpinner,
+  HorizontalDivider,
+  useQueryWithClient,
+  useDeskproElements,
   useDeskproAppTheme,
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
-  useQueryWithClient,
-  useDeskproElements,
-  Title,
 } from "@deskpro/app-sdk";
-import { AnyIcon, H2, RoundedLabelTag } from "@deskpro/deskpro-ui";
+import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
 import chunk from "lodash.chunk";
 import get from "lodash.get";
@@ -32,7 +30,7 @@ import {
 import { StoryItemRes } from "../context/StoreProvider/types";
 import { getStoryCustomFieldsToShow } from "../utils";
 import { getOtherParamsStory } from "../context/StoreProvider/hooks";
-import { ContainerMarkdown } from "../components/ContainerMarkdown/ContainerMarkdown";
+import { DPNormalize } from "../components/Typography";
 
 export const View = () => {
   const { context } = useDeskproLatestAppContext();
@@ -113,132 +111,132 @@ export const View = () => {
 
   return (
     <>
-      <Stack align="start" gap={10}>
-        <Stack gap={10} vertical align="stretch" style={{ width: "100%" }}>
-          <Title
-            title={story.name}
-            link={story.app_url}
-            icon={<ShortcutLogo />}
-            marginBottom={0}
+      <Title
+        title={story.name}
+        link={story.app_url}
+        icon={<ShortcutLogo />}
+      />
+      {story.archived && (
+        <RoundedLabelTag
+          label={"Archived"}
+          backgroundColor={theme.colors.grey80}
+          textColor={"white"}
+          closeIcon={"" as unknown as AnyIcon}
+        />
+      )}
+      <Property label="Story ID" text={story.id}/>
+      <Property label="Project" text={project?.name ?? <P5>None</P5>}/>
+      <Property label="Workflow" text={workflows?.name ?? <P5>None</P5>}/>
+      <Property
+        label="State"
+        text={stateId ? (
+          <Pill
+            textColor={theme.colors.white}
+            backgroundColor={theme.colors.cyan100}
+            label={state.name}
           />
-          {story.archived && (
-            <RoundedLabelTag
-              label={"Archived"}
-              backgroundColor={theme.colors.grey80}
-              textColor={"white"}
-              closeIcon={"" as unknown as AnyIcon}
-            />
+        ) : (
+          <P5>None</P5>
+        )}
+      />
+      <Property label="Type" text={capitalize(story.story_type)}/>
+      {epic?.id && epic?.url && (
+        <Property
+          label="Epic"
+          text={(
+            <P5>{epic.name} <ExternalLink href={epic.url} /></P5>
           )}
-          <Property title="Story ID">{story.id}</Property>
-          <Property title="Project">{project?.name ?? <em>None</em>}</Property>
-          <Property title="Workflow">
-            {workflows?.name ?? <em>None</em>}
-          </Property>
-          <Property title="State">
-            {stateId ? (
-              <Pill
-                textColor={theme.colors.white}
-                backgroundColor={theme.colors.cyan100}
-                label={state.name}
-              />
-            ) : (
-              <span>None</span>
-            )}
-          </Property>
-          <Property title="Type">{capitalize(story.story_type)}</Property>
-          {epic?.id && epic?.url && (
-            <Property title="Epic">
-              {epic.name}
-              <ExternalLink href={epic.url} />
-            </Property>
-          )}
-          <Stack vertical>
-            <H2 style={{ color: theme.colors.grey80 }}>Description</H2>
-            <ContainerMarkdown
-              dangerouslySetInnerHTML={{ __html: story?.descriptionHtml || "-" }}
-            />
-          </Stack>
-          <Property title="Iteration">
-            {iteration?.id ? iteration.name : <em>None</em>}
-          </Property>
-          {group?.id && <Property title="Team">{group.name}</Property>}
-          {owners && owners.length > 0 && (
-            <Property title="Owners">
-              {owners.map((owner, idx) => (
-                <div key={idx} style={{ marginBottom: "3px" }}>
-                  {owner.name}
-                </div>
+        />
+      )}
+      <Property
+        label="Description"
+        text={<DPNormalize text={story?.descriptionHtml}/>}
+      />
+      <Property
+        label="Iteration"
+        text={iteration?.id ? iteration.name : <P5>None</P5>}
+      />
+      {group?.id && (
+        <Property label="Team" text={group.name}/>
+      )}
+      {owners && owners.length > 0 && (
+        <Property
+          label="Owners"
+          text={owners.map((owner, idx) => (
+            <P5 key={idx} style={{ marginBottom: "3px" }}>
+              {owner.name}
+            </P5>
+          ))}
+        />
+      )}
+      {story?.deadline && (
+        <Property
+          label="Due Date"
+          text={story.deadline.toLocaleDateString()}
+        />
+      )}
+      {story?.labels && story.labels.length > 0 && (
+        <Property
+          label="Labels"
+          text={(
+            <Stack gap={2} wrap="wrap">
+              {story.labels.map((label, idx) => (
+                <Label key={idx} color={label.color}>{label.name}</Label>
               ))}
-            </Property>
+            </Stack>
           )}
-          {story?.deadline && (
-            <Property title="Due Date">
-              {story.deadline.toLocaleDateString()}
-            </Property>
+        />
+      )}
+      {epic?.labels && epic.labels.length > 0 && (
+        <Property
+          label="Epic Labels"
+          text={(
+            <Stack gap={2} wrap="wrap">
+              {epic.labels.map((
+                label: { id: string; color: string; name: string },
+                idx: number,
+              ) => (
+                <Label key={idx} color={label.color}>{label.name}</Label>
+              ))}
+            </Stack>
           )}
-          {story?.labels && story.labels.length > 0 && (
-            <Property title="Labels">
-              <Stack gap={2} wrap="wrap">
-                {story.labels.map((label, idx) => (
-                  <Label key={idx} color={label.color}>
-                    <span>{label.name}</span>
-                  </Label>
-                ))}
-              </Stack>
-            </Property>
-          )}
-          {epic?.labels && epic.labels.length > 0 && (
-            <Property title="Epic Labels">
-              <Stack gap={2}>
-                {epic.labels.map(
-                  (
-                    label: { id: string; color: string; name: string },
-                    idx: number
-                  ) => (
-                    <Label key={idx} color={label.color}>
-                      <span>{label.name}</span>
-                    </Label>
-                  )
-                )}
-              </Stack>
-            </Property>
-          )}
-
-          {Boolean(customFields?.length) && (
-            <HorizontalDivider
-              style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
-            />
-          )}
-          {chunk(customFields, 2).map((fields, idx) => {
-            return fields.length === 2 ? (
-              <Stack key={idx} align="stretch">
-                <Property title={fields[0].label} width="108px">
-                  {fields[0].value}
-                </Property>
-                <VerticalDivider width={1} />
-                <Property title={fields[1].label}>{fields[1].value}</Property>
-              </Stack>
-            ) : (
-              <Property key={idx} title={fields[0].label}>
-                {fields[0].value}
-              </Property>
-            );
-          })}
-
-          <HorizontalDivider
-            style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+        />
+      )}
+      {Boolean(customFields?.length) && (
+        <HorizontalDivider
+          style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+        />
+      )}
+      {chunk(customFields, 2).map((fields, idx) => (fields.length === 2)
+        ? (
+          <TwoProperties
+            key={idx}
+            leftLabel={fields[0].label}
+            leftText={fields[0].value}
+            rightLabel={fields[1].label}
+            rightText={fields[1].value}
           />
-
-          <TitleUI
-            title={`Relationships (${get(story, ["storyLinks"], []).length})`}
-            onClick={() => navigate("/add/storyrelations/" + id)}
-            marginBottom={0}
+        )
+        : (
+          <Property
+            key={idx}
+            label={fields[0].label}
+            text={fields[0].value}
           />
+        ))
+      }
 
-          <Relationships storyLinks={get(story, ["storyLinks"], [])} />
-        </Stack>
-      </Stack>
+      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }}/>
+
+      <Title
+        title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+        onClick={() => navigate("/add/storyrelations/" + id)}
+      />
+
+      <Relationships storyLinks={get(story, ["storyLinks"], [])} />
+
       <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />
+
       <Comments
         comments={story.comments}
         onAddComment={() => navigate("/add/comment/" + id)}

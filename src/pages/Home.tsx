@@ -2,11 +2,8 @@ import { ChangeEvent, FC, useRef, useState } from "react";
 import size from "lodash.size";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { H3, Input, Stack, IconButton } from "@deskpro/deskpro-ui";
 import {
-  H3,
-  Input,
-  Stack,
-  IconButton,
   LoadingSpinner,
   HorizontalDivider,
   useDeskproElements,

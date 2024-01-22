@@ -7,10 +7,7 @@ import { query } from "./utils/query";
 import { ReplyBoxProvider } from "./hooks";
 import { ErrorFallback } from "./components/ErrorFallback/ErrorFallback";
 import { StoreProvider } from "./context/StoreProvider/StoreProvider";
-import {
-  QueryClientProvider,
-  QueryErrorResetBoundary,
-} from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { App } from "./App";
@@ -29,21 +26,17 @@ root.render(
   <StrictMode>
     <DeskproAppProvider>
       <HashRouter>
-        <StoreProvider>
-          <QueryClientProvider client={query}>
-            <Suspense fallback={<LoadingSpinner />}>
-              <QueryErrorResetBoundary>
-                {({ reset }) => (
-                  <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
-                    <ReplyBoxProvider>
-                      <App />
-                    </ReplyBoxProvider>
-                  </ErrorBoundary>
-                )}
-              </QueryErrorResetBoundary>
+        <QueryClientProvider client={query}>
+          <StoreProvider>
+            <Suspense fallback={<LoadingSpinner/>}>
+              <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <ReplyBoxProvider>
+                  <App/>
+                </ReplyBoxProvider>
+              </ErrorBoundary>
             </Suspense>
-          </QueryClientProvider>
-        </StoreProvider>
+          </StoreProvider>
+        </QueryClientProvider>
       </HashRouter>
     </DeskproAppProvider>
   </StrictMode>

@@ -1,12 +1,12 @@
-import { Stack, H1, H2, Button } from "@deskpro/app-sdk";
+import { Stack, H1, H2, Button } from "@deskpro/deskpro-ui";
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 
 export const ErrorFallback = ({
   error,
-  resetErrorBoundary,
+  resetErrorBoundary = () => {},
 }: {
   error: Error;
-  resetErrorBoundary: () => void;
+  resetErrorBoundary?: () => void;
 }) => {
   return (
     <Stack vertical gap={10} role="alert">

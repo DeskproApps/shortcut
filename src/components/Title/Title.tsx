@@ -1,6 +1,6 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { H1, Stack } from "@deskpro/app-sdk";
+import { H1, Stack } from "@deskpro/deskpro-ui";
 import { ExternalLink } from "../ExternalLink/ExternalLink";
 
 type Props = {

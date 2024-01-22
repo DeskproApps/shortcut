@@ -1,11 +1,13 @@
 import {
+  H3,
+  Label,
+  Stack,
   Button,
   Checkbox,
   FormikField,
-  H3,
+} from "@deskpro/deskpro-ui";
+import {
   HorizontalDivider,
-  Label,
-  Stack,
   useDeskproAppClient,
   useDeskproElements,
   useQueryWithClient,

@@ -1,7 +1,5 @@
+import { Button, Label, Stack } from "@deskpro/deskpro-ui";
 import {
-  Button,
-  Label,
-  Stack,
   useDeskproElements,
   useDeskproAppClient,
 } from "@deskpro/app-sdk";

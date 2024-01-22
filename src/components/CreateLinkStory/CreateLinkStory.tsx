@@ -1,6 +1,7 @@
 import { FC } from "react";
 import "./CreateLinkStory.css";
-import { Button, Stack, useDeskproAppTheme } from "@deskpro/app-sdk";
+import { Button, Stack } from "@deskpro/deskpro-ui";
+import { useDeskproAppTheme } from "@deskpro/app-sdk";
 import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 

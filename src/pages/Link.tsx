@@ -1,16 +1,18 @@
 import {
-  Button,
-  Checkbox,
   H3,
-  HorizontalDivider,
-  IconButton,
   Input,
   Stack,
+  Button,
+  Checkbox,
+  IconButton,
+} from "@deskpro/deskpro-ui";
+import {
+  HorizontalDivider,
+  useQueryWithClient,
+  useDeskproElements,
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
-  useQueryWithClient,
-  useDeskproElements,
 } from "@deskpro/app-sdk";
 import {
   faSearch,
@@ -169,15 +171,10 @@ export const Link = () => {
         <Input
           ref={searchInputRef}
           value={text}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            search(e.target.value)
-          }
-          leftIcon={
-            searchResQuery?.isFetching ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              faSearch
-            )
+          onChange={(e: ChangeEvent<HTMLInputElement>) => search(e.target.value)}
+          leftIcon={searchResQuery?.isFetching
+            ? (<FontAwesomeIcon icon={faSpinner} spin />)
+            : faSearch
           }
           rightIcon={<IconButton icon={faTimes} onClick={clear} minimal />}
         />
