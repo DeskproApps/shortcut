@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@deskpro/app-sdk':
-    specifier: ^3.0.14
-    version: 3.0.14(@babel/core@7.23.7)(@deskpro/deskpro-ui@7.18.0)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@4.5.5)
+    specifier: ^3.0.15
+    version: 3.0.15(@babel/core@7.23.7)(@deskpro/deskpro-ui@7.18.0)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@4.5.5)
   '@deskpro/deskpro-ui':
     specifier: ^7.1.0
     version: 7.18.0(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.11)
@@ -616,8 +616,8 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@deskpro/app-sdk@3.0.14(@babel/core@7.23.7)(@deskpro/deskpro-ui@7.18.0)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@4.5.5):
-    resolution: {integrity: sha512-T0c7VnWa9lJuhN7sp+rKntSWFzHFJJCHROrXrYT/YSG83lYuuUAqAMgD4dIgAnfEjyXrWamb+sC8ALG37bnwEA==}
+  /@deskpro/app-sdk@3.0.15(@babel/core@7.23.7)(@deskpro/deskpro-ui@7.18.0)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@4.5.5):
+    resolution: {integrity: sha512-LkgXL8G3Ran9XdG2AhriUkLpesbkT6dVT+o8fBBQr5EiDtTL6Omh3dO07VSXabttr3x7rR0+1A4yo9A5wBk1IA==}
     engines: {node: ^16.0.0}
     peerDependencies:
       '@deskpro/deskpro-ui': ^7

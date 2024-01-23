@@ -61,6 +61,7 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
           <TwoProperties
             leftLabel="Story ID"
             leftText={item.id}
+            leftCopyText={`${item.id}`}
             rightLabel="Deskpro Tickets"
             rightText={entityCount}
           />

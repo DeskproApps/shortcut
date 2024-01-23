@@ -7,12 +7,12 @@ import {
   useDeskproLatestAppContext,
 } from "@deskpro/app-sdk";
 import get from "lodash.get";
-import { createContext, FC, ReactNode, useEffect } from "react";
+import { createContext, FC, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { __, match } from "ts-pattern";
 import { useDebouncedCallback } from "use-debounce";
 import { isEnableDeskproLabel } from "../../utils";
-import { useReplyBox } from "../../hooks";
+import { useReplyBox, useRegisterElements } from "../../hooks";
 import { removeDeskproLabelFromStory, removeExternalUrlToStory } from "./api";
 import { query } from "../../utils/query";
 
@@ -30,9 +30,9 @@ export const StoreProvider: FC<StoreProviderProps> = ({
   const navigate = useNavigate();
   const { deleteSelectionState } = useReplyBox();
 
-  useEffect(() => {
-    client?.registerElement("refresh", { type: "refresh_button" });
-  }, [client]);
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
+  });
 
   const debounceTargetAction = useDebouncedCallback<(a: TargetAction) => void>(
     (action: TargetAction) =>

@@ -7,7 +7,6 @@ import {
   LoadingSpinner,
   HorizontalDivider,
   useQueryWithClient,
-  useDeskproElements,
   useDeskproAppTheme,
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
@@ -18,6 +17,7 @@ import chunk from "lodash.chunk";
 import get from "lodash.get";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useRegisterElements } from "../hooks";
 import { Comments } from "../components/Comments/Comments";
 import { ExternalLink } from "../components/ExternalLink/ExternalLink";
 import { Label } from "../components/Label/Label";
@@ -66,9 +66,8 @@ export const View = () => {
     [storyQuery.isSuccess]
   );
 
-  useDeskproElements(({ registerElement, clearElements }) => {
-    clearElements();
-
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
     registerElement("edit", { type: "edit_button", payload: id });
     registerElement("viewContextMenu", {
@@ -124,7 +123,7 @@ export const View = () => {
           closeIcon={"" as unknown as AnyIcon}
         />
       )}
-      <Property label="Story ID" text={story.id}/>
+      <Property label="Story ID" text={story.id} copyText={`${story.id}`}/>
       <Property label="Project" text={project?.name ?? <P5>None</P5>}/>
       <Property label="Workflow" text={workflows?.name ?? <P5>None</P5>}/>
       <Property

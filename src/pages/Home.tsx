@@ -3,12 +3,13 @@ import size from "lodash.size";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { H3, Input, Stack, IconButton } from "@deskpro/deskpro-ui";
+import { LoadingSpinner, HorizontalDivider } from "@deskpro/app-sdk";
 import {
-  LoadingSpinner,
-  HorizontalDivider,
-  useDeskproElements,
-} from "@deskpro/app-sdk";
-import { useSetAppTitle, useSetBadgeCount, useLinkedStories } from "../hooks";
+  useSetAppTitle,
+  useSetBadgeCount,
+  useLinkedStories,
+  useRegisterElements,
+} from "../hooks";
 import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/LinkedStoryResultItem";
 
 export const Home: FC = () => {
@@ -20,8 +21,8 @@ export const Home: FC = () => {
   useSetAppTitle("Shortcut Stories");
   useSetBadgeCount(stories);
 
-  useDeskproElements(({ clearElements, registerElement }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("addStory", { type: "plus_button" });
   });
 

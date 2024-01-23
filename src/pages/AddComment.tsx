@@ -1,14 +1,11 @@
 import { Button, Label, Stack } from "@deskpro/deskpro-ui";
-import {
-  useDeskproElements,
-  useDeskproAppClient,
-} from "@deskpro/app-sdk";
+import { useDeskproAppClient } from "@deskpro/app-sdk";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { TextAreaField } from "../components/TextArea/TextArea";
 import { createStoryComment } from "../context/StoreProvider/api";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSetAppTitle } from "../hooks";
+import { useSetAppTitle, useRegisterElements } from "../hooks";
 
 const validationSchema = yup.object().shape({
   comment: yup.string(),
@@ -43,8 +40,8 @@ const AddComment = () => {
 
   useSetAppTitle("Add Comment");
 
-  useDeskproElements(({ clearElements, registerElement }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
   });
 

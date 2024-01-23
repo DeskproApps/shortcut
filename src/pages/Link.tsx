@@ -9,7 +9,6 @@ import {
 import {
   HorizontalDivider,
   useQueryWithClient,
-  useDeskproElements,
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
@@ -32,7 +31,7 @@ import {
   searchStories,
 } from "../context/StoreProvider/api";
 import { StorySearchItem } from "../context/StoreProvider/types";
-import { useSetAppTitle, useReplyBox } from "../hooks";
+import { useSetAppTitle, useReplyBox, useRegisterElements } from "../hooks";
 import { isEnableDeskproLabel } from "../utils";
 
 export const Link = () => {
@@ -52,8 +51,8 @@ export const Link = () => {
 
   useSetAppTitle("Add Story");
 
-  useDeskproElements(({ clearElements, registerElement }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
   });
 

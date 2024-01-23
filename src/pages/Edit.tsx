@@ -7,10 +7,9 @@ import {
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useQueryWithClient,
-  useDeskproElements,
 } from "@deskpro/app-sdk";
 import { StoryForm } from "../components/StoryForm/StoryForm";
-import { useSetAppTitle } from "../hooks";
+import { useSetAppTitle, useRegisterElements } from "../hooks";
 import {
   normalize,
   getLabelsNameById,
@@ -75,8 +74,8 @@ const Edit = () => {
 
   useSetAppTitle("Edit Story");
 
-  useDeskproElements(({ clearElements, registerElement }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
   });
 

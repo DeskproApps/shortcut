@@ -2,7 +2,6 @@ import {
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useQueryWithClient,
-  useDeskproElements,
 } from "@deskpro/app-sdk";
 import find from "lodash.find";
 import { FC, useState } from "react";
@@ -14,6 +13,7 @@ import {
   createStory,
   getStoryDependencies,
 } from "../context/StoreProvider/api";
+import { useRegisterElements } from "../hooks";
 import {
   CreateStoryData,
   ShortcutStoryAssociationProps,
@@ -41,8 +41,8 @@ export const Create: FC = () => {
 
   const dataDependencies = dataDependenciesQuery.data;
 
-  useDeskproElements(({ clearElements, registerElement }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
   });
 
