@@ -21,7 +21,7 @@ import { Relationships } from "../Relationships/Relationships";
 import { Link } from "../Link/Link";
 import "./LinkedStoryResultItem.css";
 import { getStoryDependencies } from "../../context/StoreProvider/api";
-import { getOtherParamsStory } from "../../context/StoreProvider/hooks";
+import { enhanceStory } from "../../utils";
 
 export interface LinkedStoryResultItemProps {
   item: StoryItemRes;
@@ -42,36 +42,35 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
 
   const dataDependencies = dataDependenciesQuery.data;
 
-  const { project, workflows, state, epic, iteration, group, owners } = useMemo(
-    () => getOtherParamsStory(item, dataDependencies),
+  const { project, workflow, state, epic, iteration, group, owners } = useMemo(
+    () => enhanceStory(item, dataDependencies),
     [item, dataDependencies]
   );
 
   const onClickView: MouseEventHandler<HTMLAnchorElement> = useCallback((e) => {
     e.preventDefault();
-
-    if (onView) {
-      onView();
-    }
-  }, [onView]);
+    onView && onView();
+  }, [onView])
 
   return (
     <>
       <Title
         title={(
-          <Link href="#" onClick={onClickView}>{item.name}</Link>
+          <>
+            <Link href="#" onClick={onClickView}>{item.name}</Link>
+            {item.archived && (
+              <RoundedLabelTag
+                label={"Archived"}
+                backgroundColor={theme.colors.grey80}
+                textColor={"white"}
+                closeIcon={"" as unknown as AnyIcon}
+              />
+            )}
+          </>
         )}
         link={item.app_url}
         icon={<ShortcutLogo />}
       />
-      {item.archived && (
-        <RoundedLabelTag
-          label={"Archived"}
-          backgroundColor={theme.colors.grey80}
-          textColor={"white"}
-          closeIcon={"" as unknown as AnyIcon}
-        />
-      )}
       <TwoProperties
         leftLabel="Story ID"
         leftText={item.id}
@@ -85,7 +84,7 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
       />
       <Property
         label="Workflow"
-        text={workflows ? workflows.name : <P5>None</P5>}
+        text={workflow ? workflow.name : <P5>None</P5>}
       />
       <Property
         label="State"

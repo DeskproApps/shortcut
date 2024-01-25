@@ -29,7 +29,7 @@ import {
 } from "../context/StoreProvider/api";
 import { StoryItemRes } from "../context/StoreProvider/types";
 import { getStoryCustomFieldsToShow } from "../utils";
-import { getOtherParamsStory } from "../context/StoreProvider/hooks";
+import { enhanceStory } from "../utils";
 import { DPNormalize } from "../components/Typography";
 
 export const View = () => {
@@ -56,8 +56,7 @@ export const View = () => {
 
   const dataDependencies = dataDependenciesQuery.data;
 
-  const { group, workflows, state, project, epic, iteration, stateId, owners } =
-    getOtherParamsStory(story, dataDependencies);
+  const { group, workflow, state, project, epic, iteration, stateId, owners } = enhanceStory(story, dataDependencies);
 
   useInitialisedDeskproAppClient(
     (client) => {
@@ -125,7 +124,7 @@ export const View = () => {
       )}
       <Property label="Story ID" text={story.id} copyText={`${story.id}`}/>
       <Property label="Project" text={project?.name ?? <P5>None</P5>}/>
-      <Property label="Workflow" text={workflows?.name ?? <P5>None</P5>}/>
+      <Property label="Workflow" text={workflow?.name ?? <P5>None</P5>}/>
       <Property
         label="State"
         text={stateId ? (

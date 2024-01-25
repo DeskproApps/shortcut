@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useRef, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import size from "lodash.size";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,6 @@ import { LinkedStoryResultItem } from "../components/LinkedStoryResultItem/Linke
 
 export const Home: FC = () => {
   const navigate = useNavigate();
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { isLoading, stories } = useLinkedStories();
 
@@ -36,7 +35,6 @@ export const Home: FC = () => {
     <>
       <Stack>
         <Input
-          ref={searchInputRef}
           value={searchQuery}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setSearchQuery(e.target.value)

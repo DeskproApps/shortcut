@@ -29,9 +29,6 @@ dependencies:
   javascript-time-ago:
     specifier: ^2.5.7
     version: 2.5.9
-  js-cache:
-    specifier: 1.0.3
-    version: 1.0.3
   lodash.capitalize:
     specifier: ^4.2.1
     version: 4.2.1
@@ -2021,10 +2018,6 @@ packages:
       babel-preset-current-node-syntax: 1.0.1(@babel/core@7.23.7)
     dev: true
 
-  /backbone-events-standalone@0.2.7:
-    resolution: {integrity: sha512-8RgZDihR30W2nXuEAb5+6cH8UwU5FSGxUuQYOcMXf7GsIFKTFmWuAvNn3LYkmACzgl+4kiEDxqFoRg7a50MCZw==}
-    dev: false
-
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
@@ -3294,11 +3287,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /infinite-timeout@0.1.0:
-    resolution: {integrity: sha512-M6M2Fg556g6jHe50gLSXxSauqu8seMGbnEgD20ofhnlBlIZOLnchDdDLDh3G505HEci3qOFjrkMH3YPAFKKt2A==}
-    engines: {node: '>=0.8'}
-    dev: false
-
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     dependencies:
@@ -4072,14 +4060,6 @@ packages:
       - ts-node
       - utf-8-validate
     dev: true
-
-  /js-cache@1.0.3:
-    resolution: {integrity: sha512-1vJ8wLHuuzxbzJZxRBs51HAhlCIuO/bNROmjroBHUhoxBbhwnqBCHe2TEw2KPdW/n8qPu4+h9HZHcNZEod7jxw==}
-    engines: {node: '>=0.8'}
-    dependencies:
-      backbone-events-standalone: 0.2.7
-      infinite-timeout: 0.1.0
-    dev: false
 
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}

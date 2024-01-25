@@ -30,7 +30,7 @@ import {
   getStoryById,
 } from "../context/StoreProvider/api";
 import { useNavigate, useParams } from "react-router-dom";
-import { getOtherParamsStory } from "../context/StoreProvider/hooks";
+import { enhanceStory } from "../utils";
 
 const Edit = () => {
   const { client } = useDeskproAppClient();
@@ -60,7 +60,7 @@ const Edit = () => {
   const customFields = useMemo(() => {
     return isEmpty(dataDependencies?.customFields)
       ? {}
-      : normalizeCustomFields(dataDependencies.customFields);
+      : normalizeCustomFields(dataDependencies?.customFields || []);
   }, [dataDependencies?.customFields]);
 
   const selectedCustomFields = useMemo(
@@ -120,7 +120,7 @@ const Edit = () => {
       }
 
       const { workflow, stateId, state, group, iteration, epic } =
-        getOtherParamsStory(res, dataDependencies);
+        enhanceStory(res, dataDependencies);
 
       const metadata: ShortcutStoryAssociationProps = {
         archived: res.archived,
@@ -162,8 +162,8 @@ const Edit = () => {
     })();
   };
 
-  const { group, workflows, state, project, epic, iteration } =
-    getOtherParamsStory(story, dataDependencies);
+  const { group, workflow, state, project, epic, iteration } =
+    enhanceStory(story, dataDependencies);
 
   if (storyQuery.isLoading || dataDependenciesQuery.isLoading) {
     return <LoadingSpinner></LoadingSpinner>;
@@ -174,7 +174,7 @@ const Edit = () => {
     name: story.name,
     description: story.description,
     team: group?.id,
-    workflow: workflows?.id,
+    workflow: workflow?.id,
     state: state?.id,
     project: project?.id ?? "",
     epic: epic?.id,
