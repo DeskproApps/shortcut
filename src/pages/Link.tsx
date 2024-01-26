@@ -1,16 +1,17 @@
 import {
-  Button,
-  Checkbox,
   H3,
-  HorizontalDivider,
-  IconButton,
   Input,
   Stack,
+  Button,
+  Checkbox,
+  IconButton,
+} from "@deskpro/deskpro-ui";
+import {
+  HorizontalDivider,
+  useQueryWithClient,
   useDeskproAppClient,
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
-  useQueryWithClient,
-  useDeskproElements,
 } from "@deskpro/app-sdk";
 import {
   faSearch,
@@ -30,7 +31,7 @@ import {
   searchStories,
 } from "../context/StoreProvider/api";
 import { StorySearchItem } from "../context/StoreProvider/types";
-import { useSetAppTitle, useReplyBox } from "../hooks";
+import { useSetAppTitle, useReplyBox, useRegisterElements } from "../hooks";
 import { isEnableDeskproLabel } from "../utils";
 
 export const Link = () => {
@@ -50,8 +51,8 @@ export const Link = () => {
 
   useSetAppTitle("Add Story");
 
-  useDeskproElements(({ clearElements, registerElement }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
   });
 
@@ -169,15 +170,10 @@ export const Link = () => {
         <Input
           ref={searchInputRef}
           value={text}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            search(e.target.value)
-          }
-          leftIcon={
-            searchResQuery?.isFetching ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              faSearch
-            )
+          onChange={(e: ChangeEvent<HTMLInputElement>) => search(e.target.value)}
+          leftIcon={searchResQuery?.isFetching
+            ? (<FontAwesomeIcon icon={faSpinner} spin />)
+            : faSearch
           }
           rightIcon={<IconButton icon={faTimes} onClick={clear} minimal />}
         />

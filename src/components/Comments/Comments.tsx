@@ -2,15 +2,8 @@ import { FC, useState, useEffect } from "react";
 import styled from "styled-components";
 import { faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 import ReactTimeAgo from "react-time-ago";
-import { Avatar } from "@deskpro/deskpro-ui";
-import {
-  H1,
-  P1,
-  P11,
-  Stack,
-  Button,
-  useQueryWithClient,
-} from "@deskpro/app-sdk";
+import { Avatar, H1, P1, P11, Stack, Button } from "@deskpro/deskpro-ui";
+import { useQueryWithClient } from "@deskpro/app-sdk";
 import { Comment as CommentType } from "../../context/StoreProvider/types";
 import { getMemberById } from "../../context/StoreProvider/api";
 import isEmpty from "lodash.isempty";
@@ -74,9 +67,7 @@ const Comments: FC<Props> = ({ onAddComment, comments }) => {
         comments.map((comment) => getMemberById(client, comment.author_id))
       );
     },
-    {
-      enabled: !isEmptyBool,
-    }
+    { enabled: !isEmptyBool }
   );
 
   const members = membersQuery.data;
@@ -88,10 +79,6 @@ const Comments: FC<Props> = ({ onAddComment, comments }) => {
       setCount(0);
     }
   }, [comments]);
-
-  if (isEmptyBool) {
-    return <></>;
-  }
 
   return (
     <>

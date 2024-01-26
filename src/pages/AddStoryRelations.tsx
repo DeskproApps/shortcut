@@ -1,13 +1,14 @@
 import {
+  H3,
+  Label,
+  Stack,
   Button,
   Checkbox,
   FormikField,
-  H3,
+} from "@deskpro/deskpro-ui";
+import {
   HorizontalDivider,
-  Label,
-  Stack,
   useDeskproAppClient,
-  useDeskproElements,
   useQueryWithClient,
 } from "@deskpro/app-sdk";
 import { Formik } from "formik";
@@ -24,7 +25,7 @@ import {
   searchStories,
 } from "../context/StoreProvider/api";
 import { StoryLink } from "../context/StoreProvider/types";
-import { useSetAppTitle } from "../hooks";
+import { useSetAppTitle, useRegisterElements } from "../hooks";
 
 const AddStoryRelations = () => {
   const { client } = useDeskproAppClient();
@@ -139,8 +140,8 @@ const AddStoryRelations = () => {
 
   useSetAppTitle("Add Relationship");
 
-  useDeskproElements(({ registerElement, clearElements }) => {
-    clearElements();
+  useRegisterElements(({ registerElement }) => {
+    registerElement("refresh", { type: "refresh_button" });
     registerElement("home", { type: "home_button" });
   });
 

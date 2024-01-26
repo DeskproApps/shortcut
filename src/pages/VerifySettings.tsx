@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
 import styled from "styled-components";
 import get from "lodash.get";
-import { P1, TSpan, Stack, Button as ButtonUI, ButtonProps } from "@deskpro/deskpro-ui";
+import { P1, Stack, Button as ButtonUI, ButtonProps } from "@deskpro/deskpro-ui";
 import { useDeskproAppEvents, useDeskproAppClient } from "@deskpro/app-sdk";
 import { nbsp } from "../constants";
+import { Invalid } from "../components/Typography";
 import { getCurrentMember } from "../context/StoreProvider/api";
 import type { FC } from "react";
 import type { CurrentMember, Settings } from "../context/StoreProvider/types";
@@ -11,10 +12,6 @@ import type { CurrentMember, Settings } from "../context/StoreProvider/types";
 export const Button: FC<ButtonProps> = styled(ButtonUI)`
   min-width: 72px;
   justify-content: center;
-`;
-
-const Invalid = styled(TSpan)`
-  color: ${({ theme }) => theme.colors.red100};
 `;
 
 const VerifySettings: FC = () => {
@@ -47,7 +44,7 @@ const VerifySettings: FC = () => {
   }, [client]);
 
   return (
-    <Stack align="baseline">
+    <Stack align="baseline" style={{ margin: "0 -8px" }}>
       <Button
         text="Verify Settings"
         intent="secondary"
@@ -57,7 +54,7 @@ const VerifySettings: FC = () => {
       />
       {nbsp}
       {currentUser
-        ? <P1>Verified as <TSpan type="p1">{`<${currentUser?.name}>`}</TSpan></P1>
+        ? <P1>Verified as {currentUser?.name}</P1>
         : <Invalid type="p1">{error}</Invalid> || ""
       }
     </Stack>

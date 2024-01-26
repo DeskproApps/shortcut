@@ -1,12 +1,12 @@
+import { P5, Pill, Stack } from "@deskpro/deskpro-ui";
 import {
-  HorizontalDivider,
-  Pill,
+  Title,
+  Member,
   Property,
-  Stack,
-  VerticalDivider,
+  TwoProperties,
+  HorizontalDivider,
   useDeskproAppTheme,
   useQueryWithClient,
-  Title,
 } from "@deskpro/app-sdk";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
@@ -22,7 +22,8 @@ import { Relationships } from "../Relationships/Relationships";
 import { Link } from "../Link/Link";
 import "./LinkedStoryResultItem.css";
 import { getStoryDependencies } from "../../context/StoreProvider/api";
-import { getOtherParamsStory } from "../../context/StoreProvider/hooks";
+import { enhanceStory } from "../../utils";
+
 export interface LinkedStoryResultItemProps {
   item: StoryItemRes;
   onView?: () => void;
@@ -42,101 +43,110 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
 
   const dataDependencies = dataDependenciesQuery.data;
 
-  const { project, workflows, state, epic, iteration, group, owners } = useMemo(
-    () => getOtherParamsStory(item, dataDependencies),
+  const { project, workflow, state, epic, iteration, group, owners } = useMemo(
+    () => enhanceStory(item, dataDependencies),
     [item, dataDependencies]
   );
 
   const onClickView: MouseEventHandler<HTMLAnchorElement> = useCallback((e) => {
     e.preventDefault();
-
-    if (onView) {
-      onView();
-    }
-  }, [onView]);
+    onView && onView();
+  }, [onView])
 
   return (
     <>
-      <Stack align="start" gap={10}>
-        <Stack gap={10} vertical>
-          <Title
-            title={(
-              <Link href="#" onClick={onClickView}>{item.name}</Link>
-            )}
-            link={item.app_url}
-            icon={<ShortcutLogo />}
-            marginBottom={0}
-          />
-          {item.archived && (
-            <RoundedLabelTag
-              label={"Archived"}
-              backgroundColor={theme.colors.grey80}
-              textColor={"white"}
-              closeIcon={"" as unknown as AnyIcon}
-            />
-          )}
-          <Stack align="stretch">
-            <Property title="Story ID" width="108px">
-              {item.id}
-            </Property>
-            <VerticalDivider width={1} />
-            <Property title="Deskpro Tickets">{entityCount}</Property>
-          </Stack>
-          <Property title="Project">
-            {project ? project.name : <em>None</em>}
-          </Property>
-          <Property title="Workflow">
-            {workflows ? workflows.name : <em>None</em>}
-          </Property>
-          <Property title="State">
-            {state.id ? (
-              <Pill
-                textColor={theme.colors.white}
-                backgroundColor={theme.colors.cyan100}
-                label={state.name}
+      <Title
+        title={(
+          <>
+            <Link href="#" onClick={onClickView}>{item.name}</Link>
+            {item.archived && (
+              <RoundedLabelTag
+                label={"Archived"}
+                backgroundColor={theme.colors.grey80}
+                textColor={"white"}
+                closeIcon={"" as unknown as AnyIcon}
               />
-            ) : (
-              <span>None</span>
             )}
-          </Property>
-          <Property title="Type">{capitalize(item.story_type)}</Property>
-          {epic?.id && epic.url && (
-            <Property title="Epic">
-              {epic.name}
-              <ExternalLink href={epic.url} />
-            </Property>
+          </>
+        )}
+        link={item.app_url}
+        icon={<ShortcutLogo />}
+      />
+      <TwoProperties
+        leftLabel="Story ID"
+        leftText={item.id}
+        leftCopyText={`${item.id}`}
+        rightLabel="Deskpro Tickets"
+        rightText={entityCount}
+      />
+      <Property
+        label="Project"
+        text={project ? project.name : <P5>None</P5>}
+      />
+      <Property
+        label="Workflow"
+        text={workflow ? workflow.name : <P5>None</P5>}
+      />
+      <Property
+        label="State"
+        text={state.id ? (
+          <Pill
+            textColor={theme.colors.white}
+            backgroundColor={theme.colors.cyan100}
+            label={state.name}
+          />
+        ) : (
+          <P5>None</P5>
+        )}
+      />
+      <Property label="Type" text={capitalize(item.story_type)}/>
+      {epic?.id && epic.url && (
+        <Property
+          label="Epic"
+          text={(
+            <P5>
+              {epic.name} <ExternalLink href={epic.url} />
+            </P5>
           )}
-          <Property title="Iteration">
-            {iteration?.id ? iteration?.name : <em>None</em>}
-          </Property>
-          {group?.id && <Property title="Team">{group.name}</Property>}
-          {owners && owners.length > 0 && (
-            <Property title="Owners">
+        />
+      )}
+      <Property
+        label="Iteration"
+        text={iteration?.id ? iteration?.name : <P5>None</P5>}
+      />
+      {group?.id && <Property label="Team" text={group.name}/>}
+      {owners && owners.length > 0 && (
+        <Property
+          label="Owners"
+          text={(
+            <Stack gap={12} wrap="wrap">
               {owners.map((owner, idx) => (
-                <div key={idx} style={{ marginBottom: "3px" }}>
-                  {owner.name}
-                </div>
+                <Member key={idx} name={owner.name} avatarUrl={owner.iconUrl} />
               ))}
-            </Property>
+            </Stack>
           )}
-          {item?.labels && item.labels.length > 0 && (
-            <Property title="Labels">
-              <Stack gap={2} wrap="wrap">
-                {item.labels.map((label, idx) => (
-                  <Label key={idx} color={label.color}>
-                    <span>{label.name}</span>
-                  </Label>
-                ))}
-              </Stack>
-            </Property>
+        />
+      )}
+      {item?.labels && item.labels.length > 0 && (
+        <Property
+          label="Labels"
+          text={(
+            <Stack gap={2} wrap="wrap">
+              {item.labels.map((label, idx) => (
+                <Label key={idx} color={label.color}>{label.name}</Label>
+              ))}
+            </Stack>
           )}
-          {!isEmpty(get(item, ["storyLinks"], [])) && (
-            <Property title="Relationships">
-              <Relationships storyLinks={get(item, ["storyLinks"], [])} />
-            </Property>
+        />
+      )}
+      {!isEmpty(get(item, ["storyLinks"], [])) && (
+        <Property
+          label="Relationships"
+          text={(
+            <Relationships storyLinks={get(item, ["storyLinks"], [])} />
           )}
-        </Stack>
-      </Stack>
+        />
+      )}
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
     </>
   );

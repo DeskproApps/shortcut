@@ -1,6 +1,7 @@
 import { FC } from "react";
 import "./ErrorBlock.css";
-import { Stack, useDeskproAppTheme } from "@deskpro/app-sdk";
+import { Stack } from "@deskpro/deskpro-ui";
+import { useDeskproAppTheme } from "@deskpro/app-sdk";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import capitalize from "lodash.capitalize";

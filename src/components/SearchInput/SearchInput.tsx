@@ -5,7 +5,7 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Input, IconButton, InputProps } from "@deskpro/app-sdk";
+import { Input, IconButton, InputProps } from "@deskpro/deskpro-ui";
 
 export type Props = {
   value: string;

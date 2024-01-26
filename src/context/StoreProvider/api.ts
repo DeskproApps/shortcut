@@ -1,5 +1,4 @@
 import { IDeskproClient, proxyFetch, adminGenericProxyFetch } from "@deskpro/app-sdk";
-import cache from "js-cache";
 import showdown from "showdown";
 import find from "lodash.find";
 import has from "lodash.has";
@@ -19,9 +18,6 @@ import { removeTagLinksMD } from "../../utils/removeTagLinksMD";
 
 // Shortcut REST API Base URL
 const API_BASE_URL = "https://api.app.shortcut.com/api/v3";
-
-// Key for search dependency caching (milliseconds)
-const SEARCH_DEPS_CACHE_TTL = 5 * (60 * 1000); // 5 Minutes
 
 export const markdownToHtmlConverter = new showdown.Converter({
   openLinksInNewWindow: true,
@@ -446,46 +442,36 @@ export const addRelationsToStory = (
 };
 
 export const getStoryDependencies = async (client: IDeskproClient) => {
-  const cache_key = "data_deps";
+  const [
+    groups,
+    epics,
+    members,
+    workflows,
+    iterations,
+    projects,
+    labels,
+    customFields,
+  ] = await Promise.all([
+    request(client, "GET", `${API_BASE_URL}/groups`),
+    request(client, "GET", `${API_BASE_URL}/epics`),
+    request(client, "GET", `${API_BASE_URL}/members`),
+    request(client, "GET", `${API_BASE_URL}/workflows`),
+    request(client, "GET", `${API_BASE_URL}/iterations`),
+    request(client, "GET", `${API_BASE_URL}/projects`),
+    request(client, "GET", `${API_BASE_URL}/labels`),
+    request(client, "GET", `${API_BASE_URL}/custom-fields`),
+  ]);
 
-  if (!cache.get(cache_key)) {
-    const dependencies = [
-      request(client, "GET", `${API_BASE_URL}/groups`),
-      request(client, "GET", `${API_BASE_URL}/epics`),
-      request(client, "GET", `${API_BASE_URL}/members`),
-      request(client, "GET", `${API_BASE_URL}/workflows`),
-      request(client, "GET", `${API_BASE_URL}/iterations`),
-      request(client, "GET", `${API_BASE_URL}/projects`),
-      request(client, "GET", `${API_BASE_URL}/labels`),
-      request(client, "GET", `${API_BASE_URL}/custom-fields`),
-    ];
-
-    const [
-      groups,
-      epics,
-      members,
-      workflows,
-      iterations,
-      projects,
-      labels,
-      customFields,
-    ] = await Promise.all(dependencies);
-
-    const resolved = {
-      groups,
-      epics,
-      members,
-      workflows,
-      iterations,
-      projects,
-      labels,
-      customFields,
-    };
-
-    cache.set(cache_key, resolved, SEARCH_DEPS_CACHE_TTL);
-  }
-
-  return cache.get(cache_key);
+  return {
+    groups,
+    epics,
+    members,
+    workflows,
+    iterations,
+    projects,
+    labels,
+    customFields,
+  };
 };
 
 const request = async (

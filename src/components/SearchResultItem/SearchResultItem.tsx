@@ -1,12 +1,11 @@
 import { useCallback, MouseEventHandler } from "react";
+import { P5, Pill, Stack } from "@deskpro/deskpro-ui";
 import {
-  HorizontalDivider,
-  Pill,
-  Property,
-  Stack,
-  useDeskproAppTheme,
-  VerticalDivider,
   Title,
+  Property,
+  TwoProperties,
+  HorizontalDivider,
+  useDeskproAppTheme,
 } from "@deskpro/app-sdk";
 import { FC, ReactElement } from "react";
 import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
@@ -45,14 +44,11 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
     <>
       <Stack align="start" gap={10}>
         {checkbox && checkbox}
-        <Stack gap={10} vertical style={{ width: "100%" }}>
+        <div style={{ width: "100%" }}>
           <Title
-            title={(
-              <Link href="#" onClick={onSelectItem}>{item.name}</Link>
-            )}
+            title={(<Link href="#" onClick={onSelectItem}>{item.name}</Link>)}
             link={item.appUrl}
             icon={<ShortcutLogo />}
-            marginBottom={0}
           />
           {item.archived && (
             <RoundedLabelTag
@@ -62,56 +58,61 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
               closeIcon={"" as unknown as AnyIcon}
             />
           )}
-          <Stack align="stretch">
-            <Property title="Story ID" width="108px">
-              {item.id}
-            </Property>
-            <VerticalDivider width={1} />
-            <Property title="Deskpro Tickets">{entityCount}</Property>
-          </Stack>
+          <TwoProperties
+            leftLabel="Story ID"
+            leftText={item.id}
+            leftCopyText={`${item.id}`}
+            rightLabel="Deskpro Tickets"
+            rightText={entityCount}
+          />
           {item.epicId && item.epicUrl && (
-            <Property title="Epic">
-              {item.epicName}
-              <ExternalLink href={item.epicUrl} />
-            </Property>
+            <Property
+              label="Epic"
+              text={(
+                <P5>
+                  {item.epicName} <ExternalLink href={item.epicUrl} />
+                </P5>
+              )}
+            />
           )}
-          <Property title="State">
-            {item.stateId ? (
+          <Property
+            label="State"
+            text={item.stateId ? (
               <Pill
                 textColor={theme.colors.white}
                 backgroundColor={theme.colors.cyan100}
                 label={item.stateName}
               />
             ) : (
-              <span>None</span>
+              <P5>None</P5>
             )}
-          </Property>
-          <Property title="Type">{capitalize(item.type)}</Property>
-          <Property title="Iteration">
-            {item.iterationId ? item.iterationName : <em>None</em>}
-          </Property>
-          {item.teamId && <Property title="Team">{item.teamName}</Property>}
+          />
+          <Property label="Type" text={capitalize(item.type)}/>
+          <Property label="Iteration" text={item.iterationId ? item.iterationName : <P5>None</P5>}/>
+          {item.teamId && <Property label="Team" text={item.teamName}/>}
           {item.owners && item.owners.length > 0 && (
-            <Property title="Owners">
-              {item.owners.map((owner, idx) => (
-                <div key={idx} style={{ marginBottom: "3px" }}>
+            <Property
+              label="Owners"
+              text={item.owners.map((owner, idx) => (
+                <P5 key={idx} style={{ marginBottom: "3px" }}>
                   {owner.name}
-                </div>
+                </P5>
               ))}
-            </Property>
+            />
           )}
           {item.labels && item.labels.length > 0 && (
-            <Property title="Labels">
-              <Stack gap={2} wrap="wrap">
-                {item.labels.map((label, idx) => (
-                  <Label key={idx} color={label.color}>
-                    <span>{label.name}</span>
-                  </Label>
-                ))}
-              </Stack>
-            </Property>
+            <Property
+              label="Labels"
+              text={(
+                <Stack gap={2} wrap="wrap">
+                  {item.labels.map((label, idx) => (
+                    <Label key={idx} color={label.color}>{label.name}</Label>
+                  ))}
+                </Stack>
+              )}
+            />
           )}
-        </Stack>
+        </div>
       </Stack>
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
     </>

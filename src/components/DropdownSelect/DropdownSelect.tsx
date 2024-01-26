@@ -6,7 +6,8 @@ import {
   DropdownTargetProps,
   DropdownValueType,
   Infinite,
-} from "@deskpro/app-sdk";
+  AnyIcon,
+} from "@deskpro/deskpro-ui";
 import {
   faCaretDown,
   faHandPointer,
@@ -72,20 +73,21 @@ export const DropdownSelect: FC<DropdownSelectProps> = ({
           autoscrollText="Autoscroll"
         >
           <div style={{ maxHeight: "30vh" }}>
-            {opts.map(
-              dropdownRenderOptions(
-                handleSelectOption,
-                activeItem,
-                activeSubItem,
-                setActiveSubItem,
-                "Fetch more",
-                "Autoscroll",
-                faHandPointer,
-                faExternalLinkAlt,
-                hideIcons,
-                0
-              )
-            )}
+            {opts.map(dropdownRenderOptions({
+              handleSelectOption,
+              activeItem,
+              activeSubItem,
+              setActiveSubItem,
+              fetchMoreText: "Fetch more",
+              autoscrollText: "Autoscroll",
+              selectedIcon: faHandPointer as AnyIcon,
+              externalLinkIcon: faExternalLinkAlt as AnyIcon,
+              hasSelectedItems: false,
+              hasExpandableItems: false,
+              hideIcons,
+              setActiveValueIndex: () => {},
+              valueOptions: [],
+            }))}
           </div>
         </Infinite>
       )}

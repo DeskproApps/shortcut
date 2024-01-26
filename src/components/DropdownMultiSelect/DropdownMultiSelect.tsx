@@ -7,8 +7,9 @@ import {
   Infinite,
   Stack,
   dropdownRenderOptions,
-  useDeskproAppTheme,
-} from "@deskpro/app-sdk";
+  AnyIcon,
+} from "@deskpro/deskpro-ui";
+import { useDeskproAppTheme } from "@deskpro/app-sdk";
 import {
   faCaretDown,
   faExternalLinkAlt,
@@ -93,18 +94,22 @@ export const DropdownMultiSelect: FC<DropdownMultiSelectProps> = ({
         >
           <div style={{ maxHeight: "40vh" }}>
             {opts.map(
-              dropdownRenderOptions(
+              dropdownRenderOptions({
                 handleSelectOption,
                 activeItem,
                 activeSubItem,
                 setActiveSubItem,
-                "Fetch more",
-                "Autoscroll",
-                faHandPointer,
-                faExternalLinkAlt,
+                fetchMoreText: "Fetch more",
+                autoscrollText: "Autoscroll",
+                selectedIcon: faHandPointer as AnyIcon,
+                externalLinkIcon: faExternalLinkAlt as AnyIcon,
+                hasSelectedItems: false,
+                hasExpandableItems: false,
                 hideIcons,
-                0
-              )
+                setActiveValueIndex: () => {
+                },
+                valueOptions: [],
+              })
             )}
           </div>
         </Infinite>
