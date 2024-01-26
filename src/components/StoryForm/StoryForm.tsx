@@ -272,8 +272,8 @@ export const StoryForm: FC<StoryFormProps> = ({
         type: "value" as const,
       }));
 
-  const buildOwnersOptions = (): DropdownMultiSelectValueType[] =>
-    members
+  const buildOwnersOptions = (): DropdownMultiSelectValueType[] => {
+    return members
       .filter((m: ShortcutMember) => !m.disabled)
       .map((member: ShortcutMember) => ({
         key: `${member.id}`,
@@ -282,6 +282,7 @@ export const StoryForm: FC<StoryFormProps> = ({
         value: member.id,
         type: "value" as const,
       }));
+  };
 
   const buildLabelOptions = (): DropdownMultiSelectValueType[] =>
     labels

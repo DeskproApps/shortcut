@@ -181,7 +181,7 @@ const Edit = () => {
     iteration: iteration?.id,
     type: story.story_type,
     requester: story.requested_by_id,
-    owners: story.owner_ids?.map(({ id }) => `${id}`) ?? [],
+    owners: story.owner_ids || [],
     labels: story.labels?.map(({ id }) => id) ?? [],
     followers: story.follower_ids?.map((id) => `${id}`) ?? [],
     ...(isEmpty(selectedCustomFields)

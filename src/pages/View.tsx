@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { P5, Pill, Stack, } from "@deskpro/deskpro-ui";
+import { P5, Pill, Stack, AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import {
   Title,
+  Member,
   Property,
   TwoProperties,
   LoadingSpinner,
@@ -11,7 +12,6 @@ import {
   useDeskproLatestAppContext,
   useInitialisedDeskproAppClient,
 } from "@deskpro/app-sdk";
-import { AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
 import capitalize from "lodash.capitalize";
 import chunk from "lodash.chunk";
 import get from "lodash.get";
@@ -160,11 +160,13 @@ export const View = () => {
       {owners && owners.length > 0 && (
         <Property
           label="Owners"
-          text={owners.map((owner, idx) => (
-            <P5 key={idx} style={{ marginBottom: "3px" }}>
-              {owner.name}
-            </P5>
-          ))}
+          text={(
+            <Stack gap={12} wrap="wrap">
+              {owners.map((owner, idx) => (
+                <Member key={idx} name={owner.name} avatarUrl={owner.iconUrl} />
+              ))}
+            </Stack>
+          )}
         />
       )}
       {story?.deadline && (

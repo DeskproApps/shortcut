@@ -1,6 +1,7 @@
 import { P5, Pill, Stack } from "@deskpro/deskpro-ui";
 import {
   Title,
+  Member,
   Property,
   TwoProperties,
   HorizontalDivider,
@@ -117,11 +118,13 @@ export const LinkedStoryResultItem: FC<LinkedStoryResultItemProps> = ({
       {owners && owners.length > 0 && (
         <Property
           label="Owners"
-          text={owners.map((owner, idx) => (
-            <P5 key={idx} style={{ marginBottom: "3px" }}>
-              {owner.name}
-            </P5>
-          ))}
+          text={(
+            <Stack gap={12} wrap="wrap">
+              {owners.map((owner, idx) => (
+                <Member key={idx} name={owner.name} avatarUrl={owner.iconUrl} />
+              ))}
+            </Stack>
+          )}
         />
       )}
       {item?.labels && item.labels.length > 0 && (
