@@ -11,8 +11,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { App } from "./App";
-
-import "iframe-resizer/js/iframeResizer.contentWindow.js";
 import "@deskpro/deskpro-ui/dist/deskpro-custom-icons.css";
 import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
 

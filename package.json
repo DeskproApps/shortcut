@@ -12,13 +12,12 @@
     "bumpManifestVer": "node ./bin/bumpManifestVer.js"
   },
   "dependencies": {
-    "@deskpro/app-sdk": "^3.0.15",
-    "@deskpro/deskpro-ui": "^7.1.0",
+    "@deskpro/app-sdk": "^3.0.18",
+    "@deskpro/deskpro-ui": "^7.18.4",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@tanstack/react-query": "^4.36.1",
     "formik": "^2.2.9",
-    "iframe-resizer": "4.3.2",
     "javascript-time-ago": "^2.5.7",
     "lodash.capitalize": "^4.2.1",
     "lodash.chunk": "^4.2.0",
