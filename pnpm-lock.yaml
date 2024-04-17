@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@deskpro/app-sdk':
-    specifier: ^3.0.19
+    specifier: ^3.0.20
     version: 3.0.20(@babel/core@7.23.7)(@deskpro/deskpro-ui@7.18.4)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@4.5.5)
   '@deskpro/deskpro-ui':
     specifier: ^7.18.4
