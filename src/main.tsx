@@ -13,6 +13,7 @@ import en from "javascript-time-ago/locale/en.json";
 import { App } from "./App";
 import "@deskpro/deskpro-ui/dist/deskpro-custom-icons.css";
 import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
+import "iframe-resizer/js/iframeResizer.contentWindow.js";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -26,10 +27,10 @@ root.render(
       <HashRouter>
         <QueryClientProvider client={query}>
           <StoreProvider>
-            <Suspense fallback={<LoadingSpinner/>}>
+            <Suspense fallback={<LoadingSpinner />}>
               <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <ReplyBoxProvider>
-                  <App/>
+                  <App />
                 </ReplyBoxProvider>
               </ErrorBoundary>
             </Suspense>
