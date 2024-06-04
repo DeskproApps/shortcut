@@ -13,7 +13,6 @@ import en from "javascript-time-ago/locale/en.json";
 import { App } from "./App";
 import "@deskpro/deskpro-ui/dist/deskpro-custom-icons.css";
 import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
-import "iframe-resizer/js/iframeResizer.contentWindow.js";
 
 TimeAgo.addDefaultLocale(en);
 
