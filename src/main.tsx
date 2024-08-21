@@ -13,6 +13,9 @@ import en from "javascript-time-ago/locale/en.json";
 import { App } from "./App";
 import "@deskpro/deskpro-ui/dist/deskpro-custom-icons.css";
 import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
+import "./main.css";
+import "simplebar/dist/simplebar.min.css";
+import { Scrollbar } from "@deskpro/deskpro-ui";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -22,20 +25,22 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <DeskproAppProvider>
-      <HashRouter>
-        <QueryClientProvider client={query}>
-          <StoreProvider>
-            <Suspense fallback={<LoadingSpinner />}>
-              <ErrorBoundary FallbackComponent={ErrorFallback}>
-                <ReplyBoxProvider>
-                  <App />
-                </ReplyBoxProvider>
-              </ErrorBoundary>
-            </Suspense>
-          </StoreProvider>
-        </QueryClientProvider>
-      </HashRouter>
-    </DeskproAppProvider>
+    <Scrollbar style={{ height: "100%", width: "100%" }}>
+      <DeskproAppProvider>
+        <HashRouter>
+          <QueryClientProvider client={query}>
+            <StoreProvider>
+              <Suspense fallback={<LoadingSpinner />}>
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                  <ReplyBoxProvider>
+                    <App />
+                  </ReplyBoxProvider>
+                </ErrorBoundary>
+              </Suspense>
+            </StoreProvider>
+          </QueryClientProvider>
+        </HashRouter>
+      </DeskproAppProvider>
+    </Scrollbar>
   </StrictMode>
 );
