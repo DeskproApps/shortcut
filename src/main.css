@@ -5,3 +5,6 @@ html, body, #root {
     margin: 0px;
 }
 
+#root {
+    padding: 0px 8px;
+}
