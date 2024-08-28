@@ -44,7 +44,7 @@ const VerifySettings: FC = () => {
   }, [client]);
 
   return (
-    <Stack align="baseline" style={{ margin: "0 -8px" }}>
+    <Stack align="baseline">
       <Button
         text="Verify Settings"
         intent="secondary"
