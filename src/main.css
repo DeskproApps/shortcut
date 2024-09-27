@@ -7,4 +7,5 @@ html, body, #root {
 
 #root {
     padding: 0px 8px;
+    box-sizing: border-box;
 }
