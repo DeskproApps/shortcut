@@ -16,7 +16,7 @@ import { useReplyBox, useRegisterElements } from "../../hooks";
 import { removeDeskproLabelFromStory, removeExternalUrlToStory } from "./api";
 import { query } from "../../utils/query";
 
-export const StoreContext = createContext([{}, () => {}]);
+export const StoreContext = createContext([{}, () => { }]);
 
 export interface StoreProviderProps {
   children: ReactNode | JSX.Element;
@@ -26,7 +26,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({
   children,
 }: StoreProviderProps) => {
   const { client } = useDeskproAppClient();
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { permalinkUrl: string } }, unknown>();
   const navigate = useNavigate();
   const { deleteSelectionState } = useReplyBox();
 
@@ -43,7 +43,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({
   const unlinkTicket = ({ id, story, ticketId }: any) => {
     const { ticket }: any = (context as Context).data;
 
-    if (!client || !context?.data.ticket) {
+    if (!client || !context?.data?.ticket) {
       return;
     }
 
@@ -58,7 +58,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({
         removeExternalUrlToStory(
           client,
           `${id}`,
-          context?.data.ticket.permalinkUrl as string
+          context?.data?.ticket.permalinkUrl as string
         )
       )
       .then(() =>
@@ -88,7 +88,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({
           .with(["viewContextMenu", { action: "unlink", id: __ }], () =>
             unlinkTicket(payload)
           )
-          .otherwise(() => {});
+          .otherwise(() => { });
       },
       onTargetAction: debounceTargetAction,
     },

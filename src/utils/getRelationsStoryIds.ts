@@ -9,8 +9,8 @@ const getRelationsStoryIds = (
     flattenDeep(
       stories.map(({ storyLinks }) => {
         return storyLinks.map(({ object_id, subject_id }) => [
-          `${object_id}`,
-          `${subject_id}`,
+          object_id,
+          subject_id,
         ]);
       })
     )

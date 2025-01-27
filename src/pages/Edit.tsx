@@ -34,7 +34,7 @@ import { enhanceStory } from "../utils";
 
 const Edit = () => {
   const { client } = useDeskproAppClient();
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { id: number, permalinkUrl: string } }, unknown>();
   const [loading, setLoading] = useState(false);
   const { storyId } = useParams() as { storyId: string };
 
@@ -88,11 +88,11 @@ const Edit = () => {
   }
 
   const onSubmit = (data: CreateStoryData) => {
-    if (!client || !context?.data.ticket.id) {
+    const ticketId = context?.data?.ticket.id;
+    if (!client || !context?.data?.ticket || !ticketId) {
       return;
     }
 
-    const ticketId = context?.data.ticket.id as string;
     const permalinkUrl = context?.data.ticket.permalinkUrl as string;
     const storyData = {
       ...data,
@@ -149,7 +149,7 @@ const Edit = () => {
 
       try {
         await client
-          .getEntityAssociation("linkedShortcutStories", ticketId)
+          .getEntityAssociation("linkedShortcutStories", String(ticketId))
           .set<ShortcutStoryAssociationProps>(`${res.id}`, metadata);
       } catch (e) {
         console.error(e);
@@ -187,19 +187,19 @@ const Edit = () => {
     ...(isEmpty(selectedCustomFields)
       ? {}
       : (_values(selectedCustomFields).reduce((acc, { field_id, value_id }) => {
-          const key = `custom-field-${customFields[field_id]["canonical_name"]}`;
-          acc[key] = value_id;
-          return acc;
-        }, {}) as Record<string, string>)),
+        const key = `custom-field-${customFields[field_id]["canonical_name"]}`;
+        acc[key] = value_id;
+        return acc;
+      }, {}) as Record<string, string>)),
     ...(isEmpty(notSelectedCustomFields)
       ? {}
       : _values(notSelectedCustomFields).reduce(
-          (acc: Record<string, string>, { canonical_name }) => {
-            acc[`custom-field-${canonical_name}`] = "";
-            return acc;
-          },
-          {}
-        )),
+        (acc: Record<string, string>, { canonical_name }) => {
+          acc[`custom-field-${canonical_name}`] = "";
+          return acc;
+        },
+        {}
+      )),
   };
 
   return (

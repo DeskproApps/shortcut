@@ -28,7 +28,7 @@ import {
 
 export const Create: FC = () => {
   const { client } = useDeskproAppClient();
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { id: number, permalinkUrl: string } }, unknown>();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -47,11 +47,11 @@ export const Create: FC = () => {
   });
 
   const onSubmit = (data: CreateStoryData) => {
-    if (!client || !context?.data.ticket.id) {
+    if (!client || !context?.data?.ticket.id) {
       return;
     }
 
-    const ticketId = context?.data.ticket.id as string;
+    const ticketId = String(context?.data.ticket.id);
     const permalinkUrl = context?.data.ticket.permalinkUrl as string;
     const labelNames = getLabelsNameById(data.labels, dataDependencies?.labels);
     const storyData = {

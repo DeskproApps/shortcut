@@ -68,7 +68,7 @@ export const StoryForm: FC<StoryFormProps> = ({
   type,
   loading = false,
 }: StoryFormProps) => {
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ currentAgent: { primaryEmail: string } }, unknown>();
   const {
     theme: { colors },
   } = useDeskproAppTheme();
@@ -138,15 +138,15 @@ export const StoryForm: FC<StoryFormProps> = ({
     ["asc"]
   );
 
-  const currentAgentEmail = context?.data.currentAgent.primaryEmail ?? null;
+  const currentAgentEmail = context?.data?.currentAgent.primaryEmail ?? null;
 
   const currentRequester = values
     ? undefined
     : (members ?? []).filter(
-        (m: { profile: { email_address: string } }) =>
-          `${m.profile.email_address}`.toLowerCase() ===
-          `${currentAgentEmail}`.toLowerCase()
-      )[0];
+      (m: { profile: { email_address: string } }) =>
+        `${m.profile.email_address}`.toLowerCase() ===
+        `${currentAgentEmail}`.toLowerCase()
+    )[0];
 
   if (currentRequester) {
     initialValues.requester = currentRequester.id;
@@ -203,26 +203,26 @@ export const StoryForm: FC<StoryFormProps> = ({
   const buildProjectOptions = (
     workflowId?: string
   ): DropdownValueType<any>[] => [
-    getNoneOption(),
-    ...projects
-      .filter((p: ShortcutProject) => !p.archived)
-      .map((project: ShortcutProject, idx: number) => ({
-        key: `${idx}`,
-        label: project.name,
-        value: project.id,
-        type: "value" as const,
-      }))
-      .filter((option: { value: string }) => {
-        if (!workflowId) {
-          return true;
-        }
+      getNoneOption(),
+      ...projects
+        .filter((p: ShortcutProject) => !p.archived)
+        .map((project: ShortcutProject, idx: number) => ({
+          key: `${idx}`,
+          label: project.name,
+          value: project.id,
+          type: "value" as const,
+        }))
+        .filter((option: { value: string }) => {
+          if (!workflowId) {
+            return true;
+          }
 
-        return projects
-          .filter((p: ShortcutProject) => p.workflow_id === workflowId)
-          .map((p: ShortcutProject) => p.id)
-          .includes(option.value);
-      }),
-  ];
+          return projects
+            .filter((p: ShortcutProject) => p.workflow_id === workflowId)
+            .map((p: ShortcutProject) => p.id)
+            .includes(option.value);
+        }),
+    ];
 
   const buildEpicOptions = (projectId?: string): DropdownValueType<any>[] => [
     getNoneOption(),
@@ -537,8 +537,8 @@ export const StoryForm: FC<StoryFormProps> = ({
               </FormikField>
             </div>
             {values.type &&
-            Array.isArray(dataDependencies.customFields) &&
-            dataDependencies.customFields.length > 0 ? (
+              Array.isArray(dataDependencies.customFields) &&
+              dataDependencies.customFields.length > 0 ? (
               dataDependencies.customFields.map((customField: CustomField) => {
                 return customField.enabled &&
                   isStoryType(values.type, customField.story_types) ? (
