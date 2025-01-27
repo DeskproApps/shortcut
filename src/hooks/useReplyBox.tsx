@@ -167,8 +167,12 @@ const ReplyBoxProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [client, ticketId]);
 
   useInitialisedDeskproAppClient((client) => {
+    if (!ticketId) {
+      return;
+    }
+
     if (isCommentOnNote) {
-      registerReplyBoxNotesAdditionsTargetAction(client, ticketId!, stories);
+      registerReplyBoxNotesAdditionsTargetAction(client, ticketId, stories);
       client.registerTargetAction(
         `${APP_PREFIX}OnReplyBoxNote`,
         "on_reply_box_note"
@@ -176,7 +180,7 @@ const ReplyBoxProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     if (isCommentOnEmail) {
-      registerReplyBoxEmailsAdditionsTargetAction(client, ticketId!, stories);
+      registerReplyBoxEmailsAdditionsTargetAction(client, ticketId, stories);
       client.registerTargetAction(
         `${APP_PREFIX}OnReplyBoxEmail`,
         "on_reply_box_email"
