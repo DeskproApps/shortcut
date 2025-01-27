@@ -17,7 +17,7 @@ export const Button: FC<ButtonProps> = styled(ButtonUI)`
 const VerifySettings: FC = () => {
   const { client } = useDeskproAppClient();
 
-  const [currentUser, setCurrentUser] = useState<CurrentMember|null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentMember | null>(null);
   const [settings, setSettings] = useState<Settings>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -55,7 +55,7 @@ const VerifySettings: FC = () => {
       {nbsp}
       {currentUser
         ? <P1>Verified as {currentUser?.name}</P1>
-        : <Invalid type="p1">{error}</Invalid> || ""
+        : <Invalid type="p1">{error}</Invalid>
       }
     </Stack>
   );

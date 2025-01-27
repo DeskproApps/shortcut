@@ -5,10 +5,10 @@ import {
 } from "@deskpro/app-sdk";
 
 const useWhenNoLinkedItems = () => {
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { id: number } }, unknown>();
   const navigate = useNavigate();
 
-  const ticketId = context?.data.ticket.id;
+  const ticketId = context?.data?.ticket.id;
 
   useInitialisedDeskproAppClient((client) => {
     if (!ticketId) {
@@ -16,10 +16,10 @@ const useWhenNoLinkedItems = () => {
     }
 
     client
-      .getEntityAssociation("linkedShortcutStories", ticketId)
+      .getEntityAssociation("linkedShortcutStories", String(ticketId))
       .list()
       .then((items) => navigate(!items.length ? "/link" : "/home"));
-  }, [context?.data.ticket.id, navigate]);
+  }, [context?.data?.ticket.id, navigate]);
 };
 
 export { useWhenNoLinkedItems };

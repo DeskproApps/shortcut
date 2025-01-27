@@ -45,7 +45,7 @@ export const Link = () => {
   const [isLinkStoriesLoading, setIsLinkStoriesLoading] =
     useState<boolean>(false);
   const { client } = useDeskproAppClient();
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { id: number, permalinkUrl: string } }, unknown>();
   const { setSelectionState } = useReplyBox();
   const navigate = useNavigate();
 
@@ -62,7 +62,7 @@ export const Link = () => {
         const ids = (await client
           .getEntityAssociation(
             "linkedShortcutStories",
-            context?.data.ticket.id as string
+            String(context?.data?.ticket.id)
           )
           ?.list()) as unknown as { id: string }[];
 
@@ -112,7 +112,7 @@ export const Link = () => {
   };
 
   const linkStories = () => {
-    const ticketId = context?.data.ticket.id;
+    const ticketId = context?.data?.ticket.id;
 
     if (!selected.length || !client || !ticketId) {
       return;
@@ -131,7 +131,7 @@ export const Link = () => {
       client
         .getEntityAssociation(
           "linkedShortcutStories",
-          context?.data.ticket.id as string
+          String(context?.data?.ticket.id)
         )
         .set<{ id: string }>(`${id}`, { id: `${id}` })
         .then(() => setSelectionState(id, true, "email"))
@@ -143,7 +143,7 @@ export const Link = () => {
         addExternalUrlToStory(
           client,
           id,
-          context?.data.ticket.permalinkUrl as string
+          context?.data?.ticket.permalinkUrl as string
         )
       )
     );

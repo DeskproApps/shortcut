@@ -23,17 +23,17 @@ export type SetSelectionState = (
   entityId: StoryItemRes["id"],
   selected: boolean,
   type: ReplyBoxType
-) => Promise<void|{ isSuccess: boolean }>;
+) => Promise<void | { isSuccess: boolean }>;
 
 export type GetSelectionState = (
   entityId: StoryItemRes["id"],
   type: ReplyBoxType
-) => Promise<void|Array<GetStateResponse<string>>>;
+) => Promise<void | Array<GetStateResponse<string>>>;
 
 export type DeleteSelectionState = (
   entityId: StoryItemRes["id"],
   type: ReplyBoxType
-) => Promise<boolean|void>;
+) => Promise<boolean | void>;
 
 type ReturnUseReplyBox = {
   setSelectionState: SetSelectionState;
@@ -41,17 +41,17 @@ type ReturnUseReplyBox = {
   deleteSelectionState: DeleteSelectionState;
 };
 
-export const noteKey = (ticketId: string, entityId: StoryItemRes["id"]|"*"): string => {
+export const noteKey = (ticketId: string | number, entityId: StoryItemRes["id"] | "*"): string => {
   return `tickets/${ticketId}/${APP_PREFIX}/notes/selection/${entityId}`.toLowerCase();
 };
 
-export const emailKey = (ticketId: string, entityId: StoryItem["id"]|"*"): string => {
+export const emailKey = (ticketId: string | number, entityId: StoryItem["id"] | "*"): string => {
   return `tickets/${ticketId}/${APP_PREFIX}/emails/selection/${entityId}`.toLowerCase();
 };
 
 export const registerReplyBoxNotesAdditionsTargetAction = (
   client: IDeskproClient,
-  ticketId: string,
+  ticketId: string | number,
   stories: StoryItemRes[],
 ) => {
   if (!ticketId || !size(stories)) {
@@ -80,7 +80,7 @@ export const registerReplyBoxNotesAdditionsTargetAction = (
 
 export const registerReplyBoxEmailsAdditionsTargetAction = (
   client: IDeskproClient,
-  ticketId: string,
+  ticketId: string | number,
   stories: StoryItemRes[],
 ) => {
   if (!ticketId || !size(stories)) {
@@ -119,7 +119,7 @@ const ReplyBoxContext = createContext<ReturnUseReplyBox>({
 
 const ReplyBoxProvider: FC<PropsWithChildren> = ({ children }) => {
   const { client } = useDeskproAppClient();
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { id: number } }, unknown>();
   const { stories } = useLinkedStories();
   const ticketId = get(context, ["data", "ticket", "id"]);
 
@@ -167,6 +167,10 @@ const ReplyBoxProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [client, ticketId]);
 
   useInitialisedDeskproAppClient((client) => {
+    if (!ticketId) {
+      return;
+    }
+
     if (isCommentOnNote) {
       registerReplyBoxNotesAdditionsTargetAction(client, ticketId, stories);
       client.registerTargetAction(
@@ -195,24 +199,24 @@ const ReplyBoxProvider: FC<PropsWithChildren> = ({ children }) => {
             return;
           }
 
-          if (subjectTicketId !== ticketId) {
+          if (String(subjectTicketId) !== String(ticketId)) {
             return;
           }
 
           client.setBlocking(true);
           client.getState<{ id: string; selected: boolean }>(emailKey(subjectTicketId, "*"))
-          .then((r) => {
-            const storyIds = r
-              .filter(({ data }) => data?.selected)
-              .map(({ data }) => Number(data?.id));
+            .then((r) => {
+              const storyIds = r
+                .filter(({ data }) => data?.selected)
+                .map(({ data }) => Number(data?.id));
 
-            return Promise.all(
-              storyIds.map((storyId) =>
-                createStoryComment(client, storyId, email)
-              )
-            );
-          })
-          .finally(() => client.setBlocking(false));
+              return Promise.all(
+                storyIds.map((storyId) =>
+                  createStoryComment(client, storyId, email)
+                )
+              );
+            })
+            .finally(() => client.setBlocking(false));
         })
         .with(`${APP_PREFIX}OnReplyBoxNote`, () => {
           const subjectTicketId = action.subject;
@@ -222,7 +226,7 @@ const ReplyBoxProvider: FC<PropsWithChildren> = ({ children }) => {
             return;
           }
 
-          if (subjectTicketId !== context?.data.ticket.id) {
+          if (String(subjectTicketId) !== String(context?.data?.ticket.id)) {
             return;
           }
 

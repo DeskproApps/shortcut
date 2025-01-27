@@ -33,7 +33,7 @@ import { enhanceStory } from "../utils";
 import { DPNormalize } from "../components/Typography";
 
 export const View = () => {
-  const { context } = useDeskproLatestAppContext();
+  const { context } = useDeskproLatestAppContext<{ ticket: { id: number } }, unknown>();
   const { theme } = useDeskproAppTheme();
   const [customFields, setCustomFields] = useState<Array<any>>([]);
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ export const View = () => {
             action: "unlink",
             id,
             story,
-            ticketId: context?.data.ticket.id,
+            ticketId: context?.data?.ticket.id,
           },
         },
       ],
@@ -122,9 +122,9 @@ export const View = () => {
           closeIcon={"" as unknown as AnyIcon}
         />
       )}
-      <Property label="Story ID" text={story.id} copyText={`${story.id}`}/>
-      <Property label="Project" text={project?.name ?? <P5>None</P5>}/>
-      <Property label="Workflow" text={workflow?.name ?? <P5>None</P5>}/>
+      <Property label="Story ID" text={story.id} copyText={`${story.id}`} />
+      <Property label="Project" text={project?.name ?? <P5>None</P5>} />
+      <Property label="Workflow" text={workflow?.name ?? <P5>None</P5>} />
       <Property
         label="State"
         text={stateId ? (
@@ -137,7 +137,7 @@ export const View = () => {
           <P5>None</P5>
         )}
       />
-      <Property label="Type" text={capitalize(story.story_type)}/>
+      <Property label="Type" text={capitalize(story.story_type)} />
       {epic?.id && epic?.url && (
         <Property
           label="Epic"
@@ -148,14 +148,14 @@ export const View = () => {
       )}
       <Property
         label="Description"
-        text={<DPNormalize text={story?.descriptionHtml}/>}
+        text={<DPNormalize text={story?.descriptionHtml} />}
       />
       <Property
         label="Iteration"
         text={iteration?.id ? iteration.name : <P5>None</P5>}
       />
       {group?.id && (
-        <Property label="Team" text={group.name}/>
+        <Property label="Team" text={group.name} />
       )}
       {owners && owners.length > 0 && (
         <Property
@@ -226,7 +226,7 @@ export const View = () => {
         ))
       }
 
-      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }}/>
+      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
       <Title
         title={`Relationships (${get(story, ["storyLinks"], []).length})`}
