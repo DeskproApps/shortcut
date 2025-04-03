@@ -229,11 +229,11 @@ export const View = () => {
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
       <Title
-        title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+        title={`Relationships (${story.story_links?.length})`}
         onClick={() => navigate("/add/storyrelations/" + id)}
       />
 
-      <Relationships storyLinks={get(story, ["storyLinks"], [])} />
+      <Relationships storyLinks={story.story_links ?? []} />
 
       <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />
 
