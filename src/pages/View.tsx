@@ -228,7 +228,7 @@ export const View = () => {
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
       <Title
-        title={`Relationships (${story.story_links?.length})`}
+        title={`Relationships (${story.story_links?.length ?? 0})`}
         onClick={() => navigate("/add/storyrelations/" + id)}
       />
 
