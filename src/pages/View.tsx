@@ -14,7 +14,6 @@ import {
 } from "@deskpro/app-sdk";
 import capitalize from "lodash.capitalize";
 import chunk from "lodash.chunk";
-import get from "lodash.get";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRegisterElements } from "../hooks";
@@ -229,11 +228,11 @@ export const View = () => {
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
       <Title
-        title={`Relationships (${get(story, ["storyLinks"], []).length})`}
+        title={`Relationships (${story.story_links?.length ?? 0})`}
         onClick={() => navigate("/add/storyrelations/" + id)}
       />
 
-      <Relationships storyLinks={get(story, ["storyLinks"], [])} />
+      <Relationships storyLinks={story.story_links ?? []} />
 
       <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />
 
