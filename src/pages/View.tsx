@@ -14,7 +14,6 @@ import {
 } from "@deskpro/app-sdk";
 import capitalize from "lodash.capitalize";
 import chunk from "lodash.chunk";
-import get from "lodash.get";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRegisterElements } from "../hooks";
