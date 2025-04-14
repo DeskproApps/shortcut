@@ -156,7 +156,7 @@ export interface StoryItemRes {
   position: number;
   blocked: boolean;
   project_id: null;
-  deadline: Date;
+  deadline: Date|string;
   stats: Stats;
   created_at: string;
   moved_at: string;
@@ -237,7 +237,7 @@ export interface StoryItem {
   labels: StoryLabel[];
   description?: string;
   descriptionHtml?: string;
-  deadline?: Date;
+  deadline?: Date|string;
   requesterId: string;
   followerIds: string[];
   customFields: Array<{
