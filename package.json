@@ -43,7 +43,7 @@
     "react-router-dom": "^6.30.0",
     "react-time-ago": "^7.3.3",
     "showdown": "1.9.1",
-    "styled-components": "^6.1.17",
+    "styled-components": "^6.1.15",
     "ts-pattern": "3.3.5",
     "use-debounce": "7.0.1",
     "yup": "0.31.1"
