@@ -171,7 +171,7 @@ export const View = () => {
       {story?.deadline && (
         <Property
           label="Due Date"
-          text={story.deadline.toLocaleDateString()}
+          text={(new Date(story.deadline)).toLocaleDateString()}
         />
       )}
       {story?.labels && story.labels.length > 0 && (
