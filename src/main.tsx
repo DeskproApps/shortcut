@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import './instrument';
 import { StrictMode, Suspense } from "react";
 import ReactDOM from "react-dom/client";
@@ -17,13 +16,13 @@ import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
 import "./main.css";
 import "simplebar/dist/simplebar.min.css";
 import { Scrollbar } from "@deskpro/deskpro-ui";
+import { ErrorBoundary, reactErrorHandler } from '@sentry/react';
 
 TimeAgo.addDefaultLocale(en);
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-
+const root = ReactDOM.createRoot(document.getElementById('root') as Element, {
+  onRecoverableError: reactErrorHandler(),
+});
 root.render(
   <StrictMode>
     <Scrollbar style={{ height: "100%", width: "100%" }}>
@@ -32,11 +31,11 @@ root.render(
           <QueryClientProvider client={query}>
             <StoreProvider>
               <Suspense fallback={<LoadingSpinner />}>
-                <Sentry.ErrorBoundary FallbackComponent={ErrorFallback}>
+                <ErrorBoundary fallback={ErrorFallback}>
                   <ReplyBoxProvider>
                     <App />
                   </ReplyBoxProvider>
-                </Sentry.ErrorBoundary>
+                </ErrorBoundary>
               </Suspense>
             </StoreProvider>
           </QueryClientProvider>
