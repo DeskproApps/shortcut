@@ -1,7 +1,8 @@
+import * as Sentry from '@sentry/react';
+import './instrument';
 import { StrictMode, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
-import { ErrorBoundary } from "react-error-boundary";
 import { DeskproAppProvider, LoadingSpinner } from "@deskpro/app-sdk";
 import { query } from "./utils/query";
 import { ReplyBoxProvider } from "./hooks";
@@ -31,11 +32,11 @@ root.render(
           <QueryClientProvider client={query}>
             <StoreProvider>
               <Suspense fallback={<LoadingSpinner />}>
-                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <Sentry.ErrorBoundary FallbackComponent={ErrorFallback}>
                   <ReplyBoxProvider>
                     <App />
                   </ReplyBoxProvider>
-                </ErrorBoundary>
+                </Sentry.ErrorBoundary>
               </Suspense>
             </StoreProvider>
           </QueryClientProvider>
