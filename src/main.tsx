@@ -1,7 +1,7 @@
+import './instrument';
 import { StrictMode, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
-import { ErrorBoundary } from "react-error-boundary";
 import { DeskproAppProvider, LoadingSpinner } from "@deskpro/app-sdk";
 import { query } from "./utils/query";
 import { ReplyBoxProvider } from "./hooks";
@@ -16,13 +16,13 @@ import "@deskpro/deskpro-ui/dist/deskpro-ui.css";
 import "./main.css";
 import "simplebar/dist/simplebar.min.css";
 import { Scrollbar } from "@deskpro/deskpro-ui";
+import { ErrorBoundary, reactErrorHandler } from '@sentry/react';
 
 TimeAgo.addDefaultLocale(en);
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-
+const root = ReactDOM.createRoot(document.getElementById('root') as Element, {
+  onRecoverableError: reactErrorHandler(),
+});
 root.render(
   <StrictMode>
     <Scrollbar style={{ height: "100%", width: "100%" }}>
@@ -31,7 +31,7 @@ root.render(
           <QueryClientProvider client={query}>
             <StoreProvider>
               <Suspense fallback={<LoadingSpinner />}>
-                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <ErrorBoundary fallback={ErrorFallback}>
                   <ReplyBoxProvider>
                     <App />
                   </ReplyBoxProvider>
