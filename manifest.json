@@ -42,7 +42,7 @@
     "verify_settings": {
       "title": "",
       "type": "app_embedded",
-      "options": { "entrypoint": "#/admin/verify_settings", "height": "40px" },
+      "options": { "entrypoint": "#/admin/verify-settings", "height": "40px" },
       "isRequired": false,
       "isBackendOnly": true,
       "order": 20

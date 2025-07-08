@@ -6,13 +6,16 @@ import { Edit } from "./pages/Edit";
 import { Home } from "./pages/Home";
 import { Link } from "./pages/Link";
 import { View } from "./pages/View";
-import { VerifySettings } from "./pages/VerifySettings";
 import { LoadingAppPage } from "./pages/LoadingAppPage";
+import { VerifySettingsPage } from "./pages/admin";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/admin/verify_settings" element={<VerifySettings />} />
+      <Route path="admin">
+        <Route path="verify-settings" element={<VerifySettingsPage />} />
+      </Route>
+
       <Route path="home" element={<Home />} />
       <Route path="view/:id" element={<View />} />
       <Route path="create" element={<Create />} />
