@@ -25,6 +25,7 @@ import {
   getStoryCustomFieldsToSave,
   isEnableDeskproLabel,
 } from "../utils";
+import { Stack } from "@deskpro/deskpro-ui";
 
 export const Create: FC = () => {
   const { client } = useDeskproAppClient();
@@ -155,9 +156,12 @@ export const Create: FC = () => {
   };
 
   return (
-    <>
-      <CreateLinkStory selected="create" />
+    <Stack vertical style={{ width: "100%" }} padding={12} gap={6}>
+      <div style={{ width: "100%" }}>
+        <CreateLinkStory selected="create" />
+      </div>
+
       <StoryForm type="create" onSubmit={onSubmit} loading={loading} />
-    </>
+    </Stack>
   );
 };

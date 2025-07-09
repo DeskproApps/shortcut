@@ -33,7 +33,7 @@ export const Home: FC = () => {
 
   return (
     <>
-      <Stack>
+      <Stack padding={12}>
         <Input
           value={searchQuery}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -49,6 +49,7 @@ export const Home: FC = () => {
           }
         />
       </Stack>
+      
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
 
       {size(stories)
@@ -60,7 +61,9 @@ export const Home: FC = () => {
           />
         ))
         : (
-          <H3>No linked stories found.</H3>
+          <Stack padding={12}>
+            <H3>No linked stories found.</H3>
+          </Stack>
         )
       }
     </>

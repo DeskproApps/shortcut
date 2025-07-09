@@ -46,7 +46,7 @@ const AddComment = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ padding: "12px" }}>
       <Label label="New comment" style={{ marginBottom: "10px" }}>
         <TextAreaField
           minHeight="auto"

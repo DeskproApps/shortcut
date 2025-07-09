@@ -319,14 +319,14 @@ export const StoryForm: FC<StoryFormProps> = ({
   };
 
   return (
-    <IntlProvider locale="en">
+    <IntlProvider locale="en" >
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
         validationSchema={schema}
       >
         {({ values, submitForm, resetForm, errors, submitCount }) => (
-          <Stack gap={10} vertical>
+          <Stack gap={10} padding={12} vertical style={{ width: "100%" }}>
             {Object.values(errors).length > 0 && submitCount > 0 && (
               <ErrorBlock text={Object.values(errors) as string | string[]} />
             )}

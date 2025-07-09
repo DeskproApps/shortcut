@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { P5, Pill, Stack, AnyIcon, RoundedLabelTag } from "@deskpro/deskpro-ui";
+import { P5, Pill, Stack, AnyIcon, RoundedLabelTag, Button, H2 } from "@deskpro/deskpro-ui";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import {
   Title,
   Member,
@@ -108,133 +110,145 @@ export const View = () => {
 
   return (
     <>
-      <Title
-        title={story.name}
-        link={story.app_url}
-        icon={<ShortcutLogo />}
-      />
-      {story.archived && (
-        <RoundedLabelTag
-          label={"Archived"}
-          backgroundColor={theme.colors.grey80}
-          textColor={"white"}
-          closeIcon={"" as unknown as AnyIcon}
+      <Stack vertical padding={12}>
+        <Title
+          title={story.name}
+          link={story.app_url}
+          icon={<ShortcutLogo />}
         />
-      )}
-      <Property label="Story ID" text={story.id} copyText={`${story.id}`} />
-      <Property label="Project" text={project?.name ?? <P5>None</P5>} />
-      <Property label="Workflow" text={workflow?.name ?? <P5>None</P5>} />
-      <Property
-        label="State"
-        text={stateId ? (
-          <Pill
-            textColor={theme.colors.white}
-            backgroundColor={theme.colors.cyan100}
-            label={state.name}
+        {story.archived && (
+          <RoundedLabelTag
+            label={"Archived"}
+            backgroundColor={theme.colors.grey80}
+            textColor={"white"}
+            closeIcon={"" as unknown as AnyIcon}
           />
-        ) : (
-          <P5>None</P5>
         )}
-      />
-      <Property label="Type" text={capitalize(story.story_type)} />
-      {epic?.id && epic?.url && (
+        <Property label="Story ID" text={story.id} copyText={`${story.id}`} />
+        <Property label="Project" text={project?.name ?? <P5>None</P5>} />
+        <Property label="Workflow" text={workflow?.name ?? <P5>None</P5>} />
         <Property
-          label="Epic"
-          text={(
-            <P5>{epic.name} <ExternalLink href={epic.url} /></P5>
+          label="State"
+          text={stateId ? (
+            <Pill
+              textColor={theme.colors.white}
+              backgroundColor={theme.colors.cyan100}
+              label={state.name}
+            />
+          ) : (
+            <P5>None</P5>
           )}
         />
-      )}
-      <Property
-        label="Description"
-        text={<DPNormalize text={story?.descriptionHtml} />}
-      />
-      <Property
-        label="Iteration"
-        text={iteration?.id ? iteration.name : <P5>None</P5>}
-      />
-      {group?.id && (
-        <Property label="Team" text={group.name} />
-      )}
-      {owners && owners.length > 0 && (
-        <Property
-          label="Owners"
-          text={(
-            <Stack gap={12} wrap="wrap">
-              {owners.map((owner, idx) => (
-                <Member key={idx} name={owner.name} avatarUrl={owner.iconUrl} />
-              ))}
-            </Stack>
-          )}
-        />
-      )}
-      {story?.deadline && (
-        <Property
-          label="Due Date"
-          text={(new Date(story.deadline)).toLocaleDateString()}
-        />
-      )}
-      {story?.labels && story.labels.length > 0 && (
-        <Property
-          label="Labels"
-          text={(
-            <Stack gap={2} wrap="wrap">
-              {story.labels.map((label, idx) => (
-                <Label key={idx} color={label.color}>{label.name}</Label>
-              ))}
-            </Stack>
-          )}
-        />
-      )}
-      {epic?.labels && epic.labels.length > 0 && (
-        <Property
-          label="Epic Labels"
-          text={(
-            <Stack gap={2} wrap="wrap">
-              {epic.labels.map((
-                label: { id: string; color: string; name: string },
-                idx: number,
-              ) => (
-                <Label key={idx} color={label.color}>{label.name}</Label>
-              ))}
-            </Stack>
-          )}
-        />
-      )}
-      {Boolean(customFields?.length) && (
-        <HorizontalDivider
-          style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
-        />
-      )}
-      {chunk(customFields, 2).map((fields, idx) => (fields.length === 2)
-        ? (
-          <TwoProperties
-            key={idx}
-            leftLabel={fields[0].label}
-            leftText={fields[0].value}
-            rightLabel={fields[1].label}
-            rightText={fields[1].value}
-          />
-        )
-        : (
+        <Property label="Type" text={capitalize(story.story_type)} />
+        {epic?.id && epic?.url && (
           <Property
-            key={idx}
-            label={fields[0].label}
-            text={fields[0].value}
+            label="Epic"
+            text={(
+              <P5>{epic.name} <ExternalLink href={epic.url} /></P5>
+            )}
           />
-        ))
-      }
+        )}
+        <Property
+          label="Description"
+          text={<DPNormalize text={story?.descriptionHtml} />}
+        />
+        <Property
+          label="Iteration"
+          text={iteration?.id ? iteration.name : <P5>None</P5>}
+        />
+        {group?.id && (
+          <Property label="Team" text={group.name} />
+        )}
+        {owners && owners.length > 0 && (
+          <Property
+            label="Owners"
+            text={(
+              <Stack gap={12} wrap="wrap">
+                {owners.map((owner, idx) => (
+                  <Member key={idx} name={owner.name} avatarUrl={owner.iconUrl} />
+                ))}
+              </Stack>
+            )}
+          />
+        )}
+        {story?.deadline && (
+          <Property
+            label="Due Date"
+            text={(new Date(story.deadline)).toLocaleDateString()}
+          />
+        )}
+        {story?.labels && story.labels.length > 0 && (
+          <Property
+            label="Labels"
+            text={(
+              <Stack gap={2} wrap="wrap">
+                {story.labels.map((label, idx) => (
+                  <Label key={idx} color={label.color}>{label.name}</Label>
+                ))}
+              </Stack>
+            )}
+          />
+        )}
+        {epic?.labels && epic.labels.length > 0 && (
+          <Property
+            label="Epic Labels"
+            text={(
+              <Stack gap={2} wrap="wrap">
+                {epic.labels.map((
+                  label: { id: string; color: string; name: string },
+                  idx: number,
+                ) => (
+                  <Label key={idx} color={label.color}>{label.name}</Label>
+                ))}
+              </Stack>
+            )}
+          />
+        )}
+        {Boolean(customFields?.length) && (
+          <HorizontalDivider
+            style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }}
+          />
+        )}
+        {chunk(customFields, 2).map((fields, idx) => (fields.length === 2)
+          ? (
+            <TwoProperties
+              key={idx}
+              leftLabel={fields[0].label}
+              leftText={fields[0].value}
+              rightLabel={fields[1].label}
+              rightText={fields[1].value}
+            />
+          )
+          : (
+            <Property
+              key={idx}
+              label={fields[0].label}
+              text={fields[0].value}
+            />
+          ))
+        }
+      </Stack>
 
-      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
+      <HorizontalDivider />
 
-      <Title
-        title={`Relationships (${story.story_links?.length ?? 0})`}
-        onClick={() => navigate("/add/storyrelations/" + id)}
-      />
+      <Stack vertical padding={12}>
+        <Stack gap={6} align="center">
+          <H2 style={{ fontWeight: 500 }}>
+            {`Relationships (${story.story_links?.length ?? 0})`}
+          </H2>
+          
+          <Button
+            icon={faPlus}
+            minimal
+            noMinimalUnderline
+            onClick={() => { navigate("/add/storyrelations/" + id) }}
+          />
+        </Stack>
 
-      <Relationships storyLinks={story.story_links ?? []} />
+        <Relationships storyLinks={story.story_links ?? []} />
+      </Stack>
 
-      <HorizontalDivider style={{ marginTop: "10px", marginBottom: "10px" }} />
+      <HorizontalDivider style={{ marginTop: "0px", marginBottom: "0px" }} />
 
       <Comments
         comments={story.comments}
