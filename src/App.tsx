@@ -1,19 +1,20 @@
-import { Route, Routes } from "react-router-dom";
 import { AddComment } from "./pages/AddComment";
 import { AddStoryRelations } from "./pages/AddStoryRelations";
+import { BackfillDeskproLabelsPage, VerifySettingsPage } from "./pages/admin";
 import { Create } from "./pages/Create";
 import { Edit } from "./pages/Edit";
 import { Home } from "./pages/Home";
 import { Link } from "./pages/Link";
-import { View } from "./pages/View";
 import { LoadingAppPage } from "./pages/LoadingAppPage";
-import { VerifySettingsPage } from "./pages/admin";
+import { Route, Routes } from "react-router-dom";
+import { View } from "./pages/View";
 
 const App = () => {
   return (
     <Routes>
       <Route path="admin">
         <Route path="verify-settings" element={<VerifySettingsPage />} />
+        <Route path="backfill-deskpro-labels" element={<BackfillDeskproLabelsPage />} />
       </Route>
 
       <Route path="home" element={<Home />} />
