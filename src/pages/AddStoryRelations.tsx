@@ -147,91 +147,91 @@ const AddStoryRelations = () => {
 
   return (
     <>
-      <SearchInput
-        value={searchQuery}
-        onClear={onClearSearch}
-        onChange={onChangeSearch}
-        isFetching={Boolean(searchResQuery?.isFetching)}
-      />
+      <Stack padding={12} vertical gap={12}>
+        <SearchInput
+          value={searchQuery}
+          onClear={onClearSearch}
+          onChange={onChangeSearch}
+          isFetching={Boolean(searchResQuery?.isFetching)}
+        />
 
-      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
-
-      <Formik
-        initialValues={{ type: "" }}
-        onSubmit={onLinkStories}
-        validationSchema={Yup.object().shape({
-          type: Yup.string().required(),
-        })}
-      >
-        {({ submitForm }) => (
-          <Stack gap={10} vertical align="stretch">
-            <div className="create-form-field">
-              <FormikField<string> name="type">
-                {([field, , helpers], { id, error }) => (
-                  <Label
-                    htmlFor={id}
-                    label="Relationship type"
-                    error={error}
-                    required
-                  >
-                    <DropdownSelect
-                      showInternalSearch={false}
-                      helpers={helpers}
-                      options={[
-                        {
-                          key: "relatesTo",
-                          value: "relatesTo",
-                          label: "Relates to",
-                          type: "value" as const,
-                        },
-                        {
-                          key: "blocks",
-                          value: "blocks",
-                          label: "Blocks",
-                          type: "value" as const,
-                        },
-                        {
-                          key: "isBlockedBy",
-                          value: "isBlockedBy",
-                          label: "Is blocked by",
-                          type: "value" as const,
-                        },
-                        {
-                          key: "duplicates",
-                          value: "duplicates",
-                          label: "Duplicates",
-                          type: "value" as const,
-                        },
-                        {
-                          key: "isDuplicatedBy",
-                          value: "isDuplicatedBy",
-                          label: "Is duplicated by",
-                          type: "value" as const,
-                        },
-                      ]}
-                      id={id}
-                      placeholder="Select value"
-                      value={field.value}
-                    />
-                  </Label>
-                )}
-              </FormikField>
-            </div>
-            <Stack justify="space-between">
-              <Button
-                type="submit"
-                text="Link Stories"
-                disabled={selected.length === 0}
-                onClick={submitForm}
-                loading={isLinkStoriesLoading}
-              />
-              <Button text="Cancel" intent="secondary" onClick={onCancel} />
+        <Formik
+          initialValues={{ type: "" }}
+          onSubmit={onLinkStories}
+          validationSchema={Yup.object().shape({
+            type: Yup.string().required(),
+          })}
+        >
+          {({ submitForm }) => (
+            <Stack gap={10} vertical align="stretch" style={{ width: "100%" }}>
+              <div className="create-form-field">
+                <FormikField<string> name="type">
+                  {([field, , helpers], { id, error }) => (
+                    <Label
+                      htmlFor={id}
+                      label="Relationship type"
+                      error={error}
+                      required
+                    >
+                      <DropdownSelect
+                        showInternalSearch={false}
+                        helpers={helpers}
+                        options={[
+                          {
+                            key: "relatesTo",
+                            value: "relatesTo",
+                            label: "Relates to",
+                            type: "value" as const,
+                          },
+                          {
+                            key: "blocks",
+                            value: "blocks",
+                            label: "Blocks",
+                            type: "value" as const,
+                          },
+                          {
+                            key: "isBlockedBy",
+                            value: "isBlockedBy",
+                            label: "Is blocked by",
+                            type: "value" as const,
+                          },
+                          {
+                            key: "duplicates",
+                            value: "duplicates",
+                            label: "Duplicates",
+                            type: "value" as const,
+                          },
+                          {
+                            key: "isDuplicatedBy",
+                            value: "isDuplicatedBy",
+                            label: "Is duplicated by",
+                            type: "value" as const,
+                          },
+                        ]}
+                        id={id}
+                        placeholder="Select value"
+                        value={field.value}
+                      />
+                    </Label>
+                  )}
+                </FormikField>
+              </div>
+              <Stack justify="space-between">
+                <Button
+                  type="submit"
+                  text="Link Stories"
+                  disabled={selected.length === 0}
+                  onClick={submitForm}
+                  loading={isLinkStoriesLoading}
+                />
+                <Button text="Cancel" intent="secondary" onClick={onCancel} />
+              </Stack>
             </Stack>
-          </Stack>
-        )}
-      </Formik>
+          )}
+        </Formik>
+      </Stack>
 
-      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
+      <HorizontalDivider />
 
       {searchRes &&
         searchRes.map((item, idx) => {

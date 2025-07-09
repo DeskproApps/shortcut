@@ -165,8 +165,11 @@ export const Link = () => {
 
   return (
     <>
-      <CreateLinkStory selected="link" />
-      <Stack>
+      <Stack style={{ width: "100%" }} padding={12} vertical gap={12}>
+        <div style={{ width: "100%" }}>
+          <CreateLinkStory selected="link" />
+        </div>
+
         <Input
           ref={searchInputRef}
           value={text}
@@ -177,22 +180,24 @@ export const Link = () => {
           }
           rightIcon={<IconButton icon={faTimes} onClick={clear} minimal />}
         />
+
+        <Stack justify="space-between" style={{ width: "100%" }}>
+          <Button
+            text="Link Stories"
+            disabled={selected.length === 0}
+            onClick={() => linkStories()}
+            loading={isLinkStoriesLoading}
+          />
+          <Button
+            text="Cancel"
+            intent="secondary"
+            onClick={() => navigate("/home")}
+          />
+        </Stack>
       </Stack>
+
       <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
-      <Stack justify="space-between">
-        <Button
-          text="Link Stories"
-          disabled={selected.length === 0}
-          onClick={() => linkStories()}
-          loading={isLinkStoriesLoading}
-        />
-        <Button
-          text="Cancel"
-          intent="secondary"
-          onClick={() => navigate("/home")}
-        />
-      </Stack>
-      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
+
       {searchRes &&
         searchRes.map((item, idx) => {
           const isLinked = !!(linkedStoriesIds ?? []).filter(
@@ -215,8 +220,12 @@ export const Link = () => {
           );
         })}
       {searchRes && !searchRes.length && !searchResQuery.isLoading && (
-        <H3>No matching stories found, please try again</H3>
+        <Stack padding={12}>
+
+          <H3>No matching stories found, please try again</H3>
+        </Stack>
       )}
+
     </>
   );
 };

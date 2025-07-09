@@ -42,7 +42,7 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
 
   return (
     <>
-      <Stack align="start" gap={10}>
+      <Stack align="start" gap={10} padding={12}>
         {checkbox && checkbox}
         <div style={{ width: "100%" }}>
           <Title
@@ -87,9 +87,9 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
               <P5>None</P5>
             )}
           />
-          <Property label="Type" text={capitalize(item.type)}/>
-          <Property label="Iteration" text={item.iterationId ? item.iterationName : <P5>None</P5>}/>
-          {item.teamId && <Property label="Team" text={item.teamName}/>}
+          <Property label="Type" text={capitalize(item.type)} />
+          <Property label="Iteration" text={item.iterationId ? item.iterationName : <P5>None</P5>} />
+          {item.teamId && <Property label="Team" text={item.teamName} />}
           {item.owners && item.owners.length > 0 && (
             <Property
               label="Owners"
@@ -114,7 +114,7 @@ export const SearchResultItem: FC<SearchResultItemProps> = ({
           )}
         </div>
       </Stack>
-      <HorizontalDivider style={{ marginTop: "8px", marginBottom: "8px" }} />
+      <HorizontalDivider style={{ width: "100%", marginTop: "8px", marginBottom: "8px" }} />
     </>
   );
 };
