@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 import ReactTimeAgo from "react-time-ago";
 import { Avatar, P1, P11, Stack, Button, H2 } from "@deskpro/deskpro-ui";
-import { useQueryWithClient } from "@deskpro/app-sdk";
+import { DeskproAppTheme, useQueryWithClient } from "@deskpro/app-sdk";
 import { Comment as CommentType } from "../../context/StoreProvider/types";
 import { getMemberById } from "../../context/StoreProvider/api";
 import isEmpty from "lodash.isempty";
@@ -40,7 +40,7 @@ const Comment = styled(P1)`
   }
 `;
 
-const TimeAgo = styled(ReactTimeAgo)`
+const TimeAgo = styled(ReactTimeAgo)<DeskproAppTheme>`
   color: ${({ theme }) => theme.colors.grey80};
 `;
 

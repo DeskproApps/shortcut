@@ -1,6 +1,7 @@
+import { DeskproAppTheme } from "@deskpro/app-sdk";
 import { css } from "styled-components";
 
-export const dpNormalize = css`
+export const dpNormalize = css<DeskproAppTheme>`
   p {
     margin-top: 0;
     white-space: pre-wrap;
