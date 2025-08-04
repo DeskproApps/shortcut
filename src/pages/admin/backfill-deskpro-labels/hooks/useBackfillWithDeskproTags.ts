@@ -1,7 +1,7 @@
 import { createLabel, getLabels, getStories, updateStoryLabels } from "@/api";
 import { isShortcutErrorWithMessage, ShortcutError } from "@/api/shortcutRequest";
 import { StoryItemRes } from "@/context/StoreProvider/types";
-import { useDeskproAppClient, useDeskproLatestAppContext } from "@deskpro/app-sdk";
+import { useDeskproAppClient, useDeskproAppEvents } from "@deskpro/app-sdk";
 import { useCallback, useState } from "react";
 
 function filterStoriesByExternalLink(stories: StoryItemRes[]): StoryItemRes[] {
@@ -19,10 +19,11 @@ interface Feedback {
 export function useBackfillWithDeskproTags() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
-  const { context } = useDeskproLatestAppContext<unknown, { api_key?: string }>()
+  const [settings, setSettings] = useState<{ api_key?: string } | null>(null)
+
   const { client } = useDeskproAppClient()
 
-  const apiToken = context?.settings?.api_key
+  const apiToken = settings?.api_key
   const backfillStories = useCallback(async () => {
     if (!apiToken || !client) {
       return
@@ -121,6 +122,10 @@ export function useBackfillWithDeskproTags() {
       setIsLoading(false)
     }
   }, [apiToken, client])
+
+  useDeskproAppEvents({
+    onAdminSettingsChange: setSettings,
+  }, [client])
 
   return {
     backfillStories,
