@@ -3,18 +3,18 @@ import styled from "styled-components";
 import get from "lodash.get";
 import { P1, Stack, Button as ButtonUI, ButtonProps } from "@deskpro/deskpro-ui";
 import { useDeskproAppEvents, useDeskproAppClient } from "@deskpro/app-sdk";
-import { nbsp } from "../constants";
-import { Invalid } from "../components/Typography";
-import { getCurrentMember } from "../context/StoreProvider/api";
+import { nbsp } from "@/constants";
+import { Invalid } from "@/components/Typography";
+import { getCurrentMember } from "@/context/StoreProvider/api";
 import type { FC } from "react";
-import type { CurrentMember, Settings } from "../context/StoreProvider/types";
+import type { CurrentMember, Settings } from "@/context/StoreProvider/types";
 
 export const Button: FC<ButtonProps> = styled(ButtonUI)`
   min-width: 72px;
   justify-content: center;
 `;
 
-const VerifySettings: FC = () => {
+export default function VerifySettings() {
   const { client } = useDeskproAppClient();
 
   const [currentUser, setCurrentUser] = useState<CurrentMember | null>(null);
@@ -60,5 +60,3 @@ const VerifySettings: FC = () => {
     </Stack>
   );
 };
-
-export { VerifySettings };

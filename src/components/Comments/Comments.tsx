@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from "react";
 import styled from "styled-components";
 import { faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 import ReactTimeAgo from "react-time-ago";
-import { Avatar, H1, P1, P11, Stack, Button } from "@deskpro/deskpro-ui";
+import { Avatar, P1, P11, Stack, Button, H2 } from "@deskpro/deskpro-ui";
 import { DeskproAppTheme, useQueryWithClient } from "@deskpro/app-sdk";
 import { Comment as CommentType } from "../../context/StoreProvider/types";
 import { getMemberById } from "../../context/StoreProvider/api";
@@ -81,8 +81,10 @@ const Comments: FC<Props> = ({ onAddComment, comments }) => {
   }, [comments]);
 
   return (
-    <>
-      <H1>
+    <Stack vertical padding={12}>
+      <H2
+        style={{ fontWeight: 500 }}
+      >
         Comments ({count}) &nbsp;
         <Button
           icon={faPlus}
@@ -90,7 +92,7 @@ const Comments: FC<Props> = ({ onAddComment, comments }) => {
           noMinimalUnderline
           onClick={onAddComment}
         />
-      </H1>
+      </H2>
 
       {sortByUpdated(comments).map(
         ({ id, updated_at, author_id, textHtml }) => (
@@ -111,7 +113,7 @@ const Comments: FC<Props> = ({ onAddComment, comments }) => {
           </Stack>
         )
       )}
-    </>
+    </Stack>
   );
 };
 
