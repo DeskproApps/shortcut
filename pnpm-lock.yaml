@@ -108,8 +108,8 @@ importers:
         specifier: 3.3.5
         version: 3.3.5
       use-debounce:
-        specifier: 7.0.1
-        version: 7.0.1(react@18.3.1)
+        specifier: 10.0.6
+        version: 10.0.6(react@18.3.1)
       yup:
         specifier: 0.31.1
         version: 0.31.1
@@ -436,6 +436,10 @@ packages:
 
   '@babel/types@7.28.1':
     resolution: {integrity: sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.28.4':
+    resolution: {integrity: sha512-bkFqkLhh3pMBUQQkpVgWDWq/lqzc2678eUyDlTBhRqhCHFguYYGM0Efga7tYk4TogG/3x0EEl66/OQ+WGbWB/Q==}
     engines: {node: '>=6.9.0'}
 
   '@bcoe/v8-coverage@0.2.3':
@@ -1269,6 +1273,9 @@ packages:
   '@types/babel__traverse@7.20.7':
     resolution: {integrity: sha512-dkO5fhS7+/oos4ciWxyEyjWe48zmG6wbCheo/G2ZnHx4fs3EU6YC6UM8rk56gAjNJ9P3MTH2jo5jb92/K6wbng==}
 
+  '@types/babel__traverse@7.28.0':
+    resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
+
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
@@ -1571,6 +1578,11 @@ packages:
     resolution: {integrity: sha512-ldYss8SbBlWva1bs28q78Ju5Zq1F+8BrqBZZ0VFhLBvhh6lCpC2o3gDJi/5DRLs9FgYZCnmPYIVFU4lRXCkyUw==}
     peerDependencies:
       '@babel/core': ^7.0.0
+
+  babel-preset-current-node-syntax@1.2.0:
+    resolution: {integrity: sha512-E/VlAEzRrsLEb2+dv8yp3bo4scof3l9nR4lrld+Iy5NyVqgVYUJnDAmunkhPMisRI32Qc4iRiz425d8vM++2fg==}
+    peerDependencies:
+      '@babel/core': ^7.0.0 || ^8.0.0-0
 
   babel-preset-jest@27.5.1:
     resolution: {integrity: sha512-Nptf2FzlPCWYuJg41HBqXVT8ym6bXOevuCTbhxlUpjwtysGaIWFvDEjp4y+G7fl13FgOdjs7P/DmErqH7da0Ag==}
@@ -3503,6 +3515,12 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  use-debounce@10.0.6:
+    resolution: {integrity: sha512-C5OtPyhAZgVoteO9heXMTdW7v/IbFI+8bSVKYCJrSmiWWCLsbUxiBSp4t9v0hNBTGY97bT72ydDIDyGSFWfwXg==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      react: '*'
+
   use-debounce@7.0.1:
     resolution: {integrity: sha512-fOrzIw2wstbAJuv8PC9Vg4XgwyTLEOdq4y/Z3IhVl8DAE4svRcgyEUvrEXu+BMNgMoc3YND6qLT61kkgEKXh7Q==}
     engines: {node: '>= 10.0.0'}
@@ -3938,6 +3956,12 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@babel/types@7.28.4':
+    dependencies:
+      '@babel/helper-string-parser': 7.27.1
+      '@babel/helper-validator-identifier': 7.27.1
+    optional: true
 
   '@bcoe/v8-coverage@0.2.3': {}
 
@@ -4864,6 +4888,11 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.1
 
+  '@types/babel__traverse@7.28.0':
+    dependencies:
+      '@babel/types': 7.28.4
+    optional: true
+
   '@types/estree@1.0.8': {}
 
   '@types/fs-extra@8.1.5':
@@ -5223,9 +5252,9 @@ snapshots:
   babel-plugin-jest-hoist@27.5.1:
     dependencies:
       '@babel/template': 7.27.2
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.4
       '@types/babel__core': 7.20.5
-      '@types/babel__traverse': 7.20.7
+      '@types/babel__traverse': 7.28.0
     optional: true
 
   babel-plugin-jest-hoist@29.6.3:
@@ -5254,11 +5283,31 @@ snapshots:
       '@babel/plugin-syntax-private-property-in-object': 7.14.5(@babel/core@7.28.0)
       '@babel/plugin-syntax-top-level-await': 7.14.5(@babel/core@7.28.0)
 
+  babel-preset-current-node-syntax@1.2.0(@babel/core@7.28.0):
+    dependencies:
+      '@babel/core': 7.28.0
+      '@babel/plugin-syntax-async-generators': 7.8.4(@babel/core@7.28.0)
+      '@babel/plugin-syntax-bigint': 7.8.3(@babel/core@7.28.0)
+      '@babel/plugin-syntax-class-properties': 7.12.13(@babel/core@7.28.0)
+      '@babel/plugin-syntax-class-static-block': 7.14.5(@babel/core@7.28.0)
+      '@babel/plugin-syntax-import-attributes': 7.27.1(@babel/core@7.28.0)
+      '@babel/plugin-syntax-import-meta': 7.10.4(@babel/core@7.28.0)
+      '@babel/plugin-syntax-json-strings': 7.8.3(@babel/core@7.28.0)
+      '@babel/plugin-syntax-logical-assignment-operators': 7.10.4(@babel/core@7.28.0)
+      '@babel/plugin-syntax-nullish-coalescing-operator': 7.8.3(@babel/core@7.28.0)
+      '@babel/plugin-syntax-numeric-separator': 7.10.4(@babel/core@7.28.0)
+      '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.28.0)
+      '@babel/plugin-syntax-optional-catch-binding': 7.8.3(@babel/core@7.28.0)
+      '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.28.0)
+      '@babel/plugin-syntax-private-property-in-object': 7.14.5(@babel/core@7.28.0)
+      '@babel/plugin-syntax-top-level-await': 7.14.5(@babel/core@7.28.0)
+    optional: true
+
   babel-preset-jest@27.5.1(@babel/core@7.28.0):
     dependencies:
       '@babel/core': 7.28.0
       babel-plugin-jest-hoist: 27.5.1
-      babel-preset-current-node-syntax: 1.1.0(@babel/core@7.28.0)
+      babel-preset-current-node-syntax: 1.2.0(@babel/core@7.28.0)
     optional: true
 
   babel-preset-jest@29.6.3(@babel/core@7.28.0):
@@ -7453,6 +7502,10 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  use-debounce@10.0.6(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   use-debounce@7.0.1(react@18.3.1):
     dependencies:
