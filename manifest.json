@@ -85,7 +85,12 @@
       {
         "url": "https://api.app.shortcut.com/api/v3/.*",
         "methods": ["GET", "POST", "PUT", "DELETE"],
-        "timeout": 30
+        "timeout": 30,
+        "settingsInjection": {
+          "api_key": {
+            "header": ["Shortcut-Token"]
+          }
+        }
       }
     ]
   }
